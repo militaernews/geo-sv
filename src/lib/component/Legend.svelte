@@ -1,15 +1,15 @@
 <script lang="ts">
-	export let entries: [string, string][];
+	export let entries: [string, string][] = [];
 	export let onChange: (color: string, value: string) => void;
 </script>
 
-<div class="bg-base-200 w-56 space-y-2 rounded-tl-lg p-3">
+<div class="bg-base-200 absolute right-0 bottom-0 z-10 space-y-3 rounded-tl-lg p-3">
 	{#each entries as [color, text]}
-		<div class="flex items-center space-x-2">
-			<div class="h-4 w-4 rounded-full border-2" style="border-color: {color};"></div>
+		<div class=" flex items-center gap-2">
+			<div class="h-5 w-5 rounded-full border-3" style="border-color: {color}"></div>
 			<input
+				class="  text-sm"
 				type="text"
-				class="input input-sm input-bordered w-full text-sm"
 				bind:value={text}
 				oninput={(e) => onChange(color, e.target.value)}
 			/>

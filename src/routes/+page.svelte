@@ -1,38 +1,54 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import type { Circle } from '$lib/Circle';
+	import Legend from '$lib/component/Legend.svelte';
+	import EditorModal from '$lib/component/EditorModal.svelte';
+	import CircleItem from '$lib/component/CircleItem.svelte';
 
-	import { writable, get } from 'svelte/store';
-	const legendTexts = writable(new Map<string, string>());
-	const usedColors = writable<Set<string>>(new Set());
+	import { writable, derived } from 'svelte/store';
 
 	let isAddingCircle = $state(false);
 	let displayLegend = $state(true);
 
-	import { derived } from 'svelte/store';
-
 	let iframeRef: HTMLIFrameElement | null = null;
+
 	let showSidebar = writable(true);
-	let circles = writable<Circle[]>([]);
 
 	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
-	let nextId = 1;
-	let draggingId: number | null = null;
-	let dragStarted = false;
+	let nextId = $state(1);
+
 	let editingCircle: Circle | null = $state(null);
 
+	let circles = writable<Circle[]>([]);
+
+	const legendTexts = writable<Map<string, string>>(new Map());
+
+	const usedColors = derived(circles, ($circles) => {
+		return new Set($circles.map((c) => c.color));
+	});
+	const activeLegendEntries = derived([usedColors, legendTexts], ([$usedColors, $legendTexts]) => {
+		return Array.from($legendTexts.entries()).filter(([color]) => $usedColors.has(color));
+	});
+
+	function selectColor(color: string) {
+		if (editingCircle) {
+			editingCircle.color = color;
+		}
+	}
+
 	function addCircle() {
-		const x = 50;
-		const y = 50;
+		const color = presetColors[0];
+
 		const newCircle: Circle = {
 			id: nextId++,
-			x,
-			y,
-			text: 'Edit me',
-			color: presetColors[0],
+			x: 50,
+			y: 50,
+			text: 'Edit text...',
+			color,
 			rectExpandLeft: false,
 			headline: '',
 			borderStyle: 'solid'
 		};
+
 		isAddingCircle = true;
 		openEditor(newCircle);
 	}
@@ -41,6 +57,37 @@
 		circles.update((c) => c.filter((circle) => circle.id !== id));
 		editingCircle = null;
 	}
+
+	function saveEditor() {
+		if (!editingCircle) return;
+
+		circles.update((c) =>
+			isAddingCircle
+				? [...c, editingCircle]
+				: c.map((circle) => (circle.id === editingCircle!.id ? editingCircle : circle))
+		);
+
+		legendTexts.update((map) => {
+			if (!map.has(editingCircle!.color)) {
+				map.set(editingCircle!.color, `Edit description...`);
+			}
+			return new Map(map); // force reactivity
+		});
+
+		isAddingCircle = false;
+		editingCircle = null;
+	}
+
+	function openEditor(circle: Circle) {
+		editingCircle = { ...circle };
+	}
+
+	function cancelEditor() {
+		editingCircle = null;
+	}
+
+	let draggingId: number | null = $state(null);
+	let dragStarted = $state(false);
 
 	function onMouseDown(event: MouseEvent, id: number) {
 		draggingId = id;
@@ -75,11 +122,6 @@
 		);
 	}
 
-	const activeLegendEntries = derived([circles, legendTexts], ([$circles, $legendTexts]) => {
-		const usedColors = new Set($circles.map((c) => c.color));
-		return Array.from($legendTexts.entries()).filter(([color]) => usedColors.has(color));
-	});
-
 	function onMouseUp(event: MouseEvent) {
 		if (draggingId === null) return;
 
@@ -91,107 +133,6 @@
 		draggingId = null;
 		dragStarted = false;
 	}
-	function openEditor(circle: Circle) {
-		editingCircle = { ...circle };
-	}
-
-	function saveEditor() {
-		if (!editingCircle) return;
-
-		const currentId = editingCircle.id;
-		let previousColor = '';
-
-		// Get the previous color if editing an existing one
-		if (!isAddingCircle) {
-			const existing = $circles.find((c) => c.id === currentId);
-			if (existing) previousColor = existing.color;
-		}
-
-		circles.update((c) => {
-			if (isAddingCircle) {
-				return [...c, editingCircle!];
-			} else {
-				return c.map((circle) => (circle.id === currentId ? editingCircle! : circle));
-			}
-		});
-
-		isAddingCircle = false;
-		editingCircle = null;
-
-		// Cleanup unused previous color
-		if (previousColor && previousColor !== editingCircle.color) {
-			const stillUsed = $circles.some((c) => c.color === previousColor);
-			if (!stillUsed) {
-				const map = new Map(get(legendTexts));
-				map.delete(editingCircle.color);
-				legendTexts.set(map);
-			}
-		}
-	}
-
-	function cancelEditor() {
-		editingCircle = null;
-	}
-
-	function selectColor(color: string) {
-		if (editingCircle) {
-			editingCircle.color = color;
-			usedColors.update((set) => {
-				set.add(color);
-				return new Set(set);
-			});
-		}
-	}
-
-	import html2canvas from 'html2canvas';
-	import type { Circle } from '$lib/Circle';
-	import Legend from '$lib/component/Legend.svelte';
-	import EditorModal from '$lib/component/EditorModal.svelte';
-	import CircleItem from '$lib/component/CircleItem.svelte';
-	let showSuccess = $state(false);
-	let showError = $state(false);
-
-	async function exportPageAsImage(): Promise<void> {
-		try {
-			const element = document.body;
-			const canvas = await html2canvas(element);
-			const dataUrl = canvas.toDataURL('image/png');
-
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'page-screenshot.png';
-			link.click();
-
-			showSuccess = true;
-			setTimeout(() => (showSuccess = false), 3000);
-		} catch (error) {
-			console.error('Export failed:', error);
-			showError = true;
-			setTimeout(() => (showError = false), 3000);
-		}
-	}
-
-	onMount(() => {
-		const interval = setInterval(() => {
-			if (!iframeRef) return;
-			const iframeDoc = iframeRef.contentDocument || iframeRef.contentWindow?.document;
-			if (!iframeDoc || iframeDoc.readyState !== 'complete') return;
-
-			const xpath = '/html/body/div/div[2]/div[1]/div[2]';
-			const result = iframeDoc.evaluate(
-				xpath,
-				iframeDoc,
-				null,
-				XPathResult.FIRST_ORDERED_NODE_TYPE,
-				null
-			);
-			const targetDiv = result.singleNodeValue as HTMLElement | null;
-			if (targetDiv) {
-				targetDiv.remove();
-				clearInterval(interval);
-			}
-		}, 100);
-	});
 </script>
 
 <div
@@ -219,9 +160,8 @@
 
 	<!-- Sidebar -->
 	{#if $showSidebar}
-		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 p-4 shadow">
-			<button class="btn btn-primary mb-2 w-full" onclick={addCircle}>Add Circle</button>
-			<button class="btn btn-secondary w-full" onclick={exportPageAsImage}>Export Page</button>
+		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 space-y-2 p-4 shadow">
+			<button class="btn btn-primary w-full" onclick={addCircle}>Add Circle</button>
 
 			<label class="mb-3 flex items-center gap-2">
 				<input type="checkbox" bind:checked={displayLegend} class="checkbox" />
@@ -255,36 +195,28 @@
 		/>
 	{/if}
 
-	<Legend
-		entries={$activeLegendEntries}
-		onChange={(color, value) => {
-			const map = new Map($legendTexts);
-			map.set(color, value);
-			legendTexts.set(map);
-		}}
-	/>
+	{#if displayLegend && $activeLegendEntries.length > 0}
+		<Legend
+			entries={$activeLegendEntries}
+			onChange={(color, value) => {
+				const map = new Map($legendTexts);
+
+				map.set(color, value);
+
+				legendTexts.set(map);
+			}}
+		/>
+	{/if}
 
 	<!-- Corner Images -->
 	<div
-		class="bg-base-200 pointer-events-none absolute top-0 right-0 z-10 rounded-tr-lg p-3 text-2xl"
+		class="bg-base-200 text-1xl pointer-events-none absolute top-0 right-0 z-10 rounded-tr-lg px-3 py-2"
 	>
 		<span style="color:#00ff00">Militär</span>News
 	</div>
 	<div
-		class="bg-base-200 pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg p-3 text-2xl"
+		class="bg-base-200 text-1xl pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg px-3 py-2"
 	>
 		<span style="color:#00ff00">Militär</span>News
 	</div>
-
-	<!-- Alerts -->
-	{#if showSuccess}
-		<div class="alert alert-success fixed right-4 bottom-4 left-4 shadow">
-			<span>✅ Export successful!</span>
-		</div>
-	{/if}
-	{#if showError}
-		<div class="alert alert-error fixed right-4 bottom-4 left-4 shadow">
-			<span>❌ Export failed!</span>
-		</div>
-	{/if}
 </div>
