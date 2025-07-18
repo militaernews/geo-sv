@@ -6,6 +6,7 @@
 	const usedColors = writable<Set<string>>(new Set());
 
 	let isAddingCircle = $state(false);
+	let displayLegend = $state(true);
 
 	type Circle = {
 		id: number;
@@ -223,7 +224,7 @@
 				</svg>
 			</button>
 		</div>
-		<div class="flex-1 px-2">My App</div>
+		menu
 	</div>
 
 	<!-- Sidebar -->
@@ -231,6 +232,11 @@
 		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 p-4 shadow">
 			<button class="btn btn-primary mb-2 w-full" onclick={addCircle}>Add Circle</button>
 			<button class="btn btn-secondary w-full" onclick={exportPageAsImage}>Export Page</button>
+
+			<label class="mb-3 flex items-center gap-2">
+				<input type="checkbox" bind:checked={displayLegend} class="checkbox" />
+				<span>Display legend</span>
+			</label>
 		</div>
 	{/if}
 
@@ -265,7 +271,7 @@
 
 			<!-- Tooltip/Label, not draggable -->
 			<div
-				class=" absolute rounded px-3 py-2 text-sm text-white"
+				class=" text-md absolute cursor-pointer rounded px-2 py-1 text-white"
 				style="
 		top: 50%;
 		{circle.rectExpandLeft ? 'right: 100%; text-align: right;' : 'left: 100%; text-align: left;'}
@@ -275,17 +281,13 @@
 				onclick={() => openEditor(circle)}
 			>
 				{#if circle.headline}
-					<div class="truncate overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
+					<div class=" text-base text-lg font-bold whitespace-nowrap">
 						{circle.headline}
 					</div>
-					<div class="truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-						{circle.text}
-					</div>
-				{:else}
-					<div class="truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-						{circle.text}
-					</div>
 				{/if}
+				<div class="  whitespace-nowrap">
+					{circle.text}
+				</div>
 			</div>
 		</div>
 	{/each}
@@ -300,7 +302,10 @@
 				class="bg-base-100 text-base-content w-80 rounded p-6 shadow"
 				onclick={(e) => e.stopPropagation()}
 			>
-				<h2 class="mb-4 text-lg font-bold">Edit Circle</h2>
+				<h2 class="mb-4 text-lg font-bold">
+					{#if isAddingCircle}Create{:else}
+						Edit{/if} Point
+				</h2>
 
 				<label class="form-control mb-3">
 					<span class="label-text">Headline</span>
@@ -362,17 +367,25 @@
 	{/if}
 
 	<!-- Corner Images -->
-	<img src="/mn-logo.svg" class="pointer-events-none absolute top-0 right-0 z-10 w-32" />
 	<div
-		class="bg-base-200 pointer-events-none absolute bottom-0 left-0 z-10 w-32 rounded-tr-lg text-2xl"
+		class="bg-base-200 pointer-events-none absolute top-0 right-0 z-10 rounded-tr-lg p-3 text-2xl"
 	>
-		<p class="m-3"><span style="color:#00ff00">Militär</span>News</p>
+		<span style="color:#00ff00">Militär</span>News
+	</div>
+	<div
+		class="bg-base-200 pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg p-3 text-2xl"
+	>
+		<span style="color:#00ff00">Militär</span>News
 	</div>
 
 	<!-- Color Legend -->
 	<!-- Legend -->
-	<div class="bg-base-200 absolute right-0 bottom-0 w-56 space-y-2 rounded-tl-lg p-3">
-		<input type="text" class="input input-md text-md w-full" />
+
+	<div
+		class="bg-base-200 absolute right-0 bottom-0 w-56 space-y-2 rounded-tl-lg p-3"
+		class:hidden={!displayLegend}
+	>
+		<input type="text" class="input input-md text-md" />
 
 		{#each Array.from($legendTexts.entries()).filter( ([color]) => $circles.some((c) => c.color === color) ) as [color, text]}
 			<div class="flex items-center space-x-2">
@@ -393,12 +406,12 @@
 
 	<!-- Alerts -->
 	{#if showSuccess}
-		<div class="alert alert-success fixed bottom-4 left-4 shadow">
+		<div class="alert alert-success fixed right-4 bottom-4 left-4 shadow">
 			<span>✅ Export successful!</span>
 		</div>
 	{/if}
 	{#if showError}
-		<div class="alert alert-error fixed bottom-4 left-4 shadow">
+		<div class="alert alert-error fixed right-4 bottom-4 left-4 shadow">
 			<span>❌ Export failed!</span>
 		</div>
 	{/if}
