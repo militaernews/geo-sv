@@ -8,6 +8,8 @@
 	let isAddingCircle = $state(false);
 	let displayLegend = $state(true);
 
+	import { derived } from 'svelte/store';
+
 	type Circle = {
 		id: number;
 		x: number;
@@ -93,6 +95,11 @@
 			c.map((circle) => (circle.id === draggingId ? { ...circle, x, y } : circle))
 		);
 	}
+
+	const activeLegendEntries = derived([circles, legendTexts], ([$circles, $legendTexts]) => {
+		const usedColors = new Set($circles.map((c) => c.color));
+		return Array.from($legendTexts.entries()).filter(([color]) => usedColors.has(color));
+	});
 
 	function onMouseUp(event: MouseEvent) {
 		if (draggingId === null) return;
@@ -387,7 +394,7 @@
 	>
 		<input type="text" class="input input-md text-md" />
 
-		{#each Array.from($legendTexts.entries()).filter( ([color]) => $circles.some((c) => c.color === color) ) as [color, text]}
+		{#each $activeLegendEntries as [color, text]}
 			<div class="flex items-center space-x-2">
 				<div class="h-4 w-4 rounded-full border-2" style="border-color: {color};"></div>
 				<input
