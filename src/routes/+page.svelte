@@ -5,6 +5,7 @@
 	import CircleItem from '$lib/component/CircleItem.svelte';
 
 	import { writable, derived } from 'svelte/store';
+	import { onMount } from 'svelte';
 
 	let isAddingCircle = $state(false);
 	let displayLegend = $state(true);
@@ -12,6 +13,34 @@
 	let iframeRef: HTMLIFrameElement | null = null;
 
 	let showSidebar = writable(true);
+
+	// Map sources configuration
+	const mapSources = [
+		{
+			id: 'google-custom',
+			name: 'Google Maps (Custom)',
+			url: 'https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F'
+		},
+		{
+			id: 'google-world',
+			name: 'Google Maps (World)',
+			url: 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d57879408.81242841!2d-46.32400534374999!3d21.06171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus'
+		},
+		{
+			id: 'google-europe',
+			name: 'Google Maps (Europe)',
+			url: 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d10782470.03830303!2d4.851733234374999!3d52.16171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus'
+		},
+		{
+			id: 'openstreet',
+			name: 'OpenStreetMap',
+			url: 'https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik'
+		}
+	];
+
+	let selectedMapIndex = $state(0);
+	let currentMapUrl = $derived(mapSources[selectedMapIndex].url);
+	let isMapLoading = $state(true);
 
 	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
 	let nextId = $state(1);
@@ -133,6 +162,21 @@
 		draggingId = null;
 		dragStarted = false;
 	}
+
+	// Function to handle map switching
+	function switchMap(index: number) {
+		selectedMapIndex = index;
+		isMapLoading = true;
+		// Force iframe reload by setting src to empty and then back
+		if (iframeRef) {
+			iframeRef.src = '';
+			setTimeout(() => {
+				if (iframeRef) {
+					iframeRef.src = currentMapUrl;
+				}
+			}, 100);
+		}
+	}
 </script>
 
 <div
@@ -155,29 +199,106 @@
 				</svg>
 			</button>
 		</div>
-		menu
+		<div class="flex-1">
+			<span class="text-lg font-semibold">Map Viewer</span>
+		</div>
+		<!-- Map Selector in Navbar -->
+		<div class="flex-none">
+			<div class="dropdown dropdown-end">
+				<label tabindex="0" class="btn btn-ghost">
+					{mapSources[selectedMapIndex].name}
+					<svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M19 9l-7 7-7-7"
+						/>
+					</svg>
+				</label>
+				<ul
+					tabindex="0"
+					class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow"
+				>
+					{#each mapSources as source, index}
+						<li>
+							<button
+								class="flex items-center justify-between {selectedMapIndex === index
+									? 'active'
+									: ''}"
+								onclick={() => switchMap(index)}
+							>
+								<span>{source.name}</span>
+								{#if selectedMapIndex === index}
+									<svg class="text-primary h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								{/if}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		</div>
 	</div>
 
 	<!-- Sidebar -->
 	{#if $showSidebar}
-		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 space-y-2 p-4 shadow">
+		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 space-y-4 p-4 shadow">
 			<button class="btn btn-primary w-full" onclick={addCircle}>Add Circle</button>
 
 			<label class="mb-3 flex items-center gap-2">
 				<input type="checkbox" bind:checked={displayLegend} class="checkbox" />
 				<span>Display legend</span>
 			</label>
+
+			<!-- Map Selection in Sidebar -->
+			<div class="divider">Map Selection</div>
+			<div class="space-y-2">
+				<label class="text-sm font-semibold">Choose Map:</label>
+				{#each mapSources as source, index}
+					<label class="hover:bg-base-300 flex cursor-pointer items-center gap-2 rounded p-2">
+						<input
+							type="radio"
+							name="mapSource"
+							class="radio radio-primary radio-sm"
+							checked={selectedMapIndex === index}
+							onchange={() => switchMap(index)}
+						/>
+						<span class="text-sm">{source.name}</span>
+					</label>
+				{/each}
+			</div>
 		</div>
 	{/if}
 
 	<!-- Map Iframe -->
-	<iframe
-		bind:this={iframeRef}
-		src="https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F"
-		class="absolute top-16 left-0 z-0 h-[calc(100%-4rem)] w-full"
-		loading="lazy"
-		allowfullscreen
-	></iframe>
+	<div class="absolute top-16 left-0 z-0 h-[calc(100%-4rem)] w-full">
+		<!-- Loading Spinner -->
+		{#if isMapLoading}
+			<div class="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
+				<div class="flex flex-col items-center gap-4">
+					<span class="loading loading-spinner loading-lg text-primary"></span>
+					<p class="text-base-content/70">Loading map...</p>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Iframe -->
+		<iframe
+			bind:this={iframeRef}
+			src={currentMapUrl}
+			class="h-full w-full"
+			loading="lazy"
+			allowfullscreen
+			title="Interactive Map"
+			onload={() => (isMapLoading = false)}
+		></iframe>
+	</div>
 
 	{#each $circles as circle (circle.id)}
 		<CircleItem {circle} onDragStart={onMouseDown} onEdit={openEditor} />
@@ -200,9 +321,7 @@
 			entries={$activeLegendEntries}
 			onChange={(color, value) => {
 				const map = new Map($legendTexts);
-
 				map.set(color, value);
-
 				legendTexts.set(map);
 			}}
 		/>

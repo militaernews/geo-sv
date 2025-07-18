@@ -49,6 +49,7 @@
 	"dependencies": {
 		"@iconify/svelte": "5.0.0",
 		"html2canvas": "^1.4.1",
+		"jsdom": "^26.1.0",
 		"leaflet": "^1.9.4",
 		"sveltekit-superforms": "2.27.1",
 		"valibot": "1.1.0"
