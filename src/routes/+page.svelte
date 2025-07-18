@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 
+	import { writable, get } from 'svelte/store';
+	const legendTexts = writable(new Map<string, string>());
 	const usedColors = writable<Set<string>>(new Set());
+
+	let isAddingCircle = $state(false);
 
 	type Circle = {
 		id: number;
@@ -18,6 +21,7 @@
 	let iframeRef: HTMLIFrameElement | null = null;
 	let showSidebar = writable(true);
 	let circles = writable<Circle[]>([]);
+
 	let legendLabels = writable<Record<string, string>>({
 		'#3b82f6': 'Category A',
 		'#10b981': 'Category B',
@@ -25,33 +29,35 @@
 		'#ef4444': 'Category D'
 	});
 
-	const presetColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+	// Initialize legendTexts from legendLabels
+	legendTexts.set(new Map(Object.entries(get(legendLabels))));
+
+	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
 	let nextId = 1;
 	let draggingId: number | null = null;
 	let dragStarted = false;
 	let editingCircle: Circle | null = $state(null);
 
 	function addCircle() {
-		const x = Math.random() * 80 + 10;
-		const y = Math.random() * 80 + 10;
-		circles.update((c) => [
-			...c,
-			{
-				id: nextId++,
-				x,
-				y,
-				headline: '',
-				text: 'Label',
-				color: '#3b82f6',
-				rectExpandLeft: false,
-				borderStyle: 'solid'
-			}
-		]);
+		const x = 50;
+		const y = 50;
+		const newCircle: Circle = {
+			id: nextId++,
+			x,
+			y,
+			text: 'Edit me',
+			color: presetColors[0],
+			rectExpandLeft: false,
+			headline: '',
+			borderStyle: 'solid'
+		};
+		isAddingCircle = true;
+		openEditor(newCircle);
+	}
 
-		usedColors.update((set) => {
-			set.add('#3b82f6'); // default color
-			return new Set(set);
-		});
+	function removeCircle(id: number) {
+		circles.update((c) => c.filter((circle) => circle.id !== id));
+		editingCircle = null;
 	}
 
 	function onMouseDown(event: MouseEvent, id: number) {
@@ -71,8 +77,16 @@
 		let x = ((event.clientX - rect.left) / rect.width) * 100;
 		let y = ((event.clientY - rect.top) / rect.height) * 100;
 
-		x = Math.min(100, Math.max(0, x));
-		y = Math.min(100, Math.max(0, y));
+		const circleSizeX = (56 / rect.width) * 100;
+		const circleSizeY = (56 / rect.height) * 100;
+		const margin = 2;
+		const minX = margin + circleSizeX / 2;
+		const maxX = 100 - margin - circleSizeX / 2;
+		const minY = margin + circleSizeY / 2;
+		const maxY = 100 - margin - circleSizeY / 2;
+
+		x = Math.min(maxX, Math.max(minX, x));
+		y = Math.min(maxY, Math.max(minY, y));
 
 		circles.update((c) =>
 			c.map((circle) => (circle.id === draggingId ? { ...circle, x, y } : circle))
@@ -90,17 +104,42 @@
 		draggingId = null;
 		dragStarted = false;
 	}
-
 	function openEditor(circle: Circle) {
 		editingCircle = { ...circle };
 	}
 
 	function saveEditor() {
 		if (!editingCircle) return;
-		circles.update((c) =>
-			c.map((circle) => (circle.id === editingCircle!.id ? editingCircle! : circle))
-		);
+
+		const currentId = editingCircle.id;
+		let previousColor = '';
+
+		// Get the previous color if editing an existing one
+		if (!isAddingCircle) {
+			const existing = $circles.find((c) => c.id === currentId);
+			if (existing) previousColor = existing.color;
+		}
+
+		circles.update((c) => {
+			if (isAddingCircle) {
+				return [...c, editingCircle!];
+			} else {
+				return c.map((circle) => (circle.id === currentId ? editingCircle! : circle));
+			}
+		});
+
+		isAddingCircle = false;
 		editingCircle = null;
+
+		// Cleanup unused previous color
+		if (previousColor && previousColor !== editingCircle.color) {
+			const stillUsed = $circles.some((c) => c.color === previousColor);
+			if (!stillUsed) {
+				const map = new Map(get(legendTexts));
+				map.delete(editingCircle.color);
+				legendTexts.set(map);
+			}
+		}
 	}
 
 	function cancelEditor() {
@@ -207,30 +246,45 @@
 	<!-- Circles -->
 	{#each $circles as circle (circle.id)}
 		<div
-			class="absolute z-10 h-14 w-14 cursor-move rounded-full border-4"
+			class="absolute z-10"
 			style="
-				top: {circle.y}%;
-				left: {circle.x}%;
-				transform: translate(-50%, -50%);
-				border-color: {circle.color};
-				border-style: {circle.borderStyle || 'solid'};
-			"
-			onmousedown={(e) => onMouseDown(e, circle.id)}
-			onclick={() => openEditor(circle)}
+		top: {circle.y}%;
+		left: {circle.x}%;
+		transform: translate(-50%, -50%);
+	"
 		>
+			<!-- Only this inner div is draggable -->
 			<div
-				class="absolute rounded px-3 py-2 text-sm text-white shadow"
+				class="h-14 w-14 cursor-move rounded-full border-4"
 				style="
-					{circle.rectExpandLeft ? 'right: 100%; text-align: right;' : 'left: 100%; text-align: left;'}
-					background-color: {circle.color};
-				"
+			border-color: {circle.color};
+			border-style: {circle.borderStyle || 'solid'};
+		"
+				onmousedown={(e) => onMouseDown(e, circle.id)}
+			></div>
+
+			<!-- Tooltip/Label, not draggable -->
+			<div
+				class=" absolute rounded px-3 py-2 text-sm text-white"
+				style="
+		top: 50%;
+		{circle.rectExpandLeft ? 'right: 100%; text-align: right;' : 'left: 100%; text-align: left;'}
+		transform: translateY(-50%);
+		background-color: {circle.color};
+	"
 				onclick={() => openEditor(circle)}
 			>
 				{#if circle.headline}
-					<div class="text-base font-bold">{circle.headline}</div>
-					<div class="text-sm">{circle.text}</div>
+					<div class="truncate overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
+						{circle.headline}
+					</div>
+					<div class="truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+						{circle.text}
+					</div>
 				{:else}
-					<div class="text-sm">{circle.text}</div>
+					<div class="truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+						{circle.text}
+					</div>
 				{/if}
 			</div>
 		</div>
@@ -263,12 +317,12 @@
 					<div class="mt-2 flex gap-2">
 						{#each presetColors as color}
 							<div
-								class="h-8 w-8 cursor-pointer rounded-full border-2"
-								style="
-									background-color: {color};
-									border-color: white;
-									box-shadow: {editingCircle.color === color ? '0 0 0 2px black' : 'none'};
-								"
+								class="h-8 w-8 cursor-pointer rounded-full border-2 border-transparent transition-all"
+								class:ring-2={editingCircle?.color === color}
+								class:ring-offset-2={editingCircle?.color === color}
+								class:shadow-md={editingCircle?.color === color}
+								class:animate-bounce-once={editingCircle?.color === color}
+								style="background-color: {color};"
 								onclick={() => selectColor(color)}
 							></div>
 						{/each}
@@ -290,35 +344,52 @@
 					<span>Dotted border</span>
 				</label>
 
-				<div class="flex justify-end gap-2">
+				<div class="mt-4 flex justify-end space-x-2">
 					<button class="btn btn-outline" onclick={cancelEditor}>Cancel</button>
-					<button class="btn btn-primary" onclick={saveEditor}>Save</button>
+
+					{#if !isAddingCircle}
+						<button class="btn btn-error" onclick={() => removeCircle(editingCircle!.id)}
+							>Remove</button
+						>
+					{/if}
+
+					<button class="btn btn-primary" onclick={saveEditor}>
+						{isAddingCircle ? 'Add Circle' : 'Save'}
+					</button>
 				</div>
 			</div>
 		</div>
 	{/if}
 
 	<!-- Corner Images -->
-	<img src="/mn-logo.svg" class="pointer-events-none absolute top-0 right-0 z-10 h-20 w-20" />
-	<img src="/mn-logo.svg" class="pointer-events-none absolute bottom-0 left-0 z-10 h-20 w-20" />
+	<img src="/mn-logo.svg" class="pointer-events-none absolute top-0 right-0 z-10 w-32" />
+	<div
+		class="bg-base-200 pointer-events-none absolute bottom-0 left-0 z-10 w-32 rounded-tr-lg text-2xl"
+	>
+		<p class="m-3"><span style="color:#00ff00">Militär</span>News</p>
+	</div>
 
 	<!-- Color Legend -->
-	{#if $circles.length > 0}
-		<div class="bg-base-200 absolute right-4 bottom-4 z-20 w-56 rounded p-4 shadow">
-			<h3 class="mb-2 text-base font-bold">Legend</h3>
-			{#each presetColors.filter((color) => $usedColors.has(color)) as color}
-				<div class="mb-2 flex items-center gap-2">
-					<div class="h-4 w-4 rounded-full" style="background-color: {color}"></div>
-					<input
-						type="text"
-						class="input input-sm input-bordered flex-1"
-						bind:value={$legendLabels[color]}
-						oninput={(e) => legendLabels.update((l) => ({ ...l, [color]: e.target.value }))}
-					/>
-				</div>
-			{/each}
-		</div>
-	{/if}
+	<!-- Legend -->
+	<div class="bg-base-200 absolute right-0 bottom-0 w-56 space-y-2 rounded-tl-lg p-3">
+		<input type="text" class="input input-md text-md w-full" />
+
+		{#each Array.from($legendTexts.entries()).filter( ([color]) => $circles.some((c) => c.color === color) ) as [color, text]}
+			<div class="flex items-center space-x-2">
+				<div class="h-4 w-4 rounded-full border-2" style="border-color: {color};"></div>
+				<input
+					type="text"
+					class="input input-sm input-bordered w-full text-sm"
+					value={text}
+					oninput={(e) => {
+						const map = new Map($legendTexts);
+						map.set(color, e.target.value);
+						legendTexts.set(map);
+					}}
+				/>
+			</div>
+		{/each}
+	</div>
 
 	<!-- Alerts -->
 	{#if showSuccess}
