@@ -10,30 +10,9 @@
 
 	import { derived } from 'svelte/store';
 
-	type Circle = {
-		id: number;
-		x: number;
-		y: number;
-		headline?: string;
-		text: string;
-		color: string;
-		rectExpandLeft: boolean;
-		borderStyle?: 'solid' | 'dotted';
-	};
-
 	let iframeRef: HTMLIFrameElement | null = null;
 	let showSidebar = writable(true);
 	let circles = writable<Circle[]>([]);
-
-	let legendLabels = writable<Record<string, string>>({
-		'#3b82f6': 'Category A',
-		'#10b981': 'Category B',
-		'#f59e0b': 'Category C',
-		'#ef4444': 'Category D'
-	});
-
-	// Initialize legendTexts from legendLabels
-	legendTexts.set(new Map(Object.entries(get(legendLabels))));
 
 	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
 	let nextId = 1;
@@ -165,6 +144,10 @@
 	}
 
 	import html2canvas from 'html2canvas';
+	import type { Circle } from '$lib/Circle';
+	import Legend from '$lib/component/Legend.svelte';
+	import EditorModal from '$lib/component/EditorModal.svelte';
+	import CircleItem from '$lib/component/CircleItem.svelte';
 	let showSuccess = $state(false);
 	let showError = $state(false);
 
@@ -256,122 +239,30 @@
 		allowfullscreen
 	></iframe>
 
-	<!-- Circles -->
 	{#each $circles as circle (circle.id)}
-		<div
-			class="absolute z-10"
-			style="
-		top: {circle.y}%;
-		left: {circle.x}%;
-		transform: translate(-50%, -50%);
-	"
-		>
-			<!-- Only this inner div is draggable -->
-			<div
-				class="h-14 w-14 cursor-move rounded-full border-4"
-				style="
-			border-color: {circle.color};
-			border-style: {circle.borderStyle || 'solid'};
-		"
-				onmousedown={(e) => onMouseDown(e, circle.id)}
-			></div>
-
-			<!-- Tooltip/Label, not draggable -->
-			<div
-				class=" text-md absolute cursor-pointer rounded px-2 py-1 text-white"
-				style="
-		top: 50%;
-		{circle.rectExpandLeft ? 'right: 100%; text-align: right;' : 'left: 100%; text-align: left;'}
-		transform: translateY(-50%);
-		background-color: {circle.color};
-	"
-				onclick={() => openEditor(circle)}
-			>
-				{#if circle.headline}
-					<div class=" text-base text-lg font-bold whitespace-nowrap">
-						{circle.headline}
-					</div>
-				{/if}
-				<div class="  whitespace-nowrap">
-					{circle.text}
-				</div>
-			</div>
-		</div>
+		<CircleItem {circle} onDragStart={onMouseDown} onEdit={openEditor} />
 	{/each}
 
-	<!-- Modal -->
 	{#if editingCircle}
-		<div
-			class="bg-opacity- fixed inset-0 z-50 flex items-center justify-center bg-black"
-			onclick={cancelEditor}
-		>
-			<div
-				class="bg-base-100 text-base-content w-80 rounded p-6 shadow"
-				onclick={(e) => e.stopPropagation()}
-			>
-				<h2 class="mb-4 text-lg font-bold">
-					{#if isAddingCircle}Create{:else}
-						Edit{/if} Point
-				</h2>
-
-				<label class="form-control mb-3">
-					<span class="label-text">Headline</span>
-					<input type="text" class="input input-bordered" bind:value={editingCircle.headline} />
-				</label>
-
-				<label class="form-control mb-3">
-					<span class="label-text">Text</span>
-					<input type="text" class="input input-bordered" bind:value={editingCircle.text} />
-				</label>
-
-				<label class="form-control mb-3">
-					<span class="label-text">Color</span>
-					<div class="mt-2 flex gap-2">
-						{#each presetColors as color}
-							<div
-								class="h-8 w-8 cursor-pointer rounded-full border-2 border-transparent transition-all"
-								class:ring-2={editingCircle?.color === color}
-								class:ring-offset-2={editingCircle?.color === color}
-								class:shadow-md={editingCircle?.color === color}
-								class:animate-bounce-once={editingCircle?.color === color}
-								style="background-color: {color};"
-								onclick={() => selectColor(color)}
-							></div>
-						{/each}
-					</div>
-				</label>
-
-				<label class="mb-3 flex items-center gap-2">
-					<input type="checkbox" bind:checked={editingCircle.rectExpandLeft} class="checkbox" />
-					<span>Expand label left</span>
-				</label>
-
-				<label class="mb-4 flex items-center gap-2">
-					<input
-						type="checkbox"
-						class="checkbox"
-						checked={editingCircle.borderStyle === 'dotted'}
-						onchange={(e) => (editingCircle.borderStyle = e.target.checked ? 'dotted' : 'solid')}
-					/>
-					<span>Dotted border</span>
-				</label>
-
-				<div class="mt-4 flex justify-end space-x-2">
-					<button class="btn btn-outline" onclick={cancelEditor}>Cancel</button>
-
-					{#if !isAddingCircle}
-						<button class="btn btn-error" onclick={() => removeCircle(editingCircle!.id)}
-							>Remove</button
-						>
-					{/if}
-
-					<button class="btn btn-primary" onclick={saveEditor}>
-						{isAddingCircle ? 'Add Circle' : 'Save'}
-					</button>
-				</div>
-			</div>
-		</div>
+		<EditorModal
+			circle={editingCircle}
+			isNew={isAddingCircle}
+			onCancel={cancelEditor}
+			onSave={saveEditor}
+			onRemove={() => removeCircle(editingCircle.id)}
+			{presetColors}
+			onColorSelect={selectColor}
+		/>
 	{/if}
+
+	<Legend
+		entries={$activeLegendEntries}
+		onChange={(color, value) => {
+			const map = new Map($legendTexts);
+			map.set(color, value);
+			legendTexts.set(map);
+		}}
+	/>
 
 	<!-- Corner Images -->
 	<div
@@ -383,32 +274,6 @@
 		class="bg-base-200 pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg p-3 text-2xl"
 	>
 		<span style="color:#00ff00">Militär</span>News
-	</div>
-
-	<!-- Color Legend -->
-	<!-- Legend -->
-
-	<div
-		class="bg-base-200 absolute right-0 bottom-0 w-56 space-y-2 rounded-tl-lg p-3"
-		class:hidden={!displayLegend}
-	>
-		<input type="text" class="input input-md text-md" />
-
-		{#each $activeLegendEntries as [color, text]}
-			<div class="flex items-center space-x-2">
-				<div class="h-4 w-4 rounded-full border-2" style="border-color: {color};"></div>
-				<input
-					type="text"
-					class="input input-sm input-bordered w-full text-sm"
-					value={text}
-					oninput={(e) => {
-						const map = new Map($legendTexts);
-						map.set(color, e.target.value);
-						legendTexts.set(map);
-					}}
-				/>
-			</div>
-		{/each}
 	</div>
 
 	<!-- Alerts -->
