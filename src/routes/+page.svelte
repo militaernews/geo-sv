@@ -152,9 +152,7 @@
 	}
 
 	function switchMapByIndex(index: number) {
-		// Renamed to avoid confusion with prop
 		selectedMapIndex = index;
-		// MapDisplay component handles its own loading state and iframe src
 	}
 
 	// Circle Management
@@ -255,58 +253,52 @@
 	}
 </script>
 
-<div class="relative h-screen w-screen">
-	<Sidebar
-		{displayLegend}
-		{isCapturingScreenshot}
-		{mapSources}
-		{selectedMapIndex}
-		onAddCircle={addCircle}
-		onToggleLegend={() => (displayLegend = !displayLegend)}
-		onCaptureScreenshot={captureWithHtml2Canvas}
-		onOpenMapModal={openMapModal}
-		onSwitchMap={switchMapByIndex}
-		onRemoveCustomMap={removeCustomMap}
-		onClearCirclesAndLegend={clearCirclesAndLegend}
+<svelte:head>
+	<title>MN Map</title>
+</svelte:head>
+
+<Sidebar
+	{displayLegend}
+	{isCapturingScreenshot}
+	{mapSources}
+	{selectedMapIndex}
+	onAddCircle={addCircle}
+	onToggleLegend={() => (displayLegend = !displayLegend)}
+	onCaptureScreenshot={captureWithHtml2Canvas}
+	onOpenMapModal={openMapModal}
+	onSwitchMap={switchMapByIndex}
+	onRemoveCustomMap={removeCustomMap}
+	onClearCirclesAndLegend={clearCirclesAndLegend}
+/>
+
+<MapContainer
+	{currentMapUrl}
+	circles={$circles}
+	onCircleDragStart={() => {}}
+	onCircleEdit={openEditor}
+	onCirclesUpdate={handleCirclesUpdate}
+	{displayLegend}
+	legendTexts={$legendTexts}
+	{activeLegendEntries}
+/>
+
+{#if editingCircle}
+	<EditorModal
+		circle={editingCircle}
+		isNew={isAddingCircle}
+		onCancel={cancelEditor}
+		onSave={saveEditor}
+		onRemove={() => removeCircle(editingCircle?.id!)}
+		onColorSelect={selectColor}
 	/>
+{/if}
 
-	<MapContainer
-		{currentMapUrl}
-		circles={$circles}
-		onCircleDragStart={() => {}}
-		onCircleEdit={openEditor}
-		onCirclesUpdate={handleCirclesUpdate}
-	/>
-
-	{#if editingCircle}
-		<EditorModal
-			circle={editingCircle}
-			isNew={isAddingCircle}
-			onCancel={cancelEditor}
-			onSave={saveEditor}
-			onRemove={() => removeCircle(editingCircle?.id!)}
-			onColorSelect={selectColor}
-		/>
-	{/if}
-
-	{#if displayLegend && $activeLegendEntries.length > 0}
-		<Legend
-			entries={$activeLegendEntries}
-			onChange={(colorIndex, value) => {
-				const map = new Map($legendTexts);
-				map.set(colorIndex, value);
-				legendTexts.set(map);
-			}}
-		/>
-	{/if}
-
-	<MapModal
-		showModal={showMapModal}
-		mapName={newMapName}
-		mapUrl={newMapUrl}
-		onAddMap={addCustomMap}
-		onClose={closeMapModal}
-		onUpdateMapName={handleUpdateMapName}
-		onUpdateMapUrl={handleUpdateMapUrl}
-	/>
-</div>
+<MapModal
+	showModal={showMapModal}
+	mapName={newMapName}
+	mapUrl={newMapUrl}
+	onAddMap={addCustomMap}
+	onClose={closeMapModal}
+	onUpdateMapName={handleUpdateMapName}
+	onUpdateMapUrl={handleUpdateMapUrl}
+/>

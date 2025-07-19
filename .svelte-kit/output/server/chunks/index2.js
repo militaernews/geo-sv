@@ -25,15 +25,6 @@ function deferred() {
   });
   return { promise, resolve, reject };
 }
-function fallback(value, fallback2, lazy = false) {
-  return value === void 0 ? lazy ? (
-    /** @type {() => V} */
-    fallback2()
-  ) : (
-    /** @type {V} */
-    fallback2
-  ) : value;
-}
 function equals(value) {
   return value === this.v;
 }
@@ -1767,19 +1758,25 @@ function render(component, options = {}) {
     payload.out.push(BLOCK_CLOSE);
     for (const cleanup of on_destroy) cleanup();
     on_destroy = prev_on_destroy;
-    let head = payload.head.out.join("") + payload.head.title;
+    let head2 = payload.head.out.join("") + payload.head.title;
     for (const { hash, code } of payload.css) {
-      head += `<style id="${hash}">${code}</style>`;
+      head2 += `<style id="${hash}">${code}</style>`;
     }
     const body = payload.out.join("");
     return {
-      head,
+      head: head2,
       html: body,
       body
     };
   } finally {
     abort();
   }
+}
+function head(payload, fn) {
+  const head_payload = payload.head;
+  head_payload.out.push(BLOCK_OPEN);
+  fn(head_payload);
+  head_payload.out.push(BLOCK_CLOSE);
 }
 function spread_attributes(attrs, css_hash, classes, styles, flags = 0) {
   if (attrs.class) {
@@ -1831,15 +1828,6 @@ function unsubscribe_stores(store_values) {
     store_values[store_name][1]();
   }
 }
-function bind_props(props_parent, props_now) {
-  for (const key in props_now) {
-    const initial_value = props_parent[key];
-    const value = props_now[key];
-    if (initial_value === void 0 && value !== void 0 && Object.getOwnPropertyDescriptor(props_parent, key)?.set) {
-      props_parent[key] = value;
-    }
-  }
-}
 function ensure_array_like(array_like_or_iterator) {
   if (array_like_or_iterator) {
     return array_like_or_iterator.length !== void 0 ? array_like_or_iterator : Array.from(array_like_or_iterator);
@@ -1865,11 +1853,10 @@ export {
   attr as P,
   stringify as Q,
   attr_style as R,
-  bind_props as S,
-  fallback as T,
-  store_get as U,
-  unsubscribe_stores as V,
-  BROWSER as W,
+  store_get as S,
+  unsubscribe_stores as T,
+  head as U,
+  BROWSER as V,
   subscribe_to_store as a,
   push as b,
   get_next_sibling as c,

@@ -1,7 +1,8 @@
-import { M as spread_attributes, N as ensure_array_like, O as attr_class, P as attr, e as escape_html, p as pop, b as push, Q as stringify, R as attr_style, S as bind_props, T as fallback, U as store_get, V as unsubscribe_stores } from "../../chunks/index2.js";
+import { M as spread_attributes, N as ensure_array_like, O as attr_class, P as attr, e as escape_html, p as pop, b as push, Q as stringify, R as attr_style, S as store_get, T as unsubscribe_stores, U as head } from "../../chunks/index2.js";
 import "clsx";
 import { d as derived, w as writable } from "../../chunks/index.js";
 import "html2canvas";
+import "dom-to-image";
 function Floppy_disk($$payload, $$props) {
   const { $$slots, $$events, ...p } = $$props;
   $$payload.out.push(`<svg${spread_attributes(
@@ -98,57 +99,7 @@ function Plus($$payload, $$props) {
     3
   )}><g fill="none"><path fill="url(#f2072id4)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id5)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id6)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id0)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id1)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id2)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><path fill="url(#f2072id3)" d="M19.05 5.06c0-1.68-1.37-3.06-3.06-3.06s-3.07 1.38-3.06 3.06v7.87H5.06C3.38 12.93 2 14.3 2 15.99c0 1.68 1.38 3.06 3.06 3.06h7.87v7.86c0 1.68 1.37 3.06 3.06 3.06c1.68 0 3.06-1.37 3.06-3.06v-7.86h7.86c1.68 0 3.06-1.37 3.06-3.06c0-1.68-1.37-3.06-3.06-3.06h-7.86z"></path><defs><radialGradient id="f2072id0" cx="0" cy="0" r="1" gradientTransform="matrix(0 2.85096 -5.34217 0 16.31 28.79)" gradientUnits="userSpaceOnUse"><stop offset=".096" stop-color="#9447FE"></stop><stop offset=".846" stop-color="#7D6CBB" stop-opacity="0"></stop></radialGradient><radialGradient id="f2072id1" cx="0" cy="0" r="1" gradientTransform="matrix(-3.26241 0 0 -4.60993 2.26 15.156)" gradientUnits="userSpaceOnUse"><stop offset=".11" stop-color="#41366A"></stop><stop offset="1" stop-color="#7E5FCD" stop-opacity="0"></stop></radialGradient><radialGradient id="f2072id2" cx="0" cy="0" r="1" gradientTransform="matrix(1.0537 -1.67517 2.25759 1.42004 17.194 3.818)" gradientUnits="userSpaceOnUse"><stop offset=".177" stop-color="#A398D8"></stop><stop offset="1" stop-color="#8A7ACC" stop-opacity="0"></stop></radialGradient><radialGradient id="f2072id3" cx="0" cy="0" r="1" gradientTransform="matrix(1.46526 -1.95368 1.4073 1.05548 18.874 13.64)" gradientUnits="userSpaceOnUse"><stop offset=".177" stop-color="#A398D8"></stop><stop offset="1" stop-color="#8A7ACC" stop-opacity="0"></stop></radialGradient><linearGradient id="f2072id4" x1="15.985" x2="15.985" y1="2" y2="27.773" gradientUnits="userSpaceOnUse"><stop stop-color="#7366AD"></stop><stop offset="1" stop-color="#7D5DD4"></stop></linearGradient><linearGradient id="f2072id5" x1="15.985" x2="15.985" y1="12.732" y2="19.5" gradientUnits="userSpaceOnUse"><stop stop-color="#655898"></stop><stop offset=".214" stop-color="#8276BD"></stop><stop offset=".335" stop-color="#897EC1"></stop><stop offset=".523" stop-color="#7966C1"></stop><stop offset=".863" stop-color="#8842EC"></stop><stop offset="1" stop-color="#6035BE"></stop></linearGradient><linearGradient id="f2072id6" x1="13" x2="20.766" y1="9" y2="9" gradientUnits="userSpaceOnUse"><stop stop-color="#564199" stop-opacity="0"></stop><stop offset=".352" stop-color="#7362AF"></stop><stop offset=".563" stop-color="#8878CA"></stop><stop offset=".643" stop-color="#8878CA"></stop><stop offset=".849" stop-color="#9489CB" stop-opacity="0"></stop></linearGradient></defs></g></svg>`);
 }
-function Sidebar($$payload, $$props) {
-  push();
-  const {
-    displayLegend,
-    isCapturingScreenshot,
-    mapSources,
-    selectedMapIndex
-  } = $$props;
-  const each_array = ensure_array_like(
-    // Function to toggle legend in parent
-    // Function to switch map in parent
-    // Removed $$restProps
-    // Read displayLegend directly
-    mapSources
-  );
-  $$payload.out.push(`<div class="bg-base-300 absolute top-0 left-0 z-20 flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"><div class="tooltip tooltip-right" data-tip="Add Marker"><button class="btn btn-ghost btn-sm">`);
-  Round_pushpin($$payload, { class: "h-6 w-6" });
-  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Toggle Legend"><button${attr_class(`btn btn-ghost btn-sm ${stringify(displayLegend ? "btn-active bg-primary text-primary-content" : "")}`)}>`);
-  Eye($$payload, { class: "h-6 w-6" });
-  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Download Screenshot"><button class="btn btn-ghost btn-sm"${attr("disabled", isCapturingScreenshot, true)}>`);
-  if (isCapturingScreenshot) {
-    $$payload.out.push("<!--[-->");
-    $$payload.out.push(`<span class="loading loading-spinner loading-sm"></span>`);
-  } else {
-    $$payload.out.push("<!--[!-->");
-    Floppy_disk($$payload, { class: "h-6 w-6" });
-  }
-  $$payload.out.push(`<!--]--></button></div> <div class="tooltip tooltip-right" data-tip="Add Custom Map"><button class="btn btn-ghost btn-sm">`);
-  Plus($$payload, { class: "h-6 w-6" });
-  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Select Map"><div class="dropdown dropdown-right"><label tabindex="0" class="btn btn-ghost btn-sm">`);
-  World_map($$payload, { class: "h-6 w-6" });
-  $$payload.out.push(`<!----></label> <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"><!--[-->`);
-  for (let index = 0, $$length = each_array.length; index < $$length; index++) {
-    let source = each_array[index];
-    $$payload.out.push(`<li class="p-1"><div${attr_class(`flex w-full items-center justify-between ${stringify(selectedMapIndex === index ? "bg-primary text-primary-content" : "")}`)}><button class="flex-1 text-left text-sm"><span class="truncate overflow-ellipsis">${escape_html(source.name)}</span></button> `);
-    if (source.isCustom) {
-      $$payload.out.push("<!--[-->");
-      $$payload.out.push(`<button class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content" title="Remove custom map">`);
-      Wastebasket($$payload, { class: "h-3 w-3" });
-      $$payload.out.push(`<!----></button>`);
-    } else {
-      $$payload.out.push("<!--[!-->");
-    }
-    $$payload.out.push(`<!--]--></div></li>`);
-  }
-  $$payload.out.push(`<!--]--></ul></div></div> <div class="flex-1"></div> <div class="tooltip tooltip-right" data-tip="Clear Circles &amp; Legend"><button class="btn btn-ghost btn-sm text-error">`);
-  Wastebasket($$payload, { class: "h-6 w-6" });
-  $$payload.out.push(`<!----></button></div></div>`);
-  pop();
-}
-function Pencil($$payload, $$props) {
+function Cross_mark($$payload, $$props) {
   const { $$slots, $$events, ...p } = $$props;
   $$payload.out.push(`<svg${spread_attributes(
     {
@@ -162,126 +113,168 @@ function Pencil($$payload, $$props) {
     void 0,
     void 0,
     3
-  )}><g fill="none"><path fill="url(#f1646ida)" d="M23.037 2.506a1.5 1.5 0 0 1 2.121 0l4.363 4.363a1.5 1.5 0 0 1 0 2.121L9.464 29.048l-6.485-6.485z"></path><path fill="url(#f1646id0)" d="M23.037 2.506a1.5 1.5 0 0 1 2.121 0l4.363 4.363a1.5 1.5 0 0 1 0 2.121L9.464 29.048l-6.485-6.485z"></path><path fill="url(#f1646id1)" d="M23.037 2.506a1.5 1.5 0 0 1 2.121 0l4.363 4.363a1.5 1.5 0 0 1 0 2.121L9.464 29.048l-6.485-6.485z"></path><path fill="url(#f1646idb)" d="M23.037 2.506a1.5 1.5 0 0 1 2.121 0l4.363 4.363a1.5 1.5 0 0 1 0 2.121L9.464 29.048l-6.485-6.485z"></path><path fill="url(#f1646id2)" d="M2.034 29.782a.2.2 0 0 0 .219.218l6.54-.629a1 1 0 0 0 .518-.205l.153-.118l-6.484-6.485l-.101.122a1 1 0 0 0-.224.543z"></path><path fill="url(#f1646id3)" d="M2.034 29.782a.2.2 0 0 0 .219.218l6.54-.629a1 1 0 0 0 .518-.205l.153-.118l-6.484-6.485l-.101.122a1 1 0 0 0-.224.543z"></path><path fill="url(#f1646id4)" d="M2.034 29.782a.2.2 0 0 0 .219.218l6.54-.629a1 1 0 0 0 .518-.205l.153-.118l-6.484-6.485l-.101.122a1 1 0 0 0-.224.543z"></path><path fill="url(#f1646id5)" d="m26.34 12.172l3.18-3.182a1.5 1.5 0 0 0 0-2.121l-4.363-4.363a1.5 1.5 0 0 0-2.121 0l-3.182 3.182z"></path><path fill="url(#f1646id6)" d="m26.34 12.172l3.18-3.182a1.5 1.5 0 0 0 0-2.121l-4.363-4.363a1.5 1.5 0 0 0-2.121 0l-3.182 3.182z"></path><path fill="url(#f1646idc)" d="m26.34 12.172l3.18-3.182a1.5 1.5 0 0 0 0-2.121l-4.363-4.363a1.5 1.5 0 0 0-2.121 0l-3.182 3.182z"></path><path fill="url(#f1646id7)" d="m16.666 8.877l3.19-3.19l6.484 6.485l-3.19 3.19z"></path><path fill="url(#f1646id8)" d="m16.666 8.877l3.19-3.19l6.484 6.485l-3.19 3.19z"></path><path fill="url(#f1646id9)" d="M2.253 30a.2.2 0 0 1-.219-.218l.218-2.3l2.296 2.297z"></path><defs><linearGradient id="f1646id0" x1="10.136" x2="11.699" y1="14.875" y2="16.375" gradientUnits="userSpaceOnUse"><stop stop-color="#EE9B6A"></stop><stop offset="1" stop-color="#EE9B6A" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id1" x1="20.637" x2="18.762" y1="18.5" y2="16.938" gradientUnits="userSpaceOnUse"><stop stop-color="#E66A62"></stop><stop offset="1" stop-color="#E66A62" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id2" x1="3.887" x2="6.512" y1="26.094" y2="30.219" gradientUnits="userSpaceOnUse"><stop stop-color="#D8A587"></stop><stop offset="1" stop-color="#CE7A98"></stop></linearGradient><linearGradient id="f1646id3" x1="6.98" x2="6.457" y1="26.282" y2="26.812" gradientUnits="userSpaceOnUse"><stop offset=".207" stop-color="#FFC09F"></stop><stop offset="1" stop-color="#FCB196" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id4" x1="1.512" x2="3.637" y1="25.937" y2="26.125" gradientUnits="userSpaceOnUse"><stop stop-color="#DEBCA3"></stop><stop offset="1" stop-color="#DEBCA3" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id5" x1="28.074" x2="23.949" y1="4.938" y2="9" gradientUnits="userSpaceOnUse"><stop stop-color="#FF6153"></stop><stop offset="1" stop-color="#FF6154"></stop></linearGradient><linearGradient id="f1646id6" x1="20.762" x2="24.012" y1="4.563" y2="7.563" gradientUnits="userSpaceOnUse"><stop stop-color="#F1553E"></stop><stop offset="1" stop-color="#F1553E" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id7" x1="18.324" x2="22.449" y1="7.375" y2="11.125" gradientUnits="userSpaceOnUse"><stop stop-color="#C5C4CB"></stop><stop offset="1" stop-color="#E8DEFA"></stop></linearGradient><linearGradient id="f1646id8" x1="24.824" x2="22.512" y1="14.375" y2="12.125" gradientUnits="userSpaceOnUse"><stop stop-color="#C9B9E0"></stop><stop offset="1" stop-color="#C9B9E0" stop-opacity="0"></stop></linearGradient><linearGradient id="f1646id9" x1="2.23" x2="3.291" y1="28.531" y2="30.001" gradientUnits="userSpaceOnUse"><stop stop-color="#461E49"></stop><stop offset="1" stop-color="#450F51"></stop></linearGradient><radialGradient id="f1646ida" cx="0" cy="0" r="1" gradientTransform="matrix(13.74998 -14.06245 8.72293 8.5291 6.199 26)" gradientUnits="userSpaceOnUse"><stop stop-color="#FF9130"></stop><stop offset="1" stop-color="#F3633D"></stop></radialGradient><radialGradient id="f1646idb" cx="0" cy="0" r="1" gradientTransform="matrix(12.87503 -12.81253 2.8651 2.87908 5.949 25.813)" gradientUnits="userSpaceOnUse"><stop stop-color="#FF994D"></stop><stop offset="1" stop-color="#FF994D" stop-opacity="0"></stop></radialGradient><radialGradient id="f1646idc" cx="0" cy="0" r="1" gradientTransform="rotate(135 12.398 8.577)scale(1.37002 3.11227)" gradientUnits="userSpaceOnUse"><stop offset=".177" stop-color="#FF786D"></stop><stop offset="1" stop-color="#FF786D" stop-opacity="0"></stop></radialGradient></defs></g></svg>`);
+  )}><g fill="none"><g filter="url(#f342id4)"><path fill="url(#f342id0)" d="M4.435 2.809A1.55 1.55 0 0 0 2.243 5L13.41 16.169a.25.25 0 0 1 0 .354L2.243 27.692a1.55 1.55 0 1 0 2.192 2.192l11.168-11.169a.25.25 0 0 1 .354 0l11.168 11.169a1.55 1.55 0 0 0 2.193-2.192l-11.17-11.17a.25.25 0 0 1 0-.353l11.17-11.168a1.55 1.55 0 0 0-2.192-2.192l-11.17 11.168a.25.25 0 0 1-.353 0z"></path><path fill="url(#f342id1)" d="M4.435 2.809A1.55 1.55 0 0 0 2.243 5L13.41 16.169a.25.25 0 0 1 0 .354L2.243 27.692a1.55 1.55 0 1 0 2.192 2.192l11.168-11.169a.25.25 0 0 1 .354 0l11.168 11.169a1.55 1.55 0 0 0 2.193-2.192l-11.17-11.17a.25.25 0 0 1 0-.353l11.17-11.168a1.55 1.55 0 0 0-2.192-2.192l-11.17 11.168a.25.25 0 0 1-.353 0z"></path></g><path fill="url(#f342id7)" d="M4.435 2.809A1.55 1.55 0 0 0 2.243 5L13.41 16.169a.25.25 0 0 1 0 .354L2.243 27.692a1.55 1.55 0 1 0 2.192 2.192l11.168-11.169a.25.25 0 0 1 .354 0l11.168 11.169a1.55 1.55 0 0 0 2.193-2.192l-11.17-11.17a.25.25 0 0 1 0-.353l11.17-11.168a1.55 1.55 0 0 0-2.192-2.192l-11.17 11.168a.25.25 0 0 1-.353 0z"></path><g filter="url(#f342id5)"><path stroke="url(#f342id2)" stroke-linecap="round" d="M3.685 3.558L15.2 15.074m13.367 13.368L17.68 17.555"></path></g><g filter="url(#f342id6)"><path stroke="url(#f342id3)" stroke-linecap="round" d="m27.832 4.289l-10.78 10.785M3.685 28.442L14.57 17.555"></path></g><defs><linearGradient id="f342id0" x1="15.78" x2="15.78" y1="2.355" y2="30.338" gradientUnits="userSpaceOnUse"><stop stop-color="#E02C6B"></stop><stop offset="1" stop-color="#FF354E"></stop></linearGradient><linearGradient id="f342id1" x1="6.29" x2="14.721" y1="6.699" y2="15.172" gradientUnits="userSpaceOnUse"><stop stop-color="#EE3D81"></stop><stop offset="1" stop-color="#EE3D81" stop-opacity="0"></stop></linearGradient><linearGradient id="f342id2" x1="3.314" x2="28.986" y1="3.885" y2="29.499" gradientUnits="userSpaceOnUse"><stop stop-color="#FF679B"></stop><stop offset="1" stop-color="#FF7171"></stop></linearGradient><linearGradient id="f342id3" x1="28.939" x2="6.319" y1="3.885" y2="26.505" gradientUnits="userSpaceOnUse"><stop stop-color="#EF4B8B"></stop><stop offset="1" stop-color="#FE4753"></stop></linearGradient><filter id="f342id4" width="28.483" height="27.983" x="1.789" y="2.355" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dx=".5"></feOffset><feGaussianBlur stdDeviation=".5"></feGaussianBlur><feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"></feComposite><feColorMatrix values="0 0 0 0 0.776471 0 0 0 0 0.219608 0 0 0 0 0.411765 0 0 0 1 0"></feColorMatrix><feBlend in2="shape" result="effect1_innerShadow_18590_2030"></feBlend></filter><filter id="f342id5" width="27.383" height="27.383" x="2.435" y="2.308" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur result="effect1_foregroundBlur_18590_2030" stdDeviation=".375"></feGaussianBlur></filter><filter id="f342id6" width="26.647" height="26.652" x="2.435" y="3.039" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend><feGaussianBlur result="effect1_foregroundBlur_18590_2030" stdDeviation=".375"></feGaussianBlur></filter><radialGradient id="f342id7" cx="0" cy="0" r="1" gradientTransform="rotate(134.145 13.617 7.88)scale(1.36671)" gradientUnits="userSpaceOnUse"><stop stop-color="#FF75A7"></stop><stop offset="1" stop-color="#FF75A7" stop-opacity="0"></stop></radialGradient></defs></g></svg>`);
 }
-function EditorModal($$payload, $$props) {
+function Sidebar($$payload, $$props) {
   push();
-  let circle = $$props["circle"];
-  let isNew = $$props["isNew"];
-  let onCancel = $$props["onCancel"];
-  let onSave = $$props["onSave"];
-  let onRemove = $$props["onRemove"];
-  let presetColors = $$props["presetColors"];
-  let onColorSelect = $$props["onColorSelect"];
-  const each_array = ensure_array_like(presetColors);
-  $$payload.out.push(`<div class="bg-opacity- fixed inset-0 z-50 flex items-center justify-center bg-black"><div class="bg-base-100 text-base-content w-80 rounded p-6 shadow"><div class="mb-6 flex items-center gap-3">`);
-  if (isNew) {
+  const {
+    displayLegend,
+    isCapturingScreenshot,
+    mapSources,
+    selectedMapIndex
+  } = $$props;
+  const each_array = ensure_array_like(mapSources);
+  $$payload.out.push(`<div class="bg-base-300 absolute top-0 left-0 flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"><div class="tooltip tooltip-right" data-tip="Add Marker"><button class="btn btn-ghost btn-sm">`);
+  Round_pushpin($$payload, { class: "size-6" });
+  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Toggle Legend"><button${attr_class(`btn btn-ghost btn-sm ${stringify(displayLegend ? "btn-active bg-primary text-primary-content" : "")}`)}>`);
+  Eye($$payload, { class: "size-6" });
+  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Download Screenshot"><button class="btn btn-ghost btn-sm"${attr("disabled", isCapturingScreenshot, true)}>`);
+  if (isCapturingScreenshot) {
     $$payload.out.push("<!--[-->");
-    Round_pushpin($$payload, { class: "size-5" });
+    $$payload.out.push(`<span class="loading loading-spinner loading-sm"></span>`);
   } else {
     $$payload.out.push("<!--[!-->");
-    Pencil($$payload, { class: "size-5" });
+    Floppy_disk($$payload, { class: "size-6" });
   }
-  $$payload.out.push(`<!--]--> <h3 class="text-xl font-bold">`);
-  if (isNew) {
-    $$payload.out.push("<!--[-->");
-    $$payload.out.push(`Create`);
-  } else {
-    $$payload.out.push("<!--[!-->");
-    $$payload.out.push(`Edit`);
+  $$payload.out.push(`<!--]--></button></div> <div class="tooltip tooltip-right" data-tip="Add Custom Map"><button class="btn btn-ghost btn-sm">`);
+  Plus($$payload, { class: "size-6" });
+  $$payload.out.push(`<!----></button></div> <div class="tooltip tooltip-right" data-tip="Select Map"><div class="dropdown dropdown-right"><label tabindex="0" class="btn btn-ghost btn-sm">`);
+  World_map($$payload, { class: "size-6" });
+  $$payload.out.push(`<!----></label> <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"><!--[-->`);
+  for (let index = 0, $$length = each_array.length; index < $$length; index++) {
+    let source = each_array[index];
+    $$payload.out.push(`<li class="p-1"><div${attr_class(`flex w-full items-center justify-between ${stringify(selectedMapIndex === index ? "bg-primary text-primary-content" : "")}`)}><button class="flex-1 text-left text-sm"><span class="truncate overflow-ellipsis">${escape_html(source.name)}</span></button> `);
+    if (source.isCustom) {
+      $$payload.out.push("<!--[-->");
+      $$payload.out.push(`<button class="btn btn-ghost btn-xs" title="Remove custom map">`);
+      Cross_mark($$payload, { class: "size-3" });
+      $$payload.out.push(`<!----></button>`);
+    } else {
+      $$payload.out.push("<!--[!-->");
+    }
+    $$payload.out.push(`<!--]--></div></li>`);
   }
-  $$payload.out.push(`<!--]--> Point</h3></div> <label class="form-control mb-3"><span class="label-text">Headline</span> <input type="text" class="input input-bordered"${attr("value", circle.headline)}/></label> <label class="form-control mb-3"><span class="label-text">Text</span> <input type="text" class="input input-bordered"${attr("value", circle.text)}/></label> <label class="form-control mb-3"><span class="label-text">Color</span> <div class="mt-2 flex gap-2"><!--[-->`);
-  for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-    let color = each_array[$$index];
-    $$payload.out.push(`<button${attr_class("size-8 cursor-pointer rounded-full border-2 border-transparent transition-all", void 0, {
-      "ring-2": circle?.color === color,
-      "ring-offset-2": circle?.color === color,
-      "shadow-md": circle?.color === color,
-      "animate-bounce-once": circle?.color === color
-    })}${attr_style(`background-color: ${stringify(color)};`)}></button>`);
-  }
-  $$payload.out.push(`<!--]--></div></label> <label class="mb-3 flex items-center gap-2"><input type="checkbox"${attr("checked", circle.rectExpandLeft, true)} class="checkbox"/> <span>Expand label left</span></label> <label class="mb-4 flex items-center gap-2"><input type="checkbox" class="checkbox"${attr("checked", circle.useDottedBorder, true)}/> <span>Dotted border</span></label> <div class="mt-4 flex justify-end space-x-2"><button class="btn btn-ghost">Cancel</button> `);
-  if (!isNew) {
-    $$payload.out.push("<!--[-->");
-    $$payload.out.push(`<button class="btn btn-error">Remove</button>`);
-  } else {
-    $$payload.out.push("<!--[!-->");
-  }
-  $$payload.out.push(`<!--]--> <button class="btn btn-primary">${escape_html(isNew ? "Add Point" : "Save Changes")}</button></div></div></div>`);
-  bind_props($$props, {
-    circle,
-    isNew,
-    onCancel,
-    onSave,
-    onRemove,
-    presetColors,
-    onColorSelect
-  });
+  $$payload.out.push(`<!--]--></ul></div></div> <div class="flex-1"></div> <div class="tooltip tooltip-right" data-tip="Clear Circles &amp; Legend"><button class="btn btn-ghost btn-sm text-error">`);
+  Wastebasket($$payload, { class: "size-6" });
+  $$payload.out.push(`<!----></button></div></div>`);
   pop();
 }
+const presetColors = [
+  { color: "#ffcc00", useDarkFont: true },
+  // Yellow
+  { color: "#ff00ff", useDarkFont: false },
+  // Magenta
+  { color: "#800080", useDarkFont: false },
+  // Purple
+  { color: "#00ffff", useDarkFont: true },
+  // Cyan
+  { color: "#00ff00", useDarkFont: true }
+  // Green
+];
+const defaultMapSources = [
+  {
+    name: "Google Maps (Project Owl)",
+    url: "https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F",
+    isCustom: false
+  },
+  {
+    name: "Google Maps",
+    url: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d57879408.81242841!2d-46.32400534374999!3d21.06171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus",
+    isCustom: false
+  },
+  {
+    name: "Satellites.pro",
+    url: "https://satellites.pro/Ukraine_map#48.882780,37.924805,7",
+    isCustom: false
+  },
+  {
+    name: "OpenStreetMap",
+    url: "https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik",
+    isCustom: false
+  },
+  {
+    name: "OpenStreetMap (Dark)",
+    url: "https://umap.openstreetmap.fr/en/map/dark-mode_297704#6/48.591/-325.525",
+    isCustom: false
+  },
+  {
+    name: "OpenTopoMap",
+    url: "https://opentopomap.org/#map=5/48.882780/37.924805",
+    isCustom: false
+  }
+];
 function Legend($$payload, $$props) {
   push();
-  let entries = fallback($$props["entries"], () => [], true);
-  let onChange = $$props["onChange"];
+  const { entries = [] } = $$props;
   const each_array = ensure_array_like(entries);
   $$payload.out.push(`<div class="bg-base-200 absolute right-0 bottom-0 z-10 space-y-3 rounded-tl-lg p-3"><!--[-->`);
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-    let [color, text] = each_array[$$index];
-    $$payload.out.push(`<div class="flex items-center gap-2"><div class="h-5 w-5 rounded-full border-3"${attr_style(`border-color: ${stringify(color)}`)}></div> <input class="text-sm" type="text"${attr("value", text)}/></div>`);
+    let [colorIndex, text] = each_array[$$index];
+    $$payload.out.push(`<div class="flex items-center gap-2"><div class="h-5 w-5 rounded-full border-3"${attr_style(`border-color: ${stringify(presetColors[colorIndex].color)}`)}></div> <input class="text-sm" type="text"${attr("value", text)}/></div>`);
   }
   $$payload.out.push(`<!--]--></div>`);
-  bind_props($$props, { entries, onChange });
   pop();
 }
 function CircleItem($$payload, $$props) {
   push();
-  let circle = $$props["circle"];
-  let onDragStart = $$props["onDragStart"];
-  let onEdit = $$props["onEdit"];
-  $$payload.out.push(`<div class="absolute z-10"${attr_style(`top: ${stringify(circle.y)}%; left: ${stringify(circle.x)}%; transform: translate(-50%, -50%);`)}><div${attr_class("h-14 w-14 cursor-move rounded-full border-4", void 0, {
+  const { circle } = $$props;
+  const fontColor = presetColors[circle.colorIndex]?.useDarkFont ? "#000000" : "#ffffff";
+  const backgroundColor = presetColors[circle.colorIndex]?.color;
+  $$payload.out.push(`<div class="absolute z-10"${attr_style(`top: ${stringify(circle.y)}%; left: ${stringify(circle.x)}%; transform: translate(-50%, -50%);`)}><div${attr_class("size-16 cursor-move rounded-full border-4", void 0, {
     "border-dotted": circle.useDottedBorder,
     "border-solid": !circle.useDottedBorder
-  })}${attr_style(`border-color: ${stringify(circle.color)};`)}></div> <div class="text-md absolute cursor-pointer rounded px-2 py-1 text-white"${attr_style(` top: 50%; ${stringify(circle.rectExpandLeft ? "right: 100%; text-align: right;" : "left: 100%; text-align: left;")} transform: translateY(-50%); background-color: ${stringify(circle.color)}; `)}>`);
+  })}${attr_style(`border-color: ${stringify(backgroundColor)};`)}></div> <button type="button"${attr_class("text-md absolute cursor-pointer px-2 py-1", void 0, {
+    "rounded-l": circle.rectExpandLeft,
+    "rounded-r": !circle.rectExpandLeft,
+    "rounded": circle.headline
+  })}${attr_style(` top: 50%; ${stringify(circle.rectExpandLeft ? "right: 93%; text-align: right;" : "left: 93%; text-align: left;")} transform: translateY(-50%); background-color: ${stringify(backgroundColor)}; color: ${stringify(fontColor)}; `)}>`);
   if (circle.headline) {
     $$payload.out.push("<!--[-->");
     $$payload.out.push(`<div class="truncate text-base font-bold whitespace-nowrap">${escape_html(circle.headline)}</div>`);
   } else {
     $$payload.out.push("<!--[!-->");
   }
-  $$payload.out.push(`<!--]--> <div class="truncate whitespace-nowrap">${escape_html(circle.text)}</div></div></div>`);
-  bind_props($$props, { circle, onDragStart, onEdit });
+  $$payload.out.push(`<!--]--> <div class="truncate whitespace-nowrap">${escape_html(circle.text)}</div></button></div>`);
   pop();
 }
 function Branding($$payload) {
-  $$payload.out.push(`<div class="bg-base-200 text-1xl pointer-events-none absolute top-0 right-0 z-10 rounded-bl-lg px-3 py-2"><span style="color:#00ff00">Militär</span>News</div> <div class="bg-base-200 text-1xl pointer-events-none absolute bottom-0 left-16 z-10 rounded-tr-lg px-3 py-2"><span style="color:#00ff00">Militär</span>News</div>`);
+  $$payload.out.push(`<div class="bg-base-200 text-1xl pointer-events-none absolute top-0 right-0 z-10 rounded-bl-lg px-3 py-2"><span style="color:#00ff00">Militär</span>News</div> <div class="bg-base-200 text-1xl pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg px-3 py-2"><span style="color:#00ff00">Militär</span>News</div>`);
 }
 function MapContainer($$payload, $$props) {
   push();
+  var $$store_subs;
   const {
     currentMapUrl,
     circles,
-    onCircleEdit
+    displayLegend,
+    activeLegendEntries
   } = $$props;
-  function handleMouseDown(event, id) {
-  }
   const each_array = ensure_array_like(circles);
-  $$payload.out.push(`<div class="relative container h-screen w-full overflow-hidden"><div class="absolute top-0 left-16 z-0 h-full w-[calc(100%-4rem)]">`);
+  $$payload.out.push(`<div class="relative ml-16 h-screen flex-grow overflow-hidden" id="container"><div class="z-0 h-full w-full">`);
   {
     $$payload.out.push("<!--[-->");
     $$payload.out.push(`<div class="bg-base-100 absolute inset-0 z-10 flex items-center justify-center"><div class="flex flex-col items-center gap-4"><span class="loading loading-spinner loading-lg text-primary"></span> <p class="text-base-content/70">Loading map...</p></div></div>`);
   }
-  $$payload.out.push(`<!--]--> <iframe${attr("src", currentMapUrl)} class="h-full w-full" loading="lazy" allowfullscreen title="Interactive Map" onload="this.__e=event"></iframe></div> <!--[-->`);
+  $$payload.out.push(`<!--]--> <iframe${attr("src", currentMapUrl)} class="h-full w-full" loading="lazy" allowfullscreen title="Interactive Map" allow="display-capture" onload="this.__e=event"></iframe></div> <!--[-->`);
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
     let circle = each_array[$$index];
     CircleItem($$payload, {
-      circle,
-      onDragStart: (e) => handleMouseDown(e, circle.id),
-      onEdit: onCircleEdit
+      circle
     });
+  }
+  $$payload.out.push(`<!--]--> `);
+  if (displayLegend && store_get($$store_subs ??= {}, "$activeLegendEntries", activeLegendEntries).length > 0) {
+    $$payload.out.push("<!--[-->");
+    Legend($$payload, {
+      entries: store_get($$store_subs ??= {}, "$activeLegendEntries", activeLegendEntries)
+    });
+  } else {
+    $$payload.out.push("<!--[!-->");
   }
   $$payload.out.push(`<!--]--> `);
   Branding($$payload);
   $$payload.out.push(`<!----></div>`);
+  if ($$store_subs) unsubscribe_stores($$store_subs);
   pop();
 }
 function MapModal($$payload, $$props) {
@@ -294,18 +287,24 @@ function MapModal($$payload, $$props) {
 }
 function createPersistentState(key, defaultValue, serializer = JSON.stringify, deserializer = JSON.parse) {
   let value;
-  try {
-    const saved = localStorage.getItem(key);
-    value = saved ? deserializer(saved) : defaultValue;
-  } catch (e) {
-    console.warn(`Could not load ${key} from localStorage, using default:`, e);
+  if (typeof localStorage !== "undefined") {
+    try {
+      const saved = localStorage.getItem(key);
+      value = saved ? deserializer(saved) : defaultValue;
+    } catch (e) {
+      console.warn(`Could not load ${key} from localStorage, using default:`, e);
+      value = defaultValue;
+    }
+  } else {
     value = defaultValue;
   }
   function save(newValue) {
-    try {
-      localStorage.setItem(key, serializer(newValue));
-    } catch (e) {
-      console.warn(`Could not save ${key} to localStorage:`, e);
+    if (typeof localStorage !== "undefined") {
+      try {
+        localStorage.setItem(key, serializer(newValue));
+      } catch (e) {
+        console.warn(`Could not save ${key} to localStorage:`, e);
+      }
     }
   }
   return [value, save];
@@ -315,38 +314,6 @@ function _page($$payload, $$props) {
   var $$store_subs;
   const [initialDisplayLegend, saveDisplayLegend] = createPersistentState("displayLegend", true);
   let displayLegend = initialDisplayLegend;
-  const defaultMapSources = [
-    {
-      name: "Google Maps (Project Owl)",
-      url: "https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F",
-      isCustom: false
-    },
-    {
-      name: "Google Maps",
-      url: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d57879408.81242841!2d-46.32400534374999!3d21.06171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus",
-      isCustom: false
-    },
-    {
-      name: "Satellites.pro",
-      url: "https://satellites.pro/Ukraine_map#48.882780,37.924805,7",
-      isCustom: false
-    },
-    {
-      name: "OpenStreetMap",
-      url: "https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik",
-      isCustom: false
-    },
-    {
-      name: "OpenStreetMap (Dark)",
-      url: "https://umap.openstreetmap.fr/en/map/dark-mode_297704#6/48.591/-325.525",
-      isCustom: false
-    },
-    {
-      name: "OpenTopoMap",
-      url: "https://opentopomap.org/#map=5/48.882780/37.924805",
-      isCustom: false
-    }
-  ];
   const [initialMapSources, saveMapSources] = createPersistentState("customMapSources", defaultMapSources);
   let mapSources = initialMapSources;
   const [initialSelectedMapIndex, saveSelectedMapIndex] = createPersistentState("selectedMapIndex", 0, String, Number);
@@ -356,16 +323,13 @@ function _page($$payload, $$props) {
   const [initialLegendTexts, saveLegendTexts] = createPersistentState("mapLegendTexts", /* @__PURE__ */ new Map(), (map) => JSON.stringify(Object.fromEntries(map)), (json) => new Map(Object.entries(JSON.parse(json))));
   const legendTexts = writable(initialLegendTexts);
   createPersistentState("nextCircleId", 1, String, Number);
-  let isAddingCircle = false;
   let isCapturingScreenshot = false;
-  let editingCircle = null;
   const currentMapUrl = mapSources[selectedMapIndex]?.url || "";
-  const presetColors = ["#ffcc00", "#ff00ff", "#00ffff", "#00ff00"];
   const usedColors = derived(circles, ($circles) => {
-    return new Set($circles.map((c) => c.color));
+    return new Set($circles.map((c) => c.colorIndex));
   });
   const activeLegendEntries = derived([usedColors, legendTexts], ([$usedColors, $legendTexts]) => {
-    return Array.from($legendTexts.entries()).filter(([color]) => $usedColors.has(color));
+    return Array.from($legendTexts.entries()).filter(([colorIndex]) => $usedColors.has(colorIndex));
   });
   circles.subscribe(($circles) => {
     saveCircles($circles);
@@ -373,35 +337,9 @@ function _page($$payload, $$props) {
   legendTexts.subscribe(($legendTexts) => {
     saveLegendTexts($legendTexts);
   });
-  function removeCircle(id) {
-    circles.update((c) => c.filter((circle) => circle.id !== id));
-    editingCircle = null;
-  }
-  function saveEditor() {
-    if (!editingCircle) return;
-    circles.update((c) => isAddingCircle ? [...c, editingCircle] : c.map((circle) => circle.id === editingCircle.id ? editingCircle : circle));
-    legendTexts.update((map) => {
-      if (!map.has(editingCircle.color)) {
-        map.set(editingCircle.color, `Edit description...`);
-      }
-      return new Map(map);
-    });
-    isAddingCircle = false;
-    editingCircle = null;
-  }
-  function openEditor(circle) {
-    editingCircle = { ...circle };
-  }
-  function cancelEditor() {
-    editingCircle = null;
-    isAddingCircle = false;
-  }
-  function selectColor(color) {
-    if (editingCircle) {
-      editingCircle.color = color;
-    }
-  }
-  $$payload.out.push(`<div class="relative h-screen w-screen">`);
+  head($$payload, ($$payload2) => {
+    $$payload2.title = `<title>MN Map</title>`;
+  });
   Sidebar($$payload, {
     displayLegend,
     isCapturingScreenshot,
@@ -412,40 +350,17 @@ function _page($$payload, $$props) {
   MapContainer($$payload, {
     currentMapUrl,
     circles: store_get($$store_subs ??= {}, "$circles", circles),
-    onCircleEdit: openEditor
+    displayLegend,
+    legendTexts: store_get($$store_subs ??= {}, "$legendTexts", legendTexts),
+    activeLegendEntries
   });
   $$payload.out.push(`<!----> `);
-  if (editingCircle) {
-    $$payload.out.push("<!--[-->");
-    EditorModal($$payload, {
-      circle: editingCircle,
-      isNew: isAddingCircle,
-      onCancel: cancelEditor,
-      onSave: saveEditor,
-      onRemove: () => removeCircle(editingCircle?.id),
-      presetColors,
-      onColorSelect: selectColor
-    });
-  } else {
-    $$payload.out.push("<!--[!-->");
-  }
-  $$payload.out.push(`<!--]--> `);
-  if (displayLegend && store_get($$store_subs ??= {}, "$activeLegendEntries", activeLegendEntries).length > 0) {
-    $$payload.out.push("<!--[-->");
-    Legend($$payload, {
-      entries: store_get($$store_subs ??= {}, "$activeLegendEntries", activeLegendEntries),
-      onChange: (color, value) => {
-        const map = new Map(store_get($$store_subs ??= {}, "$legendTexts", legendTexts));
-        map.set(color, value);
-        legendTexts.set(map);
-      }
-    });
-  } else {
+  {
     $$payload.out.push("<!--[!-->");
   }
   $$payload.out.push(`<!--]--> `);
   MapModal($$payload);
-  $$payload.out.push(`<!----></div>`);
+  $$payload.out.push(`<!---->`);
   if ($$store_subs) unsubscribe_stores($$store_subs);
   pop();
 }

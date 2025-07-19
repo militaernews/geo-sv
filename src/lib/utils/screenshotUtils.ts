@@ -5,17 +5,32 @@ export async function captureScreenshot(): Promise<void> {
 	const element = document.getElementById('container');
 	console.log(element);
 
-	domtoimage
-		.toPng(element)
-		.then(function (dataUrl) {
-			const link = document.createElement('a');
-			link.download = 'element.png';
-			link.href = dataUrl;
-			link.click();
-		})
-		.catch(function (error) {
-			console.error('dom-to-image error:', error);
-		});
+	if (element) {
+		const scale = 4;
+
+		const style = {
+			transform: 'scale(' + scale + ')',
+			transformOrigin: 'top left',
+			width: element.offsetWidth + 'px',
+			height: element.offsetHeight + 'px'
+		};
+
+		domtoimage
+			.toPng(element, {
+				width: element.offsetWidth * scale,
+				height: element.offsetHeight * scale,
+				style: style
+			})
+			.then((dataUrl) => {
+				const link = document.createElement('a') as HTMLAnchorElement;
+				link.download = 'high-res.png';
+				link.href = dataUrl;
+				link.click();
+			})
+			.catch((error) => {
+				console.error('dom-to-image error:', error);
+			});
+	}
 }
 
 export async function captureScreenshot3(): Promise<void> {

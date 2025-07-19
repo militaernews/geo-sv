@@ -3,13 +3,27 @@
 	import type { Circle } from '$lib/Circle';
 	import CircleItem from '$lib/component/CircleItem.svelte';
 	import Branding from '$lib/component/Branding.svelte';
+	import Legend from './Legend.svelte';
+	import type { Readable } from 'svelte/store';
 
-	const { currentMapUrl, circles, onCircleDragStart, onCircleEdit, onCirclesUpdate } = $props<{
+	const {
+		currentMapUrl,
+		circles,
+		onCircleDragStart,
+		onCircleEdit,
+		onCirclesUpdate,
+		displayLegend,
+		legendTexts,
+		activeLegendEntries
+	} = $props<{
 		currentMapUrl: string;
 		circles: Circle[];
 		onCircleDragStart: (event: MouseEvent, id: number) => void;
 		onCircleEdit: (circle: Circle) => void;
 		onCirclesUpdate: (updatedCircles: Circle[]) => void;
+		displayLegend: boolean;
+		legendTexts: Map<number, string>;
+		activeLegendEntries: Readable<[number, string][]>;
 	}>();
 
 	let isMapLoading = $state(true);
@@ -90,13 +104,13 @@
 </script>
 
 <div
-	class="relative container h-screen w-full overflow-hidden"
+	class="relative ml-16 h-screen flex-grow overflow-hidden"
 	id="container"
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
 	onmouseleave={handleMouseUp}
 >
-	<div class="absolute top-0 left-16 z-0 h-full w-[calc(100%-4rem)]">
+	<div class=" z-0 h-full w-full">
 		{#if isMapLoading}
 			<div class="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
 				<div class="flex flex-col items-center gap-4">
@@ -121,6 +135,17 @@
 	{#each circles as circle (circle.id)}
 		<CircleItem {circle} onDragStart={(e) => handleMouseDown(e, circle.id)} onEdit={onCircleEdit} />
 	{/each}
+
+	{#if displayLegend && $activeLegendEntries.length > 0}
+		<Legend
+			entries={$activeLegendEntries}
+			onChange={(colorIndex, value) => {
+				const map = new Map($legendTexts);
+				map.set(colorIndex, value);
+				legendTexts.set(map);
+			}}
+		/>
+	{/if}
 
 	<Branding />
 </div>
