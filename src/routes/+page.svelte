@@ -3,6 +3,8 @@
 	import Legend from '$lib/component/Legend.svelte';
 	import EditorModal from '$lib/component/EditorModal.svelte';
 	import CircleItem from '$lib/component/CircleItem.svelte';
+	import FluentEmojiFloppyDisk from '~icons/fluent-emoji/floppy-disk';
+	import FluentEmojiRoundPushpin from '~icons/fluent-emoji/round-pushpin';
 
 	import { writable, derived } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -12,24 +14,22 @@
 
 	let iframeRef: HTMLIFrameElement | null = null;
 
-	let showSidebar = writable(true);
-
 	// Map sources configuration
 	const mapSources = [
 		{
 			id: 'google-custom',
-			name: 'Google Maps (Custom)',
+			name: 'Google Maps (Project Owl)',
 			url: 'https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F'
 		},
 		{
 			id: 'google-world',
-			name: 'Google Maps (World)',
+			name: 'Google Maps',
 			url: 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d57879408.81242841!2d-46.32400534374999!3d21.06171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus'
 		},
 		{
 			id: 'google-europe',
-			name: 'Google Maps (Europe)',
-			url: 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d10782470.03830303!2d4.851733234374999!3d52.16171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus'
+			name: 'Satellites.pro',
+			url: 'https://satellites.pro/Ukraine_map#48.882780,37.924805,7'
 		},
 		{
 			id: 'openstreet',
@@ -41,6 +41,7 @@
 	let selectedMapIndex = $state(0);
 	let currentMapUrl = $derived(mapSources[selectedMapIndex].url);
 	let isMapLoading = $state(true);
+	let isCapturingScreenshot = $state(false);
 
 	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
 	let nextId = $state(1);
@@ -177,6 +178,71 @@
 			}, 100);
 		}
 	}
+
+	// Function to capture screenshot
+	async function captureScreenshot() {
+		isCapturingScreenshot = true;
+
+		try {
+			// Temporarily hide sidebar for screenshot
+
+			// Wait a moment for the UI to update
+			await new Promise((resolve) => setTimeout(resolve, 100));
+
+			// Use html2canvas to capture the screen
+			const html2canvas = (
+				await import('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js')
+			).default;
+
+			// Get the main container
+			const container = document.querySelector('.relative.h-screen.w-screen') as HTMLElement;
+
+			if (container) {
+				const canvas = await html2canvas(container, {
+					useCORS: true,
+					allowTaint: true,
+					scale: 1,
+					logging: false,
+					ignoreElements: (element) => {
+						// Ignore any elements that might interfere
+						return (
+							element.classList.contains('dropdown-content') || element.classList.contains('modal')
+						);
+					}
+				});
+
+				// Convert canvas to blob and download
+				canvas.toBlob((blob) => {
+					if (blob) {
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = `map-screenshot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
+						URL.revokeObjectURL(url);
+					}
+				}, 'image/png');
+			}
+		} catch (error) {
+			console.error('Error capturing screenshot:', error);
+		} finally {
+			isCapturingScreenshot = false;
+		}
+	}
+
+	onMount(() => {
+		const handleIframeLoad = () => {
+			isMapLoading = false;
+		};
+
+		iframeRef?.addEventListener('load', handleIframeLoad);
+
+		return () => {
+			iframeRef?.removeEventListener('load', handleIframeLoad);
+		};
+	});
 </script>
 
 <div
@@ -186,92 +252,73 @@
 	onmouseleave={onMouseUp}
 >
 	<!-- Navbar -->
-	<div class="navbar bg-base-300 z-20">
-		<div class="flex-none">
-			<button class="btn btn-square btn-ghost" onclick={() => showSidebar.update((v) => !v)}>
-				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 6h16M4 12h16M4 18h16"
-					/>
-				</svg>
+	{#if !isCapturingScreenshot}
+		<div class="navbar bg-base-300 z-20">
+			<button class="btn btn-ghost" onclick={addCircle}
+				><FluentEmojiRoundPushpin class="h-5 w-5" />
 			</button>
-		</div>
-		<div class="flex-1">
-			<span class="text-lg font-semibold">Map Viewer</span>
-		</div>
-		<!-- Map Selector in Navbar -->
-		<div class="flex-none">
-			<div class="dropdown dropdown-end">
-				<label tabindex="0" class="btn btn-ghost">
-					{mapSources[selectedMapIndex].name}
-					<svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 9l-7 7-7-7"
-						/>
-					</svg>
-				</label>
-				<ul
-					tabindex="0"
-					class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow"
-				>
-					{#each mapSources as source, index}
-						<li>
-							<button
-								class="flex items-center justify-between {selectedMapIndex === index
-									? 'active'
-									: ''}"
-								onclick={() => switchMap(index)}
-							>
-								<span>{source.name}</span>
-								{#if selectedMapIndex === index}
-									<svg class="text-primary h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fill-rule="evenodd"
-											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-								{/if}
-							</button>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		</div>
-	</div>
-
-	<!-- Sidebar -->
-	{#if $showSidebar}
-		<div class="bg-base-200 absolute top-16 left-0 z-30 h-full w-64 space-y-4 p-4 shadow">
-			<button class="btn btn-primary w-full" onclick={addCircle}>Add Circle</button>
 
 			<label class="mb-3 flex items-center gap-2">
 				<input type="checkbox" bind:checked={displayLegend} class="checkbox" />
 				<span>Display legend</span>
 			</label>
 
-			<!-- Map Selection in Sidebar -->
-			<div class="divider">Map Selection</div>
-			<div class="space-y-2">
-				<label class="text-sm font-semibold">Choose Map:</label>
-				{#each mapSources as source, index}
-					<label class="hover:bg-base-300 flex cursor-pointer items-center gap-2 rounded p-2">
-						<input
-							type="radio"
-							name="mapSource"
-							class="radio radio-primary radio-sm"
-							checked={selectedMapIndex === index}
-							onchange={() => switchMap(index)}
-						/>
-						<span class="text-sm">{source.name}</span>
+			<!-- Screenshot Button in Navbar -->
+			<div class="mr-2 flex-none">
+				<button
+					class="btn btn-ghost btn-sm"
+					onclick={captureScreenshot}
+					disabled={isCapturingScreenshot}
+					title="Download Screenshot"
+				>
+					{#if isCapturingScreenshot}
+						<span class="loading loading-spinner loading-sm"></span>
+					{:else}
+						<FluentEmojiFloppyDisk class="h-5 w-5" />
+					{/if}
+				</button>
+			</div>
+			<!-- Map Selector in Navbar -->
+			<div class="flex-none">
+				<div class="dropdown dropdown-end">
+					<label tabindex="0" class="btn btn-ghost">
+						{mapSources[selectedMapIndex].name}
+						<svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M19 9l-7 7-7-7"
+							/>
+						</svg>
 					</label>
-				{/each}
+					<ul
+						tabindex="0"
+						class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow"
+					>
+						{#each mapSources as source, index}
+							<li>
+								<button
+									class="flex items-center justify-between {selectedMapIndex === index
+										? 'active'
+										: ''}"
+									onclick={() => switchMap(index)}
+								>
+									<span>{source.name}</span>
+									{#if selectedMapIndex === index}
+										<svg class="text-primary h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+											<path
+												fill-rule="evenodd"
+												d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+									{/if}
+								</button>
+							</li>
+						{/each}
+					</ul>
+				</div>
 			</div>
 		</div>
 	{/if}
@@ -310,7 +357,7 @@
 			isNew={isAddingCircle}
 			onCancel={cancelEditor}
 			onSave={saveEditor}
-			onRemove={() => removeCircle(editingCircle.id)}
+			onRemove={() => removeCircle(editingCircle?.id!)}
 			{presetColors}
 			onColorSelect={selectColor}
 		/>
