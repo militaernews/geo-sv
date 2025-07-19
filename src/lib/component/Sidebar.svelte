@@ -1,79 +1,51 @@
 <script lang="ts">
-	import type { MapSource } from '$lib/MapSource';
 	import FluentEmojiFloppyDisk from '~icons/fluent-emoji/floppy-disk';
 	import FluentEmojiRoundPushpin from '~icons/fluent-emoji/round-pushpin';
 	import FluentEmojiWorldMap from '~icons/fluent-emoji/world-map';
 	import FluentEmojiWastebasket from '~icons/fluent-emoji/wastebasket';
 	import FluentEmojiEye from '~icons/fluent-emoji/eye';
 	import FluentEmojiPlus from '~icons/fluent-emoji/plus';
-	import { circleStore } from '$lib/stores/circleStore';
-	import { legendStore } from '$lib/stores/legendStore';
-	import { captureScreenshot } from '$lib/utils/screenshotUtils';
+	import type { MapSource } from '$lib/MapSource';
 
-	interface Props {
-		onAddCircle: () => void;
-		onToggleLegend: () => void;
-		displayLegend: boolean;
-		onSwitchMap: (index: number) => void;
-		mapSources: MapSource[];
-		selectedMapIndex: number;
-		onAddCustomMap: () => void;
-		onRemoveCustomMap: (index: number) => void;
-	}
-
-	let {
-		onAddCircle,
-		onToggleLegend,
+	const {
 		displayLegend,
-		onSwitchMap,
+		isCapturingScreenshot,
 		mapSources,
 		selectedMapIndex,
-		onAddCustomMap,
-		onRemoveCustomMap
-	}: Props = $props();
-
-	const { clearAllCircles } = circleStore;
-	const { clearAllLegendTexts } = legendStore;
-
-	let isCapturingScreenshot = $state(false);
-
-	function clearCirclesAndLegend() {
-		if (
-			confirm(
-				'Are you sure you want to clear all circles and legend texts? This action cannot be undone.'
-			)
-		) {
-			clearAllCircles();
-			clearAllLegendTexts();
-		}
-	}
-
-	async function handleCaptureScreenshot() {
-		try {
-			isCapturingScreenshot = true;
-			await captureScreenshot();
-		} catch (error) {
-			// Error is already handled in the utility function
-		} finally {
-			isCapturingScreenshot = false;
-		}
-	}
+		onAddCircle,
+		onToggleLegend, // This function is used to update displayLegend
+		onCaptureScreenshot,
+		onOpenMapModal,
+		onSwitchMap, // This function is used to update selectedMapIndex
+		onRemoveCustomMap,
+		onClearCirclesAndLegend
+	} = $props<{
+		displayLegend: boolean;
+		isCapturingScreenshot: boolean;
+		mapSources: MapSource[];
+		selectedMapIndex: number;
+		onAddCircle: () => void;
+		onToggleLegend: () => void; // Function to toggle legend in parent
+		onCaptureScreenshot: () => Promise<void>;
+		onOpenMapModal: () => void;
+		onSwitchMap: (index: number) => void; // Function to switch map in parent
+		onRemoveCustomMap: (index: number) => void;
+		onClearCirclesAndLegend: () => void;
+	}>(); // Removed $$restProps
 </script>
 
 <div
 	class="bg-base-300 absolute top-0 left-0 z-20 flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"
 >
-	<!-- Add Marker Button -->
 	<div class="tooltip tooltip-right" data-tip="Add Marker">
 		<button class="btn btn-ghost btn-sm" onclick={onAddCircle}>
 			<FluentEmojiRoundPushpin class="h-6 w-6" />
 		</button>
 	</div>
 
-	<!-- Toggle Legend -->
 	<div class="tooltip tooltip-right" data-tip="Toggle Legend">
 		<button
-			class="btn btn-ghost btn-sm {displayLegend
+			class="btn btn-ghost btn-sm {displayLegend // Read displayLegend directly
 				? 'btn-active bg-primary text-primary-content'
 				: ''}"
 			onclick={onToggleLegend}
@@ -82,11 +54,10 @@
 		</button>
 	</div>
 
-	<!-- Screenshot Button -->
 	<div class="tooltip tooltip-right" data-tip="Download Screenshot">
 		<button
 			class="btn btn-ghost btn-sm"
-			onclick={handleCaptureScreenshot}
+			onclick={onCaptureScreenshot}
 			disabled={isCapturingScreenshot}
 		>
 			{#if isCapturingScreenshot}
@@ -97,14 +68,12 @@
 		</button>
 	</div>
 
-	<!-- Add Custom Map Button -->
 	<div class="tooltip tooltip-right" data-tip="Add Custom Map">
-		<button class="btn btn-ghost btn-sm" onclick={onAddCustomMap}>
+		<button class="btn btn-ghost btn-sm" onclick={onOpenMapModal}>
 			<FluentEmojiPlus class="h-6 w-6" />
 		</button>
 	</div>
 
-	<!-- Map Selector -->
 	<div class="tooltip tooltip-right" data-tip="Select Map">
 		<div class="dropdown dropdown-right">
 			<label tabindex="0" class="btn btn-ghost btn-sm">
@@ -144,12 +113,10 @@
 		</div>
 	</div>
 
-	<!-- Spacer -->
 	<div class="flex-1"></div>
 
-	<!-- Clear Circles and Legend Button -->
 	<div class="tooltip tooltip-right" data-tip="Clear Circles & Legend">
-		<button class="btn btn-ghost btn-sm text-error" onclick={clearCirclesAndLegend}>
+		<button class="btn btn-ghost btn-sm text-error" onclick={onClearCirclesAndLegend}>
 			<FluentEmojiWastebasket class="h-6 w-6" />
 		</button>
 	</div>

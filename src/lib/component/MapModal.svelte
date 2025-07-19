@@ -1,81 +1,65 @@
 <script lang="ts">
 	import FluentEmojiPlus from '~icons/fluent-emoji/plus';
 
-	interface Props {
-		onClose: () => void;
-		onAdd: (name: string, url: string) => void;
-	}
-
-	let { onClose, onAdd }: Props = $props();
-
-	let newMapName = $state('');
-	let newMapUrl = $state('');
-
-	function handleAdd() {
-		if (!newMapName.trim() || !newMapUrl.trim()) {
-			alert('Please provide both a name and URL for the custom map.');
-			return;
-		}
-
-		// Basic URL validation
-		try {
-			new URL(newMapUrl);
-		} catch {
-			alert('Please provide a valid URL.');
-			return;
-		}
-
-		onAdd(newMapName.trim(), newMapUrl.trim());
-		handleClose();
-	}
-
-	function handleClose() {
-		newMapName = '';
-		newMapUrl = '';
-		onClose();
-	}
+	const { showModal, mapName, mapUrl, onAddMap, onClose, onUpdateMapName, onUpdateMapUrl } =
+		$props<{
+			showModal: boolean;
+			mapName: string;
+			mapUrl: string;
+			onAddMap: () => void;
+			onClose: () => void;
+			onUpdateMapName: (name: string) => void; // Function to update mapName in parent
+			onUpdateMapUrl: (url: string) => void; // Function to update mapUrl in parent
+		}>();
 </script>
 
-<div class="modal modal-open">
-	<div class="modal-box w-11/12 max-w-md">
-		<div class="mb-6 flex items-center gap-3">
-			<FluentEmojiPlus class="size-5" />
-			<h3 class="text-xl font-bold">Add Custom Map</h3>
-		</div>
-
-		<div class="space-y-4">
-			<div class="form-control">
-				<label class="label">
-					<span class="label-text font-medium">Map Name</span>
-				</label>
-				<input
-					type="text"
-					placeholder="e.g., My Custom Map"
-					class="input input-bordered focus:input-primary w-full"
-					bind:value={newMapName}
-				/>
+{#if showModal}
+	<div class="modal modal-open">
+		<div class="modal-box w-11/12 max-w-md">
+			<div class="mb-6 flex items-center gap-3">
+				<FluentEmojiPlus class="h-8 w-8" />
+				<h3 class="text-xl font-bold">Add Custom Map</h3>
 			</div>
 
-			<div class="form-control">
-				<label class="label">
-					<span class="label-text font-medium">Map URL</span>
-					<span class="label-text-alt text-base-content/60">Embed or iframe URL</span>
-				</label>
-				<input
-					type="url"
-					placeholder="https://example.com/map/embed"
-					class="input input-bordered focus:input-primary w-full"
-					bind:value={newMapUrl}
-				/>
+			<div class="space-y-4">
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text font-medium">Map Name</span>
+					</label>
+					<input
+						type="text"
+						placeholder="e.g., My Custom Map"
+						class="input input-bordered focus:input-primary w-full"
+						value={mapName}
+						oninput={(e) => onUpdateMapName(e.currentTarget.value)}
+					/>
+				</div>
+
+				<div class="form-control">
+					<label class="label">
+						<span class="label-text font-medium">Map URL</span>
+						<span class="label-text-alt text-base-content/60">Embed or iframe URL</span>
+					</label>
+					<input
+						type="url"
+						placeholder="https://example.com/map/embed"
+						class="input input-bordered focus:input-primary w-full"
+						value={mapUrl}
+						oninput={(e) => onUpdateMapUrl(e.currentTarget.value)}
+					/>
+				</div>
+			</div>
+
+			<div class="modal-action mt-8">
+				<button class="btn btn-ghost" onclick={onClose}>Cancel</button>
+				<button class="btn btn-primary" onclick={onAddMap}>
+					<FluentEmojiPlus class="h-4 w-4" />
+					Add Map
+				</button>
 			</div>
 		</div>
-
-		<div class="modal-action mt-8">
-			<button class="btn btn-ghost" onclick={handleClose}>Cancel</button>
-			<button class="btn btn-primary" onclick={handleAdd}>Add Map</button>
-		</div>
+		<form method="dialog" class="modal-backdrop" onclick={onClose}>
+			<button type="button">close</button>
+		</form>
 	</div>
-	<form method="dialog" class="modal-backdrop" onclick={handleClose}>
-		<button type="button">close</button>
-	</form>
-</div>
+{/if}
