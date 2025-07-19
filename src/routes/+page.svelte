@@ -4,42 +4,15 @@
 
 	// Svelte Components
 	import Sidebar from '$lib/component/Sidebar.svelte';
-	import EditorModal from '$lib/component/EditorModal.svelte'; // Existing
-	import Legend from '$lib/component/Legend.svelte'; // Existing
-
-	// Svelte Stores and Utilities
-	import { writable, derived } from 'svelte/store';
-	import html2canvas from 'html2canvas';
+	import EditorModal from '$lib/component/EditorModal.svelte';
+	import Legend from '$lib/component/Legend.svelte';
 	import MapContainer from '$lib/component/MapContainer.svelte';
 	import MapModal from '$lib/component/MapModal.svelte';
 
-	// --- State Management and Persistence (Consolidated Load/Save) ---
-
-	// Helper to load/save data from localStorage
-	function createPersistentState<T>(
-		key: string,
-		defaultValue: T,
-		serializer = JSON.stringify,
-		deserializer = JSON.parse
-	): [T, (newValue: T) => void] {
-		let value: T;
-		try {
-			const saved = localStorage.getItem(key);
-			value = saved ? deserializer(saved) : defaultValue;
-		} catch (e) {
-			console.warn(`Could not load ${key} from localStorage, using default:`, e);
-			value = defaultValue;
-		}
-
-		function save(newValue: T) {
-			try {
-				localStorage.setItem(key, serializer(newValue));
-			} catch (e) {
-				console.warn(`Could not save ${key} to localStorage:`, e);
-			}
-		}
-		return [value, save];
-	}
+	// Svelte Stores and Utilities
+	import { writable, derived } from 'svelte/store';
+	import { captureScreenshot } from '$lib/utils/screenshotUtils';
+	import { createPersistentState } from '$lib/utils/storeutils';
 
 	// --- Initial State Definitions ---
 	const [initialDisplayLegend, saveDisplayLegend] = createPersistentState('displayLegend', true);
@@ -74,11 +47,6 @@
 		{
 			name: 'OpenTopoMap',
 			url: 'https://opentopomap.org/#map=5/48.882780/37.924805',
-			isCustom: false
-		},
-		{
-			name: 'Mapillary (Dark)',
-			url: 'https://www.mapillary.com/app/?lat=48.882780&lng=37.924805&z=15&focus=map&theme=dark',
 			isCustom: false
 		}
 	];
@@ -120,7 +88,7 @@
 	let editingCircle: Circle | null = $state(null);
 
 	const currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
-	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
+	const presetColors = ['#ffcc00', '#ff00ff', '#800080', '#00ffff', '#00ff00'];
 
 	const usedColors = derived(circles, ($circles) => {
 		return new Set($circles.map((c) => c.color));
@@ -307,63 +275,10 @@
 		}
 	}
 
-	// Screenshot functionality
 	async function captureWithHtml2Canvas() {
 		try {
 			isCapturingScreenshot = true;
-			const container = document.querySelector('.relative.h-screen.w-screen') as HTMLElement;
-
-			if (container) {
-				const style = document.createElement('style');
-				style.textContent = `
-					/* Temporary override for html2canvas compatibility */
-					.temp-screenshot * {
-						background-color: rgb(255, 255, 255) !important;
-						color: rgb(0, 0, 0) !important;
-					}
-					.temp-screenshot .bg-base-300 { background-color: rgb(209, 213, 219) !important; }
-					.temp-screenshot .bg-base-200 { background-color: rgb(229, 231, 235) !important; }
-					.temp-screenshot .bg-base-100 { background-color: rgb(243, 244, 246) !important; }
-					.temp-screenshot .text-primary { color: rgb(37, 99, 235) !important; }
-					.temp-screenshot .btn-primary {
-						background-color: rgb(37, 99, 235) !important;
-						color: rgb(255, 255, 255) !important;
-					}
-				`;
-				document.head.appendChild(style);
-				container.classList.add('temp-screenshot');
-
-				const canvas = await html2canvas(container, {
-					useCORS: true,
-					allowTaint: true,
-					scale: 1,
-					logging: false,
-					backgroundColor: '#ffffff',
-					ignoreElements: (element) => {
-						return (
-							element.classList.contains('dropdown-content') ||
-							element.classList.contains('modal') ||
-							element.classList.contains('navbar') // Assuming a navbar exists and should be ignored
-						);
-					}
-				});
-
-				container.classList.remove('temp-screenshot');
-				document.head.removeChild(style);
-
-				canvas.toBlob((blob) => {
-					if (blob) {
-						const url = URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.href = url;
-						a.download = `map-screenshot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
-						document.body.appendChild(a);
-						a.click();
-						document.body.removeChild(a);
-						URL.revokeObjectURL(url);
-					}
-				}, 'image/png');
-			}
+			captureScreenshot();
 		} catch (error) {
 			console.error('html2canvas failed:', error);
 			alert(

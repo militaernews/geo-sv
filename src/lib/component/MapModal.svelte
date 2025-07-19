@@ -8,8 +8,8 @@
 			mapUrl: string;
 			onAddMap: () => void;
 			onClose: () => void;
-			onUpdateMapName: (name: string) => void; // Function to update mapName in parent
-			onUpdateMapUrl: (url: string) => void; // Function to update mapUrl in parent
+			onUpdateMapName: (name: string) => void;
+			onUpdateMapUrl: (url: string) => void;
 		}>();
 </script>
 
