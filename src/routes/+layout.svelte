@@ -3,6 +3,6 @@
 	let { children } = $props();
 </script>
 
-<div class=" container mx-auto h-screen w-full" style="font-family:'HP Simplified'">
+<div class="  mx-auto flex h-screen w-full flex-row" style="font-family:'HP Simplified'">
 	{@render children()}
 </div>

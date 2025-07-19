@@ -5,10 +5,15 @@
 	import CircleItem from '$lib/component/CircleItem.svelte';
 	import FluentEmojiFloppyDisk from '~icons/fluent-emoji/floppy-disk';
 	import FluentEmojiRoundPushpin from '~icons/fluent-emoji/round-pushpin';
+	import FluentEmojiWorldMap from '~icons/fluent-emoji/world-map';
+	import FluentEmojiWastebasket from '~icons/fluent-emoji/wastebasket';
+	import FluentEmojiEye from '~icons/fluent-emoji/eye';
+	import FluentEmojiPlus from '~icons/fluent-emoji/plus';
 
 	import { writable, derived } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import html2canvas from 'html2canvas';
+	import type { MapSource } from '$lib/MapSource';
 
 	let isAddingCircle = $state(false);
 	let displayLegend = $state(true);
@@ -19,27 +24,23 @@
 	let iframeRef: HTMLIFrameElement | null = null;
 
 	// Map sources configuration - now stored in a writable store for persistence
-	const defaultMapSources = [
+	const defaultMapSources: MapSource[] = [
 		{
-			id: 'google-custom',
 			name: 'Google Maps (Project Owl)',
 			url: 'https://www.google.com/maps/d/embed?mid=1xPxgT8LtUjuspSOGHJc2VzA5O5jWMTE&ehbc=2E312F',
 			isCustom: false
 		},
 		{
-			id: 'google-world',
 			name: 'Google Maps',
 			url: 'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d57879408.81242841!2d-46.32400534374999!3d21.06171584375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1642678945123!5m2!1sen!2sus',
 			isCustom: false
 		},
 		{
-			id: 'google-europe',
 			name: 'Satellites.pro',
 			url: 'https://satellites.pro/Ukraine_map#48.882780,37.924805,7',
 			isCustom: false
 		},
 		{
-			id: 'openstreet',
 			name: 'OpenStreetMap',
 			url: 'https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik',
 			isCustom: false
@@ -57,7 +58,7 @@
 	}
 
 	// Save map sources to localStorage
-	function saveMapSources(sources: typeof defaultMapSources) {
+	function saveMapSources(sources: MapSource[]) {
 		try {
 			localStorage.setItem('customMapSources', JSON.stringify(sources));
 		} catch (error) {
@@ -334,6 +335,7 @@
 
 	function cancelEditor() {
 		editingCircle = null;
+		isAddingCircle = false;
 	}
 
 	let draggingId: number | null = $state(null);
@@ -399,11 +401,11 @@
 		}
 	}
 
-	// Function to clear all data
-	function clearAllData() {
+	// Function to clear circles and legend data only
+	function clearCirclesAndLegend() {
 		if (
 			confirm(
-				'Are you sure you want to clear all circles, custom maps, and settings? This action cannot be undone.'
+				'Are you sure you want to clear all circles and legend texts? This action cannot be undone.'
 			)
 		) {
 			// Clear circles
@@ -412,28 +414,15 @@
 			// Clear legend texts
 			legendTexts.set(new Map());
 
-			// Reset to default maps
-			mapSources = [...defaultMapSources];
-			saveMapSources(mapSources);
-
-			// Reset selected map index
-			selectedMapIndex = 0;
-
 			// Reset next ID
 			nextId = 1;
 			saveNextId(nextId);
 
-			// Reset display legend
-			displayLegend = true;
-
-			// Clear localStorage
+			// Clear specific localStorage items
 			try {
 				localStorage.removeItem('mapCircles');
 				localStorage.removeItem('mapLegendTexts');
-				localStorage.removeItem('customMapSources');
-				localStorage.removeItem('selectedMapIndex');
 				localStorage.removeItem('nextCircleId');
-				localStorage.removeItem('displayLegend');
 			} catch (error) {
 				console.warn('Could not clear localStorage:', error);
 			}
@@ -527,135 +516,111 @@
 	});
 </script>
 
+<!-- Left Sidebar -->
+
 <div
-	class="relative h-screen w-screen overflow-hidden"
+	class="bg-base-300 absolute top-0 left-0 z-20 flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"
+>
+	<!-- Add Marker Button -->
+	<div class="tooltip tooltip-right" data-tip="Add Marker">
+		<button class="btn btn-ghost btn-sm" onclick={addCircle}>
+			<FluentEmojiRoundPushpin class="h-6 w-6" />
+		</button>
+	</div>
+
+	<!-- Toggle Legend -->
+	<div class="tooltip tooltip-right" data-tip="Toggle Legend">
+		<button
+			class="btn btn-ghost btn-sm {displayLegend
+				? 'btn-active bg-primary text-primary-content'
+				: ''}"
+			onclick={() => (displayLegend = !displayLegend)}
+		>
+			<FluentEmojiEye class="h-6 w-6" />
+		</button>
+	</div>
+
+	<!-- Screenshot Button -->
+	<div class="tooltip tooltip-right" data-tip="Download Screenshot">
+		<button
+			class="btn btn-ghost btn-sm"
+			onclick={captureWithHtml2Canvas}
+			disabled={isCapturingScreenshot}
+		>
+			{#if isCapturingScreenshot}
+				<span class="loading loading-spinner loading-sm"></span>
+			{:else}
+				<FluentEmojiFloppyDisk class="h-6 w-6" />
+			{/if}
+		</button>
+	</div>
+
+	<!-- Add Custom Map Button -->
+	<div class="tooltip tooltip-right" data-tip="Add Custom Map">
+		<button class="btn btn-ghost btn-sm" onclick={openMapModal}>
+			<FluentEmojiPlus class="h-6 w-6" />
+		</button>
+	</div>
+
+	<!-- Map Selector -->
+	<div class="tooltip tooltip-right" data-tip="Select Map">
+		<div class="dropdown dropdown-right">
+			<label tabindex="0" class="btn btn-ghost btn-sm">
+				<FluentEmojiWorldMap class="h-6 w-6" />
+			</label>
+			<ul
+				tabindex="0"
+				class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"
+			>
+				{#each mapSources as source, index}
+					<li class="p-1">
+						<div
+							class="flex w-full items-center justify-between {selectedMapIndex === index
+								? 'bg-primary text-primary-content'
+								: ''}"
+						>
+							<button class="flex-1 text-left text-sm" onclick={() => switchMap(index)}>
+								<span class="truncate overflow-ellipsis">{source.name}</span>
+							</button>
+
+							{#if source.isCustom}
+								<button
+									class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content"
+									onclick={(e) => {
+										e.stopPropagation();
+										removeCustomMap(index);
+									}}
+									title="Remove custom map"
+								>
+									<FluentEmojiWastebasket class="h-3 w-3" />
+								</button>
+							{/if}
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</div>
+
+	<!-- Spacer -->
+	<div class="flex-1"></div>
+
+	<!-- Clear Circles and Legend Button -->
+	<div class="tooltip tooltip-right" data-tip="Clear Circles & Legend">
+		<button class="btn btn-ghost btn-sm text-error" onclick={clearCirclesAndLegend}>
+			<FluentEmojiWastebasket class="h-6 w-6" />
+		</button>
+	</div>
+</div>
+
+<div
+	class="relative container h-screen w-full overflow-hidden"
 	onmousemove={onMouseMove}
 	onmouseup={onMouseUp}
 	onmouseleave={onMouseUp}
 >
-	<!-- Navbar -->
-	{#if !isCapturingScreenshot}
-		<div class="navbar bg-base-300 z-20">
-			<button class="btn btn-ghost" onclick={addCircle} title="Add Marker"
-				><FluentEmojiRoundPushpin class="h-5 w-5" />
-			</button>
-
-			<label class="mb-3 flex items-center gap-2">
-				<input
-					type="checkbox"
-					bind:checked={displayLegend}
-					class="checkbox"
-					title="Display legend"
-				/>
-				<span>Display legend</span>
-			</label>
-
-			<!-- Screenshot Button in Navbar -->
-			<div class="mr-2 flex-none">
-				<button
-					class="btn btn-ghost btn-sm"
-					onclick={captureWithHtml2Canvas}
-					disabled={isCapturingScreenshot}
-					title="Download Screenshot"
-				>
-					{#if isCapturingScreenshot}
-						<span class="loading loading-spinner loading-sm"></span>
-					{:else}
-						<FluentEmojiFloppyDisk class="h-5 w-5" />
-					{/if}
-				</button>
-			</div>
-
-			<!-- Clear All Data Button -->
-			<div class="mr-2 flex-none">
-				<button
-					class="btn btn-ghost btn-sm text-error"
-					onclick={clearAllData}
-					title="Clear All Data"
-				>
-					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-						/>
-					</svg>
-				</button>
-			</div>
-
-			<!-- Add Custom Map Button -->
-			<div class="mr-2 flex-none">
-				<button class="btn btn-ghost btn-sm" onclick={openMapModal} title="Add Custom Map">
-					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 4v16m8-8H4"
-						/>
-					</svg>
-				</button>
-			</div>
-
-			<!-- Map Selector in Navbar -->
-			<div class="flex-none">
-				<div class="dropdown dropdown-end">
-					<label tabindex="0" class="btn btn-ghost">
-						{mapSources[selectedMapIndex]?.name || 'Select Map'}
-						<svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M19 9l-7 7-7-7"
-							/>
-						</svg>
-					</label>
-					<ul
-						tabindex="0"
-						class="dropdown-content menu bg-base-100 rounded-box z-[1] max-h-80 w-64 overflow-y-auto p-1 shadow"
-					>
-						{#each mapSources as source, index}
-							<li class="p-1" class:bg-primary={selectedMapIndex === index}>
-								<div class="flex w-full items-center justify-between">
-									<button
-										class="flex-1 text-left {selectedMapIndex === index ? 'active' : ''}"
-										onclick={() => switchMap(index)}
-									>
-										<span class="truncate overflow-ellipsis">{source.name}</span>
-									</button>
-
-									{#if source.isCustom}
-										<button
-											class="btn btn-ghost btn-xs text-error hover:bg-error hover:text-error-content"
-											onclick={(e) => {
-												e.stopPropagation();
-												removeCustomMap(index);
-											}}
-											title="Remove custom map"
-										>
-											<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-												/>
-											</svg>
-										</button>
-									{/if}
-								</div>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			</div>
-		</div>
-	{/if}
-
 	<!-- Map Iframe -->
-	<div class="absolute top-16 left-0 z-0 h-[calc(100%-4rem)] w-full">
+	<div class="absolute top-0 left-16 z-0 h-full w-[calc(100%-4rem)]">
 		<!-- Loading Spinner -->
 		{#if isMapLoading}
 			<div class="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
@@ -708,48 +673,61 @@
 	<!-- Custom Map Modal -->
 	{#if showMapModal}
 		<div class="modal modal-open">
-			<div class="modal-box">
-				<h3 class="text-lg font-bold">Add Custom Map</h3>
-				<div class="py-4">
-					<div class="form-control w-full">
+			<div class="modal-box w-11/12 max-w-md">
+				<div class="mb-6 flex items-center gap-3">
+					<FluentEmojiPlus class="h-8 w-8" />
+					<h3 class="text-xl font-bold">Add Custom Map</h3>
+				</div>
+
+				<div class="space-y-4">
+					<div class="form-control">
 						<label class="label">
-							<span class="label-text">Map Name</span>
+							<span class="label-text font-medium">Map Name</span>
 						</label>
 						<input
 							type="text"
-							placeholder="Enter map name..."
-							class="input input-bordered w-full"
+							placeholder="e.g., My Custom Map"
+							class="input input-bordered focus:input-primary w-full"
 							bind:value={newMapName}
 						/>
 					</div>
-					<div class="form-control mt-4 w-full">
+
+					<div class="form-control">
 						<label class="label">
-							<span class="label-text">Map URL</span>
+							<span class="label-text font-medium">Map URL</span>
+							<span class="label-text-alt text-base-content/60">Embed or iframe URL</span>
 						</label>
 						<input
 							type="url"
-							placeholder="Enter map embed URL..."
-							class="input input-bordered w-full"
+							placeholder="https://example.com/map/embed"
+							class="input input-bordered focus:input-primary w-full"
 							bind:value={newMapUrl}
 						/>
 					</div>
 				</div>
-				<div class="modal-action">
-					<button class="btn" onclick={closeMapModal}>Cancel</button>
-					<button class="btn btn-primary" onclick={addCustomMap}>Add Map</button>
+
+				<div class="modal-action mt-8">
+					<button class="btn btn-ghost" onclick={closeMapModal}>Cancel</button>
+					<button class="btn btn-primary" onclick={addCustomMap}>
+						<FluentEmojiPlus class="h-4 w-4" />
+						Add Map
+					</button>
 				</div>
 			</div>
+			<form method="dialog" class="modal-backdrop" onclick={closeMapModal}>
+				<button type="button">close</button>
+			</form>
 		</div>
 	{/if}
 
 	<!-- Corner Images -->
 	<div
-		class="bg-base-200 text-1xl pointer-events-none absolute top-0 right-0 z-10 rounded-tr-lg px-3 py-2"
+		class="bg-base-200 text-1xl pointer-events-none absolute top-0 right-0 z-10 rounded-bl-lg px-3 py-2"
 	>
 		<span style="color:#00ff00">Militär</span>News
 	</div>
 	<div
-		class="bg-base-200 text-1xl pointer-events-none absolute bottom-0 left-0 z-10 rounded-tr-lg px-3 py-2"
+		class="bg-base-200 text-1xl pointer-events-none absolute bottom-0 left-16 z-10 rounded-tr-lg px-3 py-2"
 	>
 		<span style="color:#00ff00">Militär</span>News
 	</div>
