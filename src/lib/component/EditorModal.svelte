@@ -1,15 +1,17 @@
 <script lang="ts">
 	import type { Circle } from '$lib/Circle';
+	import { presetColors } from '$lib/defaults';
 	import FluentEmojiPencil from '~icons/fluent-emoji/pencil';
 	import FluentEmojiRoundPushpin from '~icons/fluent-emoji/round-pushpin';
 
-	export let circle: Circle;
-	export let isNew: boolean;
-	export let onCancel: () => void;
-	export let onSave: (updated: Circle) => void;
-	export let onRemove: (circleId: number) => void;
-	export let presetColors: string[];
-	export let onColorSelect: (color: string) => void;
+	const { circle, isNew, onCancel, onSave, onRemove, onColorSelect } = $props<{
+		circle: Circle;
+		isNew: boolean;
+		onCancel: () => void;
+		onSave: (updated: Circle) => void;
+		onRemove: (circleId: number) => void;
+		onColorSelect: (colorIndex: number) => void;
+	}>();
 </script>
 
 <div
@@ -43,15 +45,15 @@
 		<label class="form-control mb-3">
 			<span class="label-text">Color</span>
 			<div class="mt-2 flex gap-2">
-				{#each presetColors as color}
+				{#each presetColors as colorOption, index}
 					<button
 						class="size-8 cursor-pointer rounded-full border-2 border-transparent transition-all"
-						class:ring-2={circle?.color === color}
-						class:ring-offset-2={circle?.color === color}
-						class:shadow-md={circle?.color === color}
-						class:animate-bounce-once={circle?.color === color}
-						style="background-color: {color};"
-						onclick={() => onColorSelect(color)}
+						class:ring-2={circle?.colorIndex === index}
+						class:ring-offset-2={circle?.colorIndex === index}
+						class:shadow-md={circle?.colorIndex === index}
+						class:animate-bounce-once={circle?.colorIndex === index}
+						style="background-color: {colorOption.color};"
+						onclick={() => onColorSelect(index)}
 					></button>
 				{/each}
 			</div>
@@ -75,7 +77,7 @@
 			{/if}
 
 			<button class="btn btn-primary" onclick={() => onSave(circle)}>
-				{isNew ? 'Add Point' : 'Save Changes'}
+				{isNew ? 'Add Point' : 'Save'}
 			</button>
 		</div>
 	</div>

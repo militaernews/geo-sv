@@ -4,7 +4,7 @@ export type Circle = {
 	y: number;
 	headline?: string;
 	text: string;
-	color: string;
+	colorIndex: number;
 	rectExpandLeft: boolean;
 	useDottedBorder: boolean;
 };

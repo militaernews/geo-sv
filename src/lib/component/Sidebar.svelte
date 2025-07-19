@@ -13,10 +13,10 @@
 		mapSources,
 		selectedMapIndex,
 		onAddCircle,
-		onToggleLegend, // This function is used to update displayLegend
+		onToggleLegend,
 		onCaptureScreenshot,
 		onOpenMapModal,
-		onSwitchMap, // This function is used to update selectedMapIndex
+		onSwitchMap,
 		onRemoveCustomMap,
 		onClearCirclesAndLegend
 	} = $props<{
@@ -25,13 +25,13 @@
 		mapSources: MapSource[];
 		selectedMapIndex: number;
 		onAddCircle: () => void;
-		onToggleLegend: () => void; // Function to toggle legend in parent
+		onToggleLegend: () => void;
 		onCaptureScreenshot: () => Promise<void>;
 		onOpenMapModal: () => void;
-		onSwitchMap: (index: number) => void; // Function to switch map in parent
+		onSwitchMap: (index: number) => void;
 		onRemoveCustomMap: (index: number) => void;
 		onClearCirclesAndLegend: () => void;
-	}>(); // Removed $$restProps
+	}>();
 </script>
 
 <div
@@ -45,7 +45,7 @@
 
 	<div class="tooltip tooltip-right" data-tip="Toggle Legend">
 		<button
-			class="btn btn-ghost btn-sm {displayLegend // Read displayLegend directly
+			class="btn btn-ghost btn-sm {displayLegend
 				? 'btn-active bg-primary text-primary-content'
 				: ''}"
 			onclick={onToggleLegend}
