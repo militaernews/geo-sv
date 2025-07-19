@@ -1,5 +1,5 @@
-import { writable } from 'svelte/store';
 import type { Circle } from '$lib/Circle';
+import { createPersistentStore } from '$lib/utils/storeutils';
 
 // Storage utilities
 function loadCircles(): Circle[] {
@@ -8,14 +8,6 @@ function loadCircles(): Circle[] {
 		return saved ? JSON.parse(saved) : [];
 	} catch {
 		return [];
-	}
-}
-
-function saveCircles(circleArray: Circle[]) {
-	try {
-		localStorage.setItem('mapCircles', JSON.stringify(circleArray));
-	} catch (error) {
-		console.warn('Could not save circles to localStorage:', error);
 	}
 }
 
@@ -43,13 +35,9 @@ function saveNextId(id: number) {
 }
 
 // Create the store
-const circles = writable<Circle[]>(loadCircles());
-let nextId = loadNextId();
+const circles = createPersistentStore<Circle[]>('mapCircles', []);
 
-// Subscribe to changes to save to localStorage
-circles.subscribe((circleArray) => {
-	saveCircles(circleArray);
-});
+let nextId = loadNextId();
 
 // Store actions
 function addCircle(): Circle {

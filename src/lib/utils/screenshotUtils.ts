@@ -3,30 +3,13 @@ import html2canvas from 'html2canvas';
 export async function captureScreenshot(): Promise<void> {
 	try {
 		// Get the main container
-		const container = document.querySelector('.relative.container.h-screen') as HTMLElement;
+		const container = document.querySelector('#container') as HTMLElement;
 
 		if (!container) {
 			throw new Error('Container not found');
 		}
 
 		// Create a temporary style to fix oklch colors for html2canvas
-		const style = document.createElement('style');
-		style.textContent = `
-			/* Temporary override for html2canvas compatibility */
-			.temp-screenshot * {
-				background-color: rgb(255, 255, 255) !important;
-				color: rgb(0, 0, 0) !important;
-			}
-			.temp-screenshot .bg-base-300 { background-color: rgb(209, 213, 219) !important; }
-			.temp-screenshot .bg-base-200 { background-color: rgb(229, 231, 235) !important; }
-			.temp-screenshot .bg-base-100 { background-color: rgb(243, 244, 246) !important; }
-			.temp-screenshot .text-primary { color: rgb(37, 99, 235) !important; }
-			.temp-screenshot .btn-primary { 
-				background-color: rgb(37, 99, 235) !important; 
-				color: rgb(255, 255, 255) !important; 
-			}
-		`;
-		document.head.appendChild(style);
 
 		// Add temp class
 		container.classList.add('temp-screenshot');
@@ -34,8 +17,8 @@ export async function captureScreenshot(): Promise<void> {
 		const canvas = await html2canvas(container, {
 			useCORS: true,
 			allowTaint: true,
-			scale: 1,
-			logging: false,
+			scale: 2,
+			logging: true,
 			backgroundColor: '#ffffff',
 			ignoreElements: (element) => {
 				return (

@@ -1,36 +1,8 @@
-import { writable, derived } from 'svelte/store';
+import { derived } from 'svelte/store';
 import { circleStore } from './circleStore';
+import { createPersistentStore } from '$lib/utils/storeutils';
 
-// Storage utilities
-function loadLegendTexts(): Map<string, string> {
-	try {
-		const saved = localStorage.getItem('mapLegendTexts');
-		if (saved) {
-			const parsed = JSON.parse(saved);
-			return new Map(Object.entries(parsed));
-		}
-		return new Map();
-	} catch {
-		return new Map();
-	}
-}
-
-function saveLegendTexts(legendMap: Map<string, string>) {
-	try {
-		const obj = Object.fromEntries(legendMap);
-		localStorage.setItem('mapLegendTexts', JSON.stringify(obj));
-	} catch (error) {
-		console.warn('Could not save legend texts to localStorage:', error);
-	}
-}
-
-// Create the store
-const legendTexts = writable<Map<string, string>>(loadLegendTexts());
-
-// Subscribe to changes to save to localStorage
-legendTexts.subscribe((legendMap) => {
-	saveLegendTexts(legendMap);
-});
+const legendTexts = createPersistentStore<Map<string, string>>('mapLegendTexts', new Map());
 
 // Derived store for used colors
 const usedColors = derived(circleStore.circles, ($circles) => {

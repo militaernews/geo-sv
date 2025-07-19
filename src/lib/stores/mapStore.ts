@@ -1,6 +1,6 @@
 import type { MapSource } from '$lib/MapSource';
+import { createPersistentStore } from '$lib/utils/storeutils';
 
-// Default map sources
 const defaultMapSources: MapSource[] = [
 	{
 		name: 'Google Maps (Project Owl)',
@@ -21,30 +21,33 @@ const defaultMapSources: MapSource[] = [
 		name: 'OpenStreetMap',
 		url: 'https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik',
 		isCustom: false
+	},
+	{
+		name: 'OpenStreetMap (Dark)',
+		url: 'https://umap.openstreetmap.fr/en/map/dark-mode_297704#6/48.591/-325.525',
+		isCustom: false
+	},
+	{
+		name: 'OpenTopoMap',
+		url: 'https://opentopomap.org/#map=5/48.882780/37.924805',
+		isCustom: false
+	},
+	{
+		name: 'Mapillary (Dark)',
+		url: 'https://www.mapillary.com/app/?lat=48.882780&lng=37.924805&z=15&focus=map&theme=dark',
+		isCustom: false
 	}
 ];
 
-// Storage utilities
-function loadMapSources(): MapSource[] {
-	try {
-		const saved = localStorage.getItem('customMapSources');
-		return saved ? JSON.parse(saved) : defaultMapSources;
-	} catch {
-		return defaultMapSources;
-	}
-}
+const mapSources = createPersistentStore<MapSource[]>('mapSources', defaultMapSources);
 
-// Save map sources to localStorage
-function saveMapSources(sources: MapSource[]) {
-	try {
-		localStorage.setItem('customMapSources', JSON.stringify(sources));
-	} catch (error) {
-		console.warn('Could not save custom maps to localStorage:', error);
-	}
-}
+const selectedMapIndex = createPersistentStore<number>('selectedMapIndex', 0);
+
+const currentMapUrl = $derived(mapSources[selectedMapIndex].url ?? '');
 
 // Export the store and actions
-export const settingsStore = {
-	loadMapSources,
-	saveMapSources
+export const mapStore = {
+	mapSources,
+	selectedMapIndex,
+	currentMapUrl
 };

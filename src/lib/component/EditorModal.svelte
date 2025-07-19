@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Circle } from '$lib/Circle';
+	import FluentEmojiPencil from '~icons/fluent-emoji/pencil';
+	import FluentEmojiRoundPushpin from '~icons/fluent-emoji/round-pushpin';
 
 	export let circle: Circle;
 	export let isNew: boolean;
@@ -18,10 +20,15 @@
 		class="bg-base-100 text-base-content w-80 rounded p-6 shadow"
 		onclick={(e) => e.stopPropagation()}
 	>
-		<h2 class="mb-4 text-lg font-bold">
-			{#if isNew}Create{:else}
-				Edit{/if} Point
-		</h2>
+		<div class="mb-6 flex items-center gap-3">
+			{#if isNew}<FluentEmojiRoundPushpin class="size-5" />{:else}
+				<FluentEmojiPencil class="size-5" />{/if}
+
+			<h3 class="text-xl font-bold">
+				{#if isNew}Create{:else}
+					Edit{/if} Point
+			</h3>
+		</div>
 
 		<label class="form-control mb-3">
 			<span class="label-text">Headline</span>
@@ -38,7 +45,7 @@
 			<div class="mt-2 flex gap-2">
 				{#each presetColors as color}
 					<button
-						class="h-8 w-8 cursor-pointer rounded-full border-2 border-transparent transition-all"
+						class="size-8 cursor-pointer rounded-full border-2 border-transparent transition-all"
 						class:ring-2={circle?.color === color}
 						class:ring-offset-2={circle?.color === color}
 						class:shadow-md={circle?.color === color}
@@ -61,13 +68,13 @@
 		</label>
 
 		<div class="mt-4 flex justify-end space-x-2">
-			<button class="btn btn-outline" onclick={onCancel}>Cancel</button>
+			<button class="btn btn-ghost" onclick={onCancel}>Cancel</button>
 
 			{#if !isNew}
 				<button class="btn btn-error" onclick={() => onRemove(circle!.id)}>Remove</button>
 			{/if}
 
-			<button class="btn btn-primary" onclick={onSave}>
+			<button class="btn btn-primary" onclick={() => onSave(circle)}>
 				{isNew ? 'Add Point' : 'Save Changes'}
 			</button>
 		</div>
