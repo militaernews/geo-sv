@@ -65,26 +65,158 @@
 		}
 	}
 
+	// Load circles from localStorage
+	function loadCircles(): Circle[] {
+		try {
+			const saved = localStorage.getItem('mapCircles');
+			return saved ? JSON.parse(saved) : [];
+		} catch {
+			return [];
+		}
+	}
+
+	// Save circles to localStorage
+	function saveCircles(circleArray: Circle[]) {
+		try {
+			localStorage.setItem('mapCircles', JSON.stringify(circleArray));
+		} catch (error) {
+			console.warn('Could not save circles to localStorage:', error);
+		}
+	}
+
+	// Load legend texts from localStorage
+	function loadLegendTexts(): Map<string, string> {
+		try {
+			const saved = localStorage.getItem('mapLegendTexts');
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				return new Map(Object.entries(parsed));
+			}
+			return new Map();
+		} catch {
+			return new Map();
+		}
+	}
+
+	// Save legend texts to localStorage
+	function saveLegendTexts(legendMap: Map<string, string>) {
+		try {
+			const obj = Object.fromEntries(legendMap);
+			localStorage.setItem('mapLegendTexts', JSON.stringify(obj));
+		} catch (error) {
+			console.warn('Could not save legend texts to localStorage:', error);
+		}
+	}
+
+	// Load selected map index from localStorage
+	function loadSelectedMapIndex(): number {
+		try {
+			const saved = localStorage.getItem('selectedMapIndex');
+			return saved ? parseInt(saved, 10) : 0;
+		} catch {
+			return 0;
+		}
+	}
+
+	// Save selected map index to localStorage
+	function saveSelectedMapIndex(index: number) {
+		try {
+			localStorage.setItem('selectedMapIndex', index.toString());
+		} catch (error) {
+			console.warn('Could not save selected map index to localStorage:', error);
+		}
+	}
+
+	// Load display legend preference from localStorage
+	function loadDisplayLegend(): boolean {
+		try {
+			const saved = localStorage.getItem('displayLegend');
+			return saved ? JSON.parse(saved) : true;
+		} catch {
+			return true;
+		}
+	}
+
+	// Save display legend preference to localStorage
+	function saveDisplayLegend(display: boolean) {
+		try {
+			localStorage.setItem('displayLegend', JSON.stringify(display));
+		} catch (error) {
+			console.warn('Could not save display legend preference to localStorage:', error);
+		}
+	}
+
 	let mapSources = $state(loadMapSources());
-	let selectedMapIndex = $state(0);
+	let selectedMapIndex = $state(loadSelectedMapIndex());
 	let currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
 	let isMapLoading = $state(true);
 	let isCapturingScreenshot = $state(false);
 
 	const presetColors = ['#ffcc00', '#ff00ff', '#00ffff', '#00ff00'];
-	let nextId = $state(1);
+
+	// Load next ID from localStorage or calculate from existing circles
+	function loadNextId(): number {
+		try {
+			const saved = localStorage.getItem('nextCircleId');
+			if (saved) {
+				return parseInt(saved, 10);
+			}
+			// If no saved ID, calculate from existing circles
+			const existingCircles = loadCircles();
+			const maxId = existingCircles.reduce((max, circle) => Math.max(max, circle.id), 0);
+			return maxId + 1;
+		} catch {
+			return 1;
+		}
+	}
+
+	// Save next ID to localStorage
+	function saveNextId(id: number) {
+		try {
+			localStorage.setItem('nextCircleId', id.toString());
+		} catch (error) {
+			console.warn('Could not save next circle ID to localStorage:', error);
+		}
+	}
+
+	let nextId = $state(loadNextId());
 
 	let editingCircle: Circle | null = $state(null);
 
-	let circles = writable<Circle[]>([]);
+	// Initialize circles store with loaded data
+	let circles = writable<Circle[]>(loadCircles());
 
-	const legendTexts = writable<Map<string, string>>(new Map());
+	// Initialize legend texts store with loaded data
+	const legendTexts = writable<Map<string, string>>(loadLegendTexts());
+
+	// Update displayLegend with loaded preference
+	displayLegend = loadDisplayLegend();
 
 	const usedColors = derived(circles, ($circles) => {
 		return new Set($circles.map((c) => c.color));
 	});
 	const activeLegendEntries = derived([usedColors, legendTexts], ([$usedColors, $legendTexts]) => {
 		return Array.from($legendTexts.entries()).filter(([color]) => $usedColors.has(color));
+	});
+
+	// Subscribe to circles changes to save to localStorage
+	circles.subscribe(($circles) => {
+		saveCircles($circles);
+	});
+
+	// Subscribe to legend texts changes to save to localStorage
+	legendTexts.subscribe(($legendTexts) => {
+		saveLegendTexts($legendTexts);
+	});
+
+	// Watch displayLegend changes to save to localStorage
+	$effect(() => {
+		saveDisplayLegend(displayLegend);
+	});
+
+	// Watch selectedMapIndex changes to save to localStorage
+	$effect(() => {
+		saveSelectedMapIndex(selectedMapIndex);
 	});
 
 	// Custom map management functions
@@ -153,7 +285,7 @@
 		const color = presetColors[0];
 
 		const newCircle: Circle = {
-			id: nextId++,
+			id: nextId,
 			x: 50,
 			y: 50,
 			text: 'Edit text...',
@@ -162,6 +294,10 @@
 			headline: '',
 			borderStyle: 'solid'
 		};
+
+		// Increment and save the next ID
+		nextId++;
+		saveNextId(nextId);
 
 		isAddingCircle = true;
 		openEditor(newCircle);
@@ -260,6 +396,47 @@
 					iframeRef.src = currentMapUrl;
 				}
 			}, 100);
+		}
+	}
+
+	// Function to clear all data
+	function clearAllData() {
+		if (
+			confirm(
+				'Are you sure you want to clear all circles, custom maps, and settings? This action cannot be undone.'
+			)
+		) {
+			// Clear circles
+			circles.set([]);
+
+			// Clear legend texts
+			legendTexts.set(new Map());
+
+			// Reset to default maps
+			mapSources = [...defaultMapSources];
+			saveMapSources(mapSources);
+
+			// Reset selected map index
+			selectedMapIndex = 0;
+
+			// Reset next ID
+			nextId = 1;
+			saveNextId(nextId);
+
+			// Reset display legend
+			displayLegend = true;
+
+			// Clear localStorage
+			try {
+				localStorage.removeItem('mapCircles');
+				localStorage.removeItem('mapLegendTexts');
+				localStorage.removeItem('customMapSources');
+				localStorage.removeItem('selectedMapIndex');
+				localStorage.removeItem('nextCircleId');
+				localStorage.removeItem('displayLegend');
+			} catch (error) {
+				console.warn('Could not clear localStorage:', error);
+			}
 		}
 	}
 
@@ -386,6 +563,24 @@
 					{:else}
 						<FluentEmojiFloppyDisk class="h-5 w-5" />
 					{/if}
+				</button>
+			</div>
+
+			<!-- Clear All Data Button -->
+			<div class="mr-2 flex-none">
+				<button
+					class="btn btn-ghost btn-sm text-error"
+					onclick={clearAllData}
+					title="Clear All Data"
+				>
+					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+						/>
+					</svg>
 				</button>
 			</div>
 
