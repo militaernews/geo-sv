@@ -1,0 +1,1 @@
+import"../chunks/NZTpNUN0.js";import{f as t,s as e,a as s,c as n,r as l}from"../chunks/D7oCPBay.js";var m=t(`<div class=" container mx-auto h-screen w-full" style="font-family:'HP Simplified'"><!></div>`);function d(o,i){var a=m(),r=n(a);e(r,()=>i.children),l(a),s(o,a)}export{d as component};

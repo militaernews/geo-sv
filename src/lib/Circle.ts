@@ -6,5 +6,5 @@ export type Circle = {
 	text: string;
 	color: string;
 	rectExpandLeft: boolean;
-	borderStyle?: 'solid' | 'dotted';
+	useDottedBorder: boolean;
 };

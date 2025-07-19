@@ -56,12 +56,7 @@
 		</label>
 
 		<label class="mb-4 flex items-center gap-2">
-			<input
-				type="checkbox"
-				class="checkbox"
-				checked={circle.borderStyle === 'dotted'}
-				onchange={(e) => (circle.borderStyle = e.target.checked ? 'dotted' : 'solid')}
-			/>
+			<input type="checkbox" class="checkbox" bind:checked={circle.useDottedBorder} />
 			<span>Dotted border</span>
 		</label>
 
@@ -73,7 +68,7 @@
 			{/if}
 
 			<button class="btn btn-primary" onclick={onSave}>
-				{isNew ? 'Add Circle' : 'Save'}
+				{isNew ? 'Add Point' : 'Save Changes'}
 			</button>
 		</div>
 	</div>

@@ -12,8 +12,10 @@
 >
 	<div
 		class="h-14 w-14 cursor-move rounded-full border-4"
-		style="border-color: {circle.color}; border-style: {circle.borderStyle || 'solid'};"
+		style="border-color: {circle.color};"
 		onmousedown={(e) => onDragStart(e, circle.id)}
+		class:border-dotted={circle.useDottedBorder}
+		class:border-solid={!circle.useDottedBorder}
 	></div>
 
 	<div
