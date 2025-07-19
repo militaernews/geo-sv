@@ -12,6 +12,7 @@
 	import { captureScreenshot } from '$lib/utils/screenshotUtils';
 	import { createPersistentState } from '$lib/utils/storeutils';
 	import { defaultMapSources } from '$lib/defaults';
+	import CookieBanner from '$lib/component/CookieBanner.svelte';
 
 	// --- Initial State Definitions ---
 	const [initialDisplayLegend, saveDisplayLegend] = createPersistentState('displayLegend', true);

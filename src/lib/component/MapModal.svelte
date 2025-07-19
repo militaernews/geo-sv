@@ -17,7 +17,7 @@
 	<div class="modal modal-open">
 		<div class="modal-box w-11/12 max-w-md">
 			<div class="mb-6 flex items-center gap-3">
-				<FluentEmojiPlus class="h-8 w-8" />
+				<FluentEmojiPlus class="size-5" />
 				<h3 class="text-xl font-bold">Add Custom Map</h3>
 			</div>
 
@@ -52,10 +52,7 @@
 
 			<div class="modal-action mt-8">
 				<button class="btn btn-ghost" onclick={onClose}>Cancel</button>
-				<button class="btn btn-primary" onclick={onAddMap}>
-					<FluentEmojiPlus class="h-4 w-4" />
-					Add Map
-				</button>
+				<button class="btn btn-primary" onclick={onAddMap}> Add Map </button>
 			</div>
 		</div>
 		<form method="dialog" class="modal-backdrop" onclick={onClose}>
