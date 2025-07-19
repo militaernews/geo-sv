@@ -4,7 +4,6 @@
 	// Svelte Components
 	import Sidebar from '$lib/component/Sidebar.svelte';
 	import EditorModal from '$lib/component/EditorModal.svelte';
-	import Legend from '$lib/component/Legend.svelte';
 	import MapContainer from '$lib/component/MapContainer.svelte';
 	import MapModal from '$lib/component/MapModal.svelte';
 

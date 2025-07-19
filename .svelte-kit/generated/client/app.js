@@ -1,5 +1,3 @@
-import * as universal_hooks from '../../../src/hooks.ts';
-
 export { matchers } from './matchers.js';
 
 export const nodes = [
@@ -11,14 +9,14 @@ export const nodes = [
 export const server_loads = [];
 
 export const dictionary = {
-		"/": [~2]
+		"/": [2]
 	};
 
 export const hooks = {
 	handleError: (({ error }) => { console.error(error) }),
 	
-	reroute: universal_hooks.reroute || (() => {}),
-	transport: universal_hooks.transport || {}
+	reroute: (() => {}),
+	transport: {}
 };
 
 export const decoders = Object.fromEntries(Object.entries(hooks.transport).map(([k, v]) => [k, v.decode]));
