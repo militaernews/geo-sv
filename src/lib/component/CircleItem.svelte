@@ -26,11 +26,13 @@
 		class="text-md absolute cursor-pointer px-2 py-1"
 		class:rounded-l={circle.rectExpandLeft}
 		class:rounded-r={!circle.rectExpandLeft}
+		class:rounded={circle.headline}
 		style="
+            top: 50%;
             {circle.rectExpandLeft
-			? 'bottom: 0; right: 50%; text-align: right;'
-			: 'bottom: 0; left: 50%; text-align: left;'}
-            transform: translateX({circle.rectExpandLeft ? '50%' : '-50%'});
+			? 'right: 93%; text-align: right;'
+			: 'left: 93%; text-align: left;'}
+            transform: translateY(-50%);
             background-color: {backgroundColor};
             color: {fontColor};
         "

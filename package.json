@@ -40,6 +40,7 @@
 	},
 	"dependencies": {
 		"@iconify/svelte": "5.0.0",
+		"dom-to-image": "^2.6.0",
 		"html2canvas": "^1.4.1",
 		"jsdom": "^26.1.0",
 		"leaflet": "^1.9.4",

@@ -1,6 +1,24 @@
 import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 
 export async function captureScreenshot(): Promise<void> {
+	const element = document.getElementById('container');
+	console.log(element);
+
+	domtoimage
+		.toPng(element)
+		.then(function (dataUrl) {
+			const link = document.createElement('a');
+			link.download = 'element.png';
+			link.href = dataUrl;
+			link.click();
+		})
+		.catch(function (error) {
+			console.error('dom-to-image error:', error);
+		});
+}
+
+export async function captureScreenshot3(): Promise<void> {
 	// import the required library
 
 	const canvas = document.createElement('canvas');

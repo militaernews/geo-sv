@@ -91,6 +91,7 @@
 
 <div
 	class="relative container h-screen w-full overflow-hidden"
+	id="container"
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
 	onmouseleave={handleMouseUp}
