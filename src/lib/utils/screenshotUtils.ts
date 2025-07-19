@@ -1,6 +1,48 @@
 import html2canvas from 'html2canvas';
 
 export async function captureScreenshot(): Promise<void> {
+	// import the required library
+
+	const canvas = document.createElement('canvas');
+	const context = canvas.getContext('2d');
+	const video = document.createElement('video');
+
+	try {
+		const captureStream = await navigator.mediaDevices.getDisplayMedia();
+		video.srcObject = captureStream;
+
+		// Wait for video to load metadata and play
+		await new Promise((resolve) => {
+			video.onloadedmetadata = () => {
+				video.play();
+				resolve(true);
+			};
+		});
+
+		// Set canvas size to match screen
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		// Draw the current frame from the video to the canvas
+		context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+		// Convert canvas to base64 PNG
+		const base64 = canvas.toDataURL('image/png');
+
+		// Download the image
+		const link = document.createElement('a');
+		link.href = base64;
+		link.download = 'screenshot.png';
+		link.click();
+
+		// Stop the capture stream
+		captureStream.getTracks().forEach((track) => track.stop());
+	} catch (err) {
+		console.error('Error: ' + err);
+	}
+}
+
+export async function captureScreenshot2(): Promise<void> {
 	try {
 		// Get the main container
 		const container = document.querySelector('#container') as HTMLElement;

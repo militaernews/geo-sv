@@ -112,6 +112,7 @@
 			loading="lazy"
 			allowfullscreen
 			title="Interactive Map"
+			allow="display-capture"
 			onload={() => (isMapLoading = false)}
 		></iframe>
 	</div>

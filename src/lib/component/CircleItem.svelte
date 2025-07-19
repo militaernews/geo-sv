@@ -27,11 +27,10 @@
 		class:rounded-l={circle.rectExpandLeft}
 		class:rounded-r={!circle.rectExpandLeft}
 		style="
-            top: 50%;
             {circle.rectExpandLeft
-			? 'right: 93%; text-align: right;'
-			: 'left: 93%; text-align: left;'}
-            transform: translateY(-50%);
+			? 'bottom: 0; right: 50%; text-align: right;'
+			: 'bottom: 0; left: 50%; text-align: left;'}
+            transform: translateX({circle.rectExpandLeft ? '50%' : '-50%'});
             background-color: {backgroundColor};
             color: {fontColor};
         "

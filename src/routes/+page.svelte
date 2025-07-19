@@ -12,7 +12,6 @@
 	import { writable, derived } from 'svelte/store';
 	import { captureScreenshot } from '$lib/utils/screenshotUtils';
 	import { createPersistentState } from '$lib/utils/storeutils';
-	import type { ColorOption } from '$lib/ColorOption';
 	import { defaultMapSources } from '$lib/defaults';
 
 	// --- Initial State Definitions ---
@@ -244,7 +243,7 @@
 	async function captureWithHtml2Canvas() {
 		try {
 			isCapturingScreenshot = true;
-			captureScreenshot();
+			await captureScreenshot();
 		} catch (error) {
 			console.error('html2canvas failed:', error);
 			alert(
