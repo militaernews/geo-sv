@@ -21,7 +21,7 @@
  * 
  * You can override `.env` values from the command line like so:
  * 
- * ```bash
+ * ```sh
  * MY_FEATURE_FLAG="enabled" npm run dev
  * ```
  */
@@ -38,11 +38,6 @@ declare module '$env/static/private' {
 	export const COMPUTERNAME: string;
 	export const ComSpec: string;
 	export const DriverData: string;
-	export const EFC_6472_1262719628: string;
-	export const EFC_6472_2283032206: string;
-	export const EFC_6472_3789132940: string;
-	export const FPS_BROWSER_APP_PROFILE_STRING: string;
-	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
 	export const HOMEDRIVE: string;
 	export const HOMEPATH: string;
@@ -51,6 +46,7 @@ declare module '$env/static/private' {
 	export const LOCALAPPDATA: string;
 	export const LOGONSERVER: string;
 	export const NODE: string;
+	export const NODE_ENV: string;
 	export const npm_command: string;
 	export const npm_config_local_prefix: string;
 	export const npm_config_user_agent: string;
@@ -101,7 +97,6 @@ declare module '$env/static/private' {
 	export const VSCODE_INJECTION: string;
 	export const windir: string;
 	export const __PSLockDownPolicy: string;
-	export const NODE_ENV: string;
 }
 
 /**
@@ -129,7 +124,7 @@ declare module '$env/static/public' {
  * console.log(env.DEPLOYMENT_SPECIFIC_VARIABLE);
  * ```
  * 
- * > In `dev`, `$env/dynamic` always includes environment variables from `.env`. In `prod`, this behavior will depend on your adapter.
+ * > [!NOTE] In `dev`, `$env/dynamic` always includes environment variables from `.env`. In `prod`, this behavior will depend on your adapter.
  */
 declare module '$env/dynamic/private' {
 	export const env: {
@@ -145,11 +140,6 @@ declare module '$env/dynamic/private' {
 		COMPUTERNAME: string;
 		ComSpec: string;
 		DriverData: string;
-		EFC_6472_1262719628: string;
-		EFC_6472_2283032206: string;
-		EFC_6472_3789132940: string;
-		FPS_BROWSER_APP_PROFILE_STRING: string;
-		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
 		HOMEDRIVE: string;
 		HOMEPATH: string;
@@ -158,6 +148,7 @@ declare module '$env/dynamic/private' {
 		LOCALAPPDATA: string;
 		LOGONSERVER: string;
 		NODE: string;
+		NODE_ENV: string;
 		npm_command: string;
 		npm_config_local_prefix: string;
 		npm_config_user_agent: string;
@@ -208,7 +199,6 @@ declare module '$env/dynamic/private' {
 		VSCODE_INJECTION: string;
 		windir: string;
 		__PSLockDownPolicy: string;
-		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
