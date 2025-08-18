@@ -6,8 +6,6 @@
 	import Legend from './Legend.svelte';
 	import type { Readable } from 'svelte/store';
 
-	import DragDropTouch from 'svelte-drag-drop-touch';
-
 	const {
 		currentMapUrl,
 		circles,
