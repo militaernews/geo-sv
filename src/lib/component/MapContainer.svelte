@@ -6,24 +6,28 @@
 	import Legend from './Legend.svelte';
 	import type { Readable } from 'svelte/store';
 
+	import DragDropTouch from 'svelte-drag-drop-touch';
+
 	const {
 		currentMapUrl,
 		circles,
-		onCircleDragStart,
+
 		onCircleEdit,
 		onCirclesUpdate,
 		displayLegend,
 		legendTexts,
-		activeLegendEntries
+		activeLegendEntries,
+		isMobile
 	} = $props<{
 		currentMapUrl: string;
 		circles: Circle[];
-		onCircleDragStart: (event: MouseEvent, id: number) => void;
+
 		onCircleEdit: (circle: Circle) => void;
 		onCirclesUpdate: (updatedCircles: Circle[]) => void;
 		displayLegend: boolean;
 		legendTexts: Map<number, string>;
 		activeLegendEntries: Readable<[number, string][]>;
+		isMobile: boolean;
 	}>();
 
 	let isMapLoading = $state(true);
@@ -34,7 +38,6 @@
 	function handleMouseDown(event: MouseEvent, id: number) {
 		draggingId = id;
 		dragStarted = false;
-		onCircleDragStart(event, id); // Propagate the event if needed
 	}
 
 	function handleMouseMove(event: MouseEvent) {
@@ -104,7 +107,8 @@
 </script>
 
 <div
-	class="relative ml-16 h-screen flex-grow overflow-hidden"
+	class="relative h-screen flex-grow overflow-hidden"
+	class:ml-16={!isMobile}
 	id="container"
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
@@ -147,5 +151,5 @@
 		/>
 	{/if}
 
-	<Branding />
+	<Branding {isMobile} />
 </div>

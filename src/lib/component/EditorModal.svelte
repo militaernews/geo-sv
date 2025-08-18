@@ -42,7 +42,7 @@
 			<input type="text" class="input input-bordered" bind:value={circle.text} />
 		</label>
 
-		<label class="form-control mb-3">
+		<label class="form-control mb-5">
 			<span class="label-text">Color</span>
 			<div class="mt-2 flex gap-2">
 				{#each presetColors as colorOption, index}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Circle } from '$lib/Circle';
 	import { presetColors } from '$lib/defaults';
+
 	const { circle, onDragStart, onEdit } = $props<{
 		circle: Circle;
 		onDragStart: (e: MouseEvent, id: number) => void;
@@ -18,6 +19,7 @@
 		class="size-16 cursor-move rounded-full border-4"
 		style="border-color: {backgroundColor};"
 		onmousedown={(e) => onDragStart(e, circle.id)}
+		ondrag={(e) => onDragStart(e, circle.id)}
 		class:border-dotted={circle.useDottedBorder}
 		class:border-solid={!circle.useDottedBorder}
 	></div>

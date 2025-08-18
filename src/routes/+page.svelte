@@ -13,6 +13,21 @@
 	import { createPersistentState } from '$lib/utils/storeutils';
 	import { defaultMapSources } from '$lib/defaults';
 
+	let isMobile = $state(false);
+
+	$effect(() => {
+		const checkMobile = () => {
+			isMobile = window.innerWidth < 768;
+		};
+
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+
+		return () => {
+			window.removeEventListener('resize', checkMobile);
+		};
+	});
+
 	// --- Initial State Definitions ---
 	const [initialDisplayLegend, saveDisplayLegend] = createPersistentState('displayLegend', true);
 	let displayLegend = $state(initialDisplayLegend);
@@ -278,17 +293,18 @@
 	onSwitchMap={switchMapByIndex}
 	onRemoveCustomMap={removeCustomMap}
 	onClearCirclesAndLegend={clearCirclesAndLegend}
+	{isMobile}
 />
 
 <MapContainer
 	{currentMapUrl}
 	circles={$circles}
-	onCircleDragStart={() => {}}
 	onCircleEdit={openEditor}
 	onCirclesUpdate={handleCirclesUpdate}
 	{displayLegend}
 	legendTexts={$legendTexts}
 	{activeLegendEntries}
+	{isMobile}
 />
 
 {#if editingCircle}
