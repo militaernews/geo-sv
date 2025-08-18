@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>MN Map | Privacy Policy</title>
+</svelte:head>
+
 <div class="prose lg:prose-xl bg-base-100 mx-auto rounded-2xl p-6 shadow-md">
 	<h1 class="text-3xl font-bold">Privacy Policy</h1>
 	<p>

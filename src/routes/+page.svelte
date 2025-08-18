@@ -12,7 +12,6 @@
 	import { captureScreenshot } from '$lib/utils/screenshotUtils';
 	import { createPersistentState } from '$lib/utils/storeutils';
 	import { defaultMapSources } from '$lib/defaults';
-	import CookieBanner from '$lib/component/CookieBanner.svelte';
 
 	// --- Initial State Definitions ---
 	const [initialDisplayLegend, saveDisplayLegend] = createPersistentState('displayLegend', true);
@@ -241,7 +240,17 @@
 	async function captureWithHtml2Canvas() {
 		try {
 			isCapturingScreenshot = true;
-			await captureScreenshot();
+
+			const response = await fetch('/api/export', {
+				method: 'POST',
+				body: JSON.stringify('{1,2 }'),
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+
+			let total = await response.json();
+			console.log(total);
 		} catch (error) {
 			console.error('html2canvas failed:', error);
 			alert(

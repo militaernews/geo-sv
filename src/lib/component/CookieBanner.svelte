@@ -7,10 +7,6 @@
 			title: 'This website uses cookies',
 			body: 'By using this site, you agree with our use of cookies'
 		},
-		services: {
-			googleAnalyticsUniversalId: 'UA-XXXXXXXX',
-			googleAnalytics4Id: 'G-XXXXXXXX'
-		},
 		theme: {
 			primary: '#14cabf',
 			dark: '#131f37',
