@@ -37,8 +37,8 @@ declare module "$app/types" {
 			"/api/export": Record<string, never>;
 			"/privacy-policy": Record<string, never>
 		};
-		Pathname(): "/" | "/api" | "/api/export" | "/privacy-policy";
+		Pathname(): "/" | "/api" | "/api/" | "/api/export" | "/api/export/" | "/privacy-policy" | "/privacy-policy/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
-		Asset(): "/favicon.png";
+		Asset(): "/favicon.png" | string & {};
 	}
 }
