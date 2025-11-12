@@ -9,7 +9,6 @@
 	const {
 		currentMapUrl,
 		circles,
-
 		onCircleEdit,
 		onCirclesUpdate,
 		displayLegend,
@@ -19,7 +18,6 @@
 	} = $props<{
 		currentMapUrl: string;
 		circles: Circle[];
-
 		onCircleEdit: (circle: Circle) => void;
 		onCirclesUpdate: (updatedCircles: Circle[]) => void;
 		displayLegend: boolean;
@@ -33,14 +31,14 @@
 	let draggingId: number | null = $state(null);
 	let dragStarted = $state(false);
 
-	function handleMouseDown(event: MouseEvent, id: number) {
+	function handlePointerDown(event: PointerEvent, id: number) {
 		draggingId = id;
 		dragStarted = false;
+		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
 	}
 
-	function handleMouseMove(event: MouseEvent) {
+	function handlePointerMove(event: PointerEvent) {
 		if (draggingId === null) return;
-
 		dragStarted = true;
 
 		const container = event.currentTarget as HTMLElement;
@@ -52,6 +50,7 @@
 		const circleSizeX = (56 / rect.width) * 100;
 		const circleSizeY = (56 / rect.height) * 100;
 		const margin = 2;
+
 		const minX = margin + circleSizeX / 2;
 		const maxX = 100 - margin - circleSizeX / 2;
 		const minY = margin + circleSizeY / 2;
@@ -63,10 +62,10 @@
 		const updatedCircles = circles.map((circle) =>
 			circle.id === draggingId ? { ...circle, x, y } : circle
 		);
-		onCirclesUpdate(updatedCircles); // Emit event to update parent store
+		onCirclesUpdate(updatedCircles);
 	}
 
-	function handleMouseUp() {
+	function handlePointerUp() {
 		if (draggingId === null) return;
 
 		if (!dragStarted) {
@@ -78,11 +77,10 @@
 		dragStarted = false;
 	}
 
-	// Watch currentMapUrl changes to force iframe reload
 	$effect(() => {
 		isMapLoading = true;
 		if (iframeRef) {
-			iframeRef.src = ''; // Clear src to force reload
+			iframeRef.src = '';
 			setTimeout(() => {
 				if (iframeRef) {
 					iframeRef.src = currentMapUrl;
@@ -95,9 +93,7 @@
 		const handleIframeLoad = () => {
 			isMapLoading = false;
 		};
-
 		iframeRef?.addEventListener('load', handleIframeLoad);
-
 		return () => {
 			iframeRef?.removeEventListener('load', handleIframeLoad);
 		};
@@ -108,9 +104,9 @@
 	class="relative h-screen flex-grow overflow-hidden"
 	class:ml-16={!isMobile}
 	id="container"
-	onmousemove={handleMouseMove}
-	onmouseup={handleMouseUp}
-	onmouseleave={handleMouseUp}
+	onpointermove={handlePointerMove}
+	onpointerup={handlePointerUp}
+	onpointercancel={handlePointerUp}
 >
 	<div class=" z-0 h-full w-full">
 		{#if isMapLoading}
@@ -121,7 +117,6 @@
 				</div>
 			</div>
 		{/if}
-
 		<iframe
 			bind:this={iframeRef}
 			src={currentMapUrl}
@@ -135,7 +130,11 @@
 	</div>
 
 	{#each circles as circle (circle.id)}
-		<CircleItem {circle} onDragStart={(e) => handleMouseDown(e, circle.id)} onEdit={onCircleEdit} />
+		<CircleItem
+			{circle}
+			onDragStart={(e) => handlePointerDown(e, circle.id)}
+			onEdit={onCircleEdit}
+		/>
 	{/each}
 
 	{#if displayLegend && $activeLegendEntries.length > 0}

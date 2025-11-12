@@ -4,9 +4,10 @@
 
 	const { circle, onDragStart, onEdit } = $props<{
 		circle: Circle;
-		onDragStart: (e: MouseEvent, id: number) => void;
+		onDragStart: (e: PointerEvent) => void;
 		onEdit: (circle: Circle) => void;
 	}>();
+
 	const fontColor = $derived(presetColors[circle.colorIndex]?.useDarkFont ? '#000000' : '#ffffff');
 	const backgroundColor = $derived(presetColors[circle.colorIndex]?.color);
 </script>
@@ -16,10 +17,9 @@
 	style="top: {circle.y}%; left: {circle.x}%; transform: translate(-50%, -50%);"
 >
 	<div
-		class="size-16 cursor-move rounded-full border-4"
+		class="size-16 cursor-move touch-none rounded-full border-4"
 		style="border-color: {backgroundColor};"
-		onmousedown={(e) => onDragStart(e, circle.id)}
-		ondrag={(e) => onDragStart(e, circle.id)}
+		onpointerdown={onDragStart}
 		class:border-dotted={circle.useDottedBorder}
 		class:border-solid={!circle.useDottedBorder}
 	></div>
