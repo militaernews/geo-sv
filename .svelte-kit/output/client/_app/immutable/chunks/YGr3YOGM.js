@@ -1,0 +1,1 @@
+import{j as o,k as u,H as p,l as t,m as _,C as g,n as a,s as i,o as n,p as m}from"./VDRBsEt7.js";function E(d,r){let s=null,f=t;var l;if(t){s=m;for(var e=_(document.head);e!==null&&(e.nodeType!==g||e.data!==d);)e=a(e);if(e===null)i(!1);else{var y=a(e);e.remove(),n(y)}}t||(l=document.head.appendChild(o()));try{u(()=>r(l),p)}finally{f&&(i(!0),n(s))}}export{E as h};

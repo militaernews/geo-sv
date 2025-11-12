@@ -9,7 +9,7 @@
 
 	// Svelte Stores and Utilities
 	import { writable, derived } from 'svelte/store';
-	import { captureScreenshot } from '$lib/utils/screenshotUtils';
+	import { captureScreenshot2 } from '$lib/utils/screenshotUtils';
 	import { createPersistentState } from '$lib/utils/storeutils';
 	import { defaultMapSources } from '$lib/defaults';
 
