@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Map, TileLayer, Marker, Polyline, Polygon, Popup } from 'sveaflet';
+	import { Map, TileLayer, Marker, Polyline, Polygon, Popup, DivIcon } from 'sveaflet';
 	import { browser } from '$app/environment';
 	import 'leaflet/dist/leaflet.css';
 	import { onMount } from 'svelte';
@@ -12,7 +12,8 @@
 		showStreetViewPlaces = $bindable(false),
 		lat = $bindable(48.8827),
 		lng = $bindable(37.9248),
-		zoom = $bindable(13)
+		zoom = $bindable(13),
+		circles = []
 	} = $props<{
 		onLocationSelect?: (lat: number, lng: number) => void;
 		measureMode?: 'distance' | 'area' | 'none';
@@ -22,6 +23,7 @@
 		lat?: number;
 		lng?: number;
 		zoom?: number;
+		circles?: any[];
 	}>();
 
 	let points = $state<[number, number][]>([]);
@@ -126,7 +128,7 @@
 	}
 </script>
 
-<div class="relative h-full min-h-[400px] w-full">
+	<div class="relative h-screen w-full">
 	{#if browser}
 		<Map
 				options={{ center: [lat, lng], zoom: zoom }}
@@ -165,18 +167,36 @@
 				{/if}
 			{/if}
 
-			{#if searchResults.length > 0}
-				{#each searchResults as result}
-					<Marker latLng={[result.lat, result.lon]}>
-						<Popup>
-							<div class="p-1">
-								<p class="text-xs font-bold">{result.display_name}</p>
-							</div>
-						</Popup>
-					</Marker>
-				{/each}
-			{/if}
-		</Map>
+				{#if searchResults.length > 0}
+					{#each searchResults as result}
+						<Marker latLng={[result.lat, result.lon]}>
+							<Popup>
+								<div class="p-1">
+									<p class="text-xs font-bold">{result.display_name}</p>
+								</div>
+							</Popup>
+						</Marker>
+					{/each}
+				{/if}
+
+				{#if circles.length > 0}
+					{#each circles as circle}
+						<Marker latLng={[circle.lat || lat, circle.lng || lng]}>
+							<DivIcon options={{
+								html: `<div style="background-color: ${circle.color || 'red'}; width: 24px; height: 24px; border: 2px solid white; border-radius: 4px; display: flex; items-center; justify-center; color: white; font-weight: bold; font-size: 10px;">${circle.symbol || 'X'}</div>`,
+								className: 'nato-icon',
+								iconSize: [24, 24],
+								iconAnchor: [12, 12]
+							}} />
+							<Popup>
+								<div class="p-1">
+									<p class="text-xs font-bold">{circle.text || 'Marker'}</p>
+								</div>
+							</Popup>
+						</Marker>
+					{/each}
+				{/if}
+			</Map>
 	{/if}
 
 	<!-- Layer Switcher UI -->
@@ -192,8 +212,8 @@
 
 <style>
 	:global(.leaflet-container) {
-		height: 100%;
-		width: 100%;
+		height: 100% !important;
+		width: 100% !important;
 		background: #1a1a1a;
 	}
 </style>

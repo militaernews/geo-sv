@@ -235,26 +235,30 @@
 	<title>MN Map</title>
 </svelte:head>
 
-<Sidebar
-	{displayLegend}
-	{isCapturingScreenshot}
-	{mapSources}
-	{selectedMapIndex}
-	onAddCircle={addCircle}
-	onToggleLegend={() => (displayLegend = !displayLegend)}
-	onCaptureScreenshot={captureScreenshot}
-	onOpenMapModal={() => (showMapModal = true)}
-	onSwitchMap={switchMapByIndex}
-	onRemoveCustomMap={(idx) => {}}
-	onClearCirclesAndLegend={() => {}}
-	{isMobile}
-	onToggleLeaflet={() => (useLeaflet = !useLeaflet)}
-	isLeafletActive={useLeaflet}
-	onToggleInfraSearch={() => (showInfraSearch = !showInfraSearch)}
-	isInfraSearchActive={showInfraSearch}
-	onToggleMeasure={toggleMeasure}
-	{measureMode}
-/>
+	<Sidebar
+		{displayLegend}
+		{isCapturingScreenshot}
+		{mapSources}
+		{selectedMapIndex}
+		onAddCircle={addCircle}
+		onToggleLegend={() => (displayLegend = !displayLegend)}
+		onCaptureScreenshot={captureScreenshot}
+		onOpenMapModal={() => (showMapModal = true)}
+		onSwitchMap={switchMapByIndex}
+		onRemoveCustomMap={(idx) => {}}
+		onClearCirclesAndLegend={() => {}}
+		{isMobile}
+		onToggleLeaflet={() => (useLeaflet = !useLeaflet)}
+		isLeafletActive={useLeaflet}
+		onToggleInfraSearch={() => (showInfraSearch = !showInfraSearch)}
+		isInfraSearchActive={showInfraSearch}
+		onToggleMeasure={toggleMeasure}
+		{measureMode}
+		circles={$circles}
+		onImportMarkers={(imported) => {
+			circles.set(imported);
+		}}
+	/>
 
 <div class="relative flex-grow" bind:this={mapElement}>
 	{#if useLeaflet}
@@ -272,6 +276,7 @@
 					bind:lat={mapLat}
 					bind:lng={mapLng}
 					bind:zoom={mapZoom}
+					circles={$circles}
 					onLocationSelect={handleLocationSelect}
 					onMeasureUpdate={(v) => (measureValue = v)}
 				/>

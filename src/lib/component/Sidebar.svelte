@@ -29,9 +29,11 @@
 			isLeafletActive,
 			onToggleInfraSearch,
 			isInfraSearchActive,
-			onToggleMeasure,
-			measureMode
-		} = $props<{
+				onToggleMeasure,
+				measureMode,
+				onImportMarkers,
+				circles
+			} = $props<{
 			displayLegend: boolean;
 			isCapturingScreenshot: boolean;
 			mapSources: MapSource[];
@@ -48,9 +50,11 @@
 			isLeafletActive: boolean;
 			onToggleInfraSearch: () => void;
 			isInfraSearchActive: boolean;
-			onToggleMeasure: (mode: 'distance' | 'area' | 'none') => void;
-			measureMode: 'distance' | 'area' | 'none';
-		}>();
+				onToggleMeasure: (mode: 'distance' | 'area' | 'none') => void;
+				measureMode: 'distance' | 'area' | 'none';
+				onImportMarkers: (markers: any[]) => void;
+				circles: any[];
+			}>();
 	
 		let showMobilePanel = $state(false);
 	
@@ -137,15 +141,57 @@
 							</button>
 						</li>
 						<div class="divider my-1 opacity-20"></div>
-						<li>
-							<button onclick={onOpenMapModal}>
-								<FluentEmojiPlus class="size-5" />
-								Add Custom Map
-							</button>
-						</li>
-					</ul>
+			<li>
+								<button onclick={onOpenMapModal}>
+									<FluentEmojiPlus class="size-5" />
+									Add Custom Map
+								</button>
+							</li>
+							<div class="divider my-1 opacity-20"></div>
+							<li>
+								<button onclick={() => {
+									const data = JSON.stringify(circles);
+									const blob = new Blob([data], { type: 'application/json' });
+									const url = URL.createObjectURL(blob);
+									const a = document.createElement('a');
+									a.href = url;
+									a.download = 'markers.json';
+									a.click();
+								}}>
+									<FluentEmojiFloppyDisk class="size-5" />
+									Export Markers
+								</button>
+							</li>
+							<li>
+								<button onclick={() => {
+									const input = document.createElement('input');
+									input.type = 'file';
+									input.accept = '.json';
+									input.onchange = (e) => {
+										const file = (e.target as HTMLInputElement).files?.[0];
+										if (file) {
+											const reader = new FileReader();
+											reader.onload = (e) => {
+												const content = e.target?.result as string;
+												try {
+													const imported = JSON.parse(content);
+														onImportMarkers(imported);
+													} catch (err) {
+													console.error('Import failed', err);
+												}
+											};
+											reader.readAsText(file);
+										}
+									};
+									input.click();
+								}}>
+									<FluentEmojiPlus class="size-5" />
+									Import Markers
+								</button>
+							</li>
+						</ul>
+					</div>
 				</div>
-			</div>
 	
 			<div class="tooltip tooltip-right" data-tip="Download Screenshot">
 				<button
