@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Map, TileLayer, Marker, Polyline, Polygon } from 'sveaflet';
+	import { Map, TileLayer, Marker, Polyline, Polygon, Popup } from 'sveaflet';
 	import { browser } from '$app/environment';
 	import 'leaflet/dist/leaflet.css';
 	import { onMount } from 'svelte';
@@ -7,11 +7,13 @@
 	const {
 		onLocationSelect,
 		measureMode = 'none',
-		onMeasureUpdate
+		onMeasureUpdate,
+		searchResults = []
 	} = $props<{
 		onLocationSelect?: (lat: number, lng: number) => void;
 		measureMode?: 'distance' | 'area' | 'none';
 		onMeasureUpdate?: (value: number, type: 'distance' | 'area') => void;
+		searchResults?: any[];
 	}>();
 
 	let points = $state<[number, number][]>([]);
@@ -36,8 +38,10 @@
 
 	let activeLayer = $state(layers.osm);
 
-	function handleMapClick(e: CustomEvent) {
-		const { latlng } = e.detail;
+	function handleMapClick(e: any) {
+		// Sveaflet might pass the raw Leaflet event or a CustomEvent
+		const latlng = e.latlng || (e.detail && e.detail.latlng);
+		if (!latlng) return;
 
 		if (measureMode !== 'none') {
 			points = [...points, [latlng.lat, latlng.lng]];
@@ -128,6 +132,18 @@
 						<Polyline latLngs={points} options={{ color: 'blue' }} />
 					{/if}
 				{/if}
+			{/if}
+
+			{#if searchResults.length > 0}
+				{#each searchResults as result}
+					<Marker latLng={[result.lat, result.lon]}>
+						<Popup>
+							<div class="p-1">
+								<p class="text-xs font-bold">{result.display_name}</p>
+							</div>
+						</Popup>
+					</Marker>
+				{/each}
 			{/if}
 		</Map>
 	{/if}

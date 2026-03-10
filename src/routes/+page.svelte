@@ -79,6 +79,7 @@
 	let measureMode = $state('none');
 	let measureValue = $state(0);
 	let showInfraSearch = $state(false);
+	let searchResults = $state([]);
 
 	const currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
 
@@ -257,13 +258,14 @@
 					<IconFluentMap24Regular class="text-base-content/50 size-12 animate-pulse" />
 				{/if}
 			</div>
-		{:then { default: LeafletMap }}
-			<LeafletMap
-				{measureMode}
-				onLocationSelect={handleLocationSelect}
-				onMeasureUpdate={(v) => (measureValue = v)}
-			/>
-		{/await}
+			{:then { default: LeafletMap }}
+				<LeafletMap
+					{measureMode}
+					{searchResults}
+					onLocationSelect={handleLocationSelect}
+					onMeasureUpdate={(v) => (measureValue = v)}
+				/>
+			{/await}
 	{:else}
 		<MapContainer
 			{currentMapUrl}
@@ -281,9 +283,12 @@
 		<StreetView lat={streetViewLat} lng={streetViewLng} onClose={() => (showStreetView = false)} />
 	{/if}
 
-	{#if showInfraSearch}
-		<InfrastructureSearch onSearch={() => {}} />
-	{/if}
+		{#if showInfraSearch}
+			<InfrastructureSearch 
+				onSearch={() => {}} 
+				onResults={(results) => searchResults = results}
+			/>
+		{/if}
 
 	{#if measureMode !== 'none'}
 		<Ruler

@@ -72,9 +72,9 @@
 	</script>
 	
 	{#if !isMobile}
-		<div
-			class="bg-base-300 absolute top-0 left-0 z-20 flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"
-		>
+<div
+				class="bg-base-300 absolute top-0 left-0 z-[1000] flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"
+			>
 			<div class="tooltip tooltip-right" data-tip="Add Marker">
 				<button class="btn btn-ghost btn-sm" onclick={onAddCircle}>
 					<FluentEmojiRoundPushpin class="size-6" />
@@ -123,7 +123,7 @@
 					<label tabindex="0" class="btn btn-ghost btn-sm">
 						<FluentEmojiPlus class="size-6" />
 					</label>
-					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 w-52 p-2 shadow">
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1001] ml-2 w-52 p-2 shadow">
 						<li>
 							<button class="{measureMode === 'distance' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('distance')}>
 								<FluentEmojiStraightRuler class="size-5" />
@@ -166,10 +166,10 @@
 					<label tabindex="0" class="btn btn-ghost btn-sm">
 						<FluentEmojiWorldMap class="size-6" />
 					</label>
-					<ul
-						tabindex="0"
-						class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"
-					>
+<ul
+							tabindex="0"
+							class="dropdown-content menu bg-base-100 rounded-box z-[1001] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"
+						>
 						{#each mapSources as source, index}
 							<li class="p-1">
 								<div

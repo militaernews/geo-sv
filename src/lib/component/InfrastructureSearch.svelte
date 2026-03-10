@@ -6,8 +6,9 @@
     import FluentEmojiZap from '~icons/fluent-emoji/high-voltage';
     import FluentEmojiConstruction from '~icons/fluent-emoji/construction-worker';
 
-    const { onSearch } = $props<{
+    const { onSearch, onResults } = $props<{
         onSearch: (type: string, query: string) => void;
+        onResults?: (results: any[]) => void;
     }>();
 
     let query = $state('');
@@ -20,14 +21,23 @@
         { id: 'fence', icon: FluentEmojiConstruction, label: 'Fences' }
     ];
 
-    function handleSearch() {
+    async function handleSearch() {
         if (query.trim()) {
             onSearch(selectedType, query.trim());
+            
+            // Fetch from Nominatim for markers
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query.trim())}&limit=10`);
+                const data = await response.json();
+                if (onResults) onResults(data);
+            } catch (error) {
+                console.error('Search failed:', error);
+            }
         }
     }
 </script>
 
-<div class="absolute top-4 left-20 z-[30] w-72 bg-base-100 rounded-lg shadow-xl border border-base-300 p-3">
+<div class="absolute top-4 left-20 z-[1001] w-72 bg-base-100 rounded-lg shadow-xl border border-base-300 p-3">
     <div class="flex flex-col gap-3">
         <div class="flex items-center gap-2">
             <FluentEmojiMagnifyingGlass class="size-5" />
