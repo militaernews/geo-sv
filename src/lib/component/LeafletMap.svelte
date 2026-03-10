@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Map, TileLayer, Marker, Polyline, Polygon } from 'sveaflet';
 	import { browser } from '$app/environment';
+	import 'leaflet/dist/leaflet.css';
 
 	const {
 		onLocationSelect,

@@ -7,14 +7,7 @@
 	import StreetView from '$lib/component/StreetView.svelte';
 	import InfrastructureSearch from '$lib/component/InfrastructureSearch.svelte';
 	import Ruler from '$lib/component/Ruler.svelte';
-	import { onMount } from 'svelte';
-
-	let IconFluentMap24Regular = $state(null);
-
-	onMount(async () => {
-		const icon = await import('~icons/fluent/map-24-regular');
-		IconFluentMap24Regular = icon.default;
-	});
+	import IconFluentMap24Regular from '~icons/fluent-emoji/world-map';
 
 	// Svelte Stores and Utilities
 	import { writable, derived } from 'svelte/store';
