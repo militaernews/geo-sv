@@ -44,11 +44,13 @@
 		"typescript-eslint": "8.57.0",
 		"unplugin-icons": "23.0.1",
 		"vite": "7.3.1",
-		"@boxfish-studio/sveltekit-cookie-manager": "1.0.3",
-		"@iconify/svelte": "5.2.1",
 		"sveaflet": "^0.1.4",
 		"sveltekit-superforms": "2.30.0",
 		"valibot": "1.2.0"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"@boxfish-studio/sveltekit-cookie-manager": "1.0.3",
+		"@iconify/svelte": "5.2.1",
+		"dotenv": "17.3.1"
+	}
 }

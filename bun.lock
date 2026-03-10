@@ -4,13 +4,16 @@
   "workspaces": {
     "": {
       "name": "frontend",
-      "devDependencies": {
+      "dependencies": {
         "@boxfish-studio/sveltekit-cookie-manager": "latest",
+        "@iconify/svelte": "latest",
+        "dotenv": "latest",
+      },
+      "devDependencies": {
         "@eslint/compat": "latest",
         "@eslint/js": "latest",
         "@iconify-json/fluent": "latest",
         "@iconify-json/fluent-emoji": "latest",
-        "@iconify/svelte": "latest",
         "@sveltejs/adapter-vercel": "latest",
         "@sveltejs/kit": "latest",
         "@sveltejs/vite-plugin-svelte": "latest",
@@ -763,6 +766,8 @@
     "devtools-protocol": ["devtools-protocol@0.0.1581282", "", {}, "sha512-nv7iKtNZQshSW2hKzYNr46nM/Cfh5SEvE2oV0/SEGgc9XupIY5ggf84Cz8eJIkBce7S3bmTAauFD6aysMpnqsQ=="],
 
     "dlv": ["dlv@1.1.3", "", {}, "sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA=="],
+
+    "dotenv": ["dotenv@17.3.1", "", {}, "sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA=="],
 
     "dunder-proto": ["dunder-proto@1.0.1", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.1", "es-errors": "^1.3.0", "gopd": "^1.2.0" } }, "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A=="],
 
