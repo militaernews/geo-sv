@@ -128,7 +128,7 @@
 	}
 </script>
 
-	<div class="relative h-screen w-full">
+<div class="relative h-screen w-full">
 	{#if browser}
 		<Map
 				options={{ center: [lat, lng], zoom: zoom }}
@@ -144,7 +144,7 @@
 
 					{#if showStreetViewPlaces}
 						<TileLayer
-							url="https://tiles.mapillary.com/maps/v1/mapillary_tiles/{z}/{x}/{y}.png?access_token=MLY|4712345678901234|your_token_here"
+							url="https://tiles.mapillary.com/maps/v1/mapillary_tiles/{'{z}'}/{'{x}'}/{'{y}'}.png?access_token=MLY|4712345678901234|your_token_here"
 							options={{ 
 								attribution: 'Mapillary',
 								opacity: 0.6,
@@ -153,51 +153,51 @@
 						/>
 					{/if}
 
-			{#if points.length > 0}
-				{#each points as point}
-					<Marker latLng={point} />
-				{/each}
+				{#if points.length > 0}
+					{#each points as point}
+						<Marker latLng={point} />
+					{/each}
 
-				{#if points.length >= 2}
-					{#if points.length >= 3 && measureMode === 'area'}
-						<Polygon latLngs={points} options={{ color: 'red' }} />
-					{:else}
-						<Polyline latLngs={points} options={{ color: 'blue' }} />
+					{#if points.length >= 2}
+						{#if points.length >= 3 && measureMode === 'area'}
+							<Polygon latLngs={points} options={{ color: 'red' }} />
+						{:else}
+							<Polyline latLngs={points} options={{ color: 'blue' }} />
+						{/if}
 					{/if}
 				{/if}
-			{/if}
 
-				{#if searchResults.length > 0}
-					{#each searchResults as result}
-						<Marker latLng={[result.lat, result.lon]}>
-							<Popup>
-								<div class="p-1">
-									<p class="text-xs font-bold">{result.display_name}</p>
-								</div>
-							</Popup>
-						</Marker>
-					{/each}
-				{/if}
+					{#if searchResults.length > 0}
+						{#each searchResults as result}
+							<Marker latLng={[result.lat, result.lon]}>
+								<Popup>
+									<div class="p-1">
+										<p class="text-xs font-bold">{result.display_name}</p>
+									</div>
+								</Popup>
+							</Marker>
+						{/each}
+					{/if}
 
-				{#if circles.length > 0}
-					{#each circles as circle}
-						<Marker latLng={[circle.lat || lat, circle.lng || lng]}>
-							<DivIcon options={{
-								html: `<div style="background-color: ${circle.color || 'red'}; width: 24px; height: 24px; border: 2px solid white; border-radius: 4px; display: flex; items-center; justify-center; color: white; font-weight: bold; font-size: 10px;">${circle.symbol || 'X'}</div>`,
-								className: 'nato-icon',
-								iconSize: [24, 24],
-								iconAnchor: [12, 12]
-							}} />
-							<Popup>
-								<div class="p-1">
-									<p class="text-xs font-bold">{circle.text || 'Marker'}</p>
-								</div>
-							</Popup>
-						</Marker>
-					{/each}
-				{/if}
-			</Map>
-	{/if}
+					{#if circles.length > 0}
+						{#each circles as circle}
+							<Marker latLng={[circle.lat || lat, circle.lng || lng]}>
+								<DivIcon options={{
+									html: `<div style="background-color: ${circle.color || 'red'}; width: 24px; height: 24px; border: 2px solid white; border-radius: 4px; display: flex; items-center; justify-center; color: white; font-weight: bold; font-size: 10px;">${circle.symbol || 'X'}</div>`,
+									className: 'nato-icon',
+									iconSize: [24, 24],
+									iconAnchor: [12, 12]
+								}} />
+								<Popup>
+									<div class="p-1">
+										<p class="text-xs font-bold">{circle.text || 'Marker'}</p>
+									</div>
+								</Popup>
+							</Marker>
+						{/each}
+					{/if}
+				</Map>
+		{/if}
 
 	<!-- Layer Switcher UI -->
 	<div class="absolute bottom-4 left-4 z-[400] flex flex-col gap-2">

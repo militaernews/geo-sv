@@ -120,14 +120,13 @@
 	});
 </script>
 
-<div
-	class="relative h-screen flex-grow overflow-hidden"
-	class:ml-16={!isMobile}
-	id="container"
-	onpointermove={handlePointerMove}
-	onpointerup={handlePointerUp}
-	onpointercancel={handlePointerUp}
->
+	<div
+		class="relative h-screen flex-grow overflow-hidden"
+		id="container"
+		onpointermove={handlePointerMove}
+		onpointerup={handlePointerUp}
+		onpointercancel={handlePointerUp}
+	>
 	<div class=" z-0 h-full w-full">
 		{#if isMapLoading}
 			<div class="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">

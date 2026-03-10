@@ -76,58 +76,42 @@
 	</script>
 	
 	{#if !isMobile}
-<div
-				class="bg-base-300 absolute top-0 left-0 z-[1000] flex h-full w-16 flex-col items-center gap-2 py-4 shadow-lg"
+	<div
+				class="absolute top-4 left-4 z-[1000]"
 			>
-			<div class="tooltip tooltip-right" data-tip="Add Marker">
-				<button class="btn btn-ghost btn-sm" onclick={onAddCircle}>
-					<FluentEmojiRoundPushpin class="size-6" />
-				</button>
-			</div>
-	
-			<div class="tooltip tooltip-right" data-tip="Toggle Legend">
-				<button
-					class="btn btn-ghost btn-sm {displayLegend
-						? 'btn-active bg-primary text-primary-content'
-						: ''}"
-					onclick={onToggleLegend}
-				>
-					<FluentEmojiEye class="size-6" />
-				</button>
-			</div>
-
-			<div class="divider mx-2 my-0 opacity-20"></div>
-
-			<div class="tooltip tooltip-right" data-tip="Advanced Leaflet Map">
-				<button
-					class="btn btn-ghost btn-sm {isLeafletActive
-						? 'btn-active bg-primary text-primary-content'
-						: ''}"
-					onclick={onToggleLeaflet}
-				>
-					<FluentEmojiMap class="size-6" />
-				</button>
-			</div>
-
-			<div class="tooltip tooltip-right" data-tip="Infrastructure Search">
-				<button
-					class="btn btn-ghost btn-sm {isInfraSearchActive
-						? 'btn-active bg-primary text-primary-content'
-						: ''}"
-					onclick={onToggleInfraSearch}
-				>
-					<FluentEmojiMagnifyingGlass class="size-6" />
-				</button>
-			</div>
-
-			<div class="divider mx-2 my-0 opacity-20"></div>
-
-			<div class="tooltip tooltip-right" data-tip="More Tools">
-				<div class="dropdown dropdown-right">
-					<label tabindex="0" class="btn btn-ghost btn-sm">
+				<div class="dropdown dropdown-bottom">
+					<label tabindex="0" class="btn btn-circle btn-primary btn-md shadow-xl">
 						<FluentEmojiPlus class="size-6" />
 					</label>
-					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1001] ml-2 w-52 p-2 shadow">
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1001] mt-2 w-64 p-2 shadow-2xl border border-base-300">
+						<li class="menu-title text-xs opacity-50">Tools</li>
+						<li>
+							<button onclick={onAddCircle}>
+								<FluentEmojiRoundPushpin class="size-5" />
+								Add Marker
+							</button>
+						</li>
+						<li>
+							<button class="{displayLegend ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleLegend}>
+								<FluentEmojiEye class="size-5" />
+								Toggle Legend
+							</button>
+						</li>
+						<li>
+							<button class="{isLeafletActive ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleLeaflet}>
+								<FluentEmojiMap class="size-5" />
+								Advanced Leaflet
+							</button>
+						</li>
+						<li>
+							<button class="{isInfraSearchActive ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleInfraSearch}>
+								<FluentEmojiMagnifyingGlass class="size-5" />
+								Infrastructure Search
+							</button>
+						</li>
+						
+						<div class="divider my-1 opacity-20"></div>
+						<li class="menu-title text-xs opacity-50">Measurement</li>
 						<li>
 							<button class="{measureMode === 'distance' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('distance')}>
 								<FluentEmojiStraightRuler class="size-5" />
@@ -140,120 +124,94 @@
 								Measure Area
 							</button>
 						</li>
+
 						<div class="divider my-1 opacity-20"></div>
-			<li>
-								<button onclick={onOpenMapModal}>
-									<FluentEmojiPlus class="size-5" />
-									Add Custom Map
-								</button>
-							</li>
-							<div class="divider my-1 opacity-20"></div>
-							<li>
-								<button onclick={() => {
-									const data = JSON.stringify(circles);
-									const blob = new Blob([data], { type: 'application/json' });
-									const url = URL.createObjectURL(blob);
-									const a = document.createElement('a');
-									a.href = url;
-									a.download = 'markers.json';
-									a.click();
-								}}>
+						<li class="menu-title text-xs opacity-50">Data</li>
+						<li>
+							<button onclick={onCaptureScreenshot} disabled={isCapturingScreenshot}>
+								{#if isCapturingScreenshot}
+									<span class="loading loading-spinner loading-xs"></span>
+								{:else}
 									<FluentEmojiFloppyDisk class="size-5" />
-									Export Markers
-								</button>
-							</li>
-							<li>
-								<button onclick={() => {
-									const input = document.createElement('input');
-									input.type = 'file';
-									input.accept = '.json';
-									input.onchange = (e) => {
-										const file = (e.target as HTMLInputElement).files?.[0];
-										if (file) {
-											const reader = new FileReader();
-											reader.onload = (e) => {
-												const content = e.target?.result as string;
-												try {
-													const imported = JSON.parse(content);
-														onImportMarkers(imported);
-													} catch (err) {
-													console.error('Import failed', err);
-												}
-											};
-											reader.readAsText(file);
-										}
-									};
-									input.click();
-								}}>
-									<FluentEmojiPlus class="size-5" />
-									Import Markers
-								</button>
-							</li>
-						</ul>
-					</div>
-				</div>
-	
-			<div class="tooltip tooltip-right" data-tip="Download Screenshot">
-				<button
-					class="btn btn-ghost btn-sm"
-					onclick={onCaptureScreenshot}
-					disabled={isCapturingScreenshot}
-				>
-					{#if isCapturingScreenshot}
-						<span class="loading loading-spinner loading-sm"></span>
-					{:else}
-						<FluentEmojiFloppyDisk class="size-6" />
-					{/if}
-				</button>
-			</div>
-	
-			<div class="tooltip tooltip-right" data-tip="Select Map">
-				<div class="dropdown dropdown-right">
-					<label tabindex="0" class="btn btn-ghost btn-sm">
-						<FluentEmojiWorldMap class="size-6" />
-					</label>
-<ul
-							tabindex="0"
-							class="dropdown-content menu bg-base-100 rounded-box z-[1001] ml-2 max-h-80 w-64 overflow-y-auto p-1 shadow"
-						>
+								{/if}
+								Screenshot
+							</button>
+						</li>
+						<li>
+							<button onclick={() => {
+								const data = JSON.stringify(circles);
+								const blob = new Blob([data], { type: 'application/json' });
+								const url = URL.createObjectURL(blob);
+								const a = document.createElement('a');
+								a.href = url;
+								a.download = 'markers.json';
+								a.click();
+							}}>
+								<FluentEmojiFloppyDisk class="size-5" />
+								Export Markers
+							</button>
+						</li>
+						<li>
+							<button onclick={() => {
+								const input = document.createElement('input');
+								input.type = 'file';
+								input.accept = '.json';
+								input.onchange = (e) => {
+									const file = (e.target as HTMLInputElement).files?.[0];
+									if (file) {
+										const reader = new FileReader();
+										reader.onload = (e) => {
+											const content = e.target?.result as string;
+											try {
+												const imported = JSON.parse(content);
+													onImportMarkers(imported);
+												} catch (err) {
+												console.error('Import failed', err);
+											}
+										};
+										reader.readAsText(file);
+									}
+								};
+								input.click();
+							}}>
+								<FluentEmojiPlus class="size-5" />
+								Import Markers
+							</button>
+						</li>
+
+						<div class="divider my-1 opacity-20"></div>
+						<li class="menu-title text-xs opacity-50">Maps</li>
+						<li>
+							<button onclick={onOpenMapModal}>
+								<FluentEmojiPlus class="size-5" />
+								Add Custom Map
+							</button>
+						</li>
 						{#each mapSources as source, index}
-							<li class="p-1">
-								<div
-									class="flex w-full items-center justify-between {selectedMapIndex === index && !isLeafletActive
-										? 'bg-primary text-primary-content'
-										: ''}"
-								>
-									<button class="flex-1 text-left text-sm" onclick={() => onSwitchMap(index)}>
-										<span class="truncate overflow-ellipsis">{source.name}</span>
+							<li>
+								<div class="flex items-center justify-between p-2 {selectedMapIndex === index && !isLeafletActive ? 'bg-primary/10 text-primary' : ''}">
+									<button class="flex-1 text-left text-xs truncate" onclick={() => onSwitchMap(index)}>
+										{source.name}
 									</button>
-	
 									{#if source.isCustom}
-										<button
-											class="btn btn-ghost btn-xs"
-											onclick={(e) => {
-												e.stopPropagation();
-												onRemoveCustomMap(index);
-											}}
-											title="Remove custom map"
-										>
+										<button class="btn btn-ghost btn-xs h-6 w-6 p-0" onclick={(e) => { e.stopPropagation(); onRemoveCustomMap(index); }}>
 											<FluentEmojiCrossMark class="size-3" />
 										</button>
 									{/if}
 								</div>
 							</li>
 						{/each}
+
+						<div class="divider my-1 opacity-20"></div>
+						<li>
+							<button class="text-error hover:bg-error/10" onclick={onClearCirclesAndLegend}>
+								<FluentEmojiWastebasket class="size-5" />
+								Clear All
+							</button>
+						</li>
 					</ul>
 				</div>
 			</div>
-	
-			<div class="flex-1"></div>
-	
-			<div class="tooltip tooltip-right" data-tip="Clear Circles & Legend">
-				<button class="btn btn-ghost btn-sm text-error" onclick={onClearCirclesAndLegend}>
-					<FluentEmojiWastebasket class="size-6" />
-				</button>
-			</div>
-		</div>
 	{:else}
 		<!-- Mobile: Minimal floating action button with simple panel -->
 		<div class="fixed bottom-5 left-5 z-50">
