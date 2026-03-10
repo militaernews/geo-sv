@@ -121,7 +121,7 @@
 </script>
 
 	<div
-		class="relative h-screen flex-grow overflow-hidden"
+		class="relative h-screen flex-grow overflow-hidden z-0"
 		id="container"
 		onpointermove={handlePointerMove}
 		onpointerup={handlePointerUp}

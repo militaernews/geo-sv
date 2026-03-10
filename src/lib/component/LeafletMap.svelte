@@ -128,9 +128,9 @@
 	}
 </script>
 
-<div class="relative h-screen w-full">
-	{#if browser}
-		<Map
+	<div class="relative h-screen w-full z-0">
+		{#if browser}
+			<Map
 				options={{ center: [lat, lng], zoom: zoom }}
 				bind:instance={map}
 				onclick={handleMapClick}
