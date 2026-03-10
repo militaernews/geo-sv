@@ -200,11 +200,11 @@
 		{/if}
 
 	<!-- Layer Switcher UI -->
-	<div class="absolute bottom-4 left-4 z-[400] flex flex-col gap-2">
-		<button class="btn btn-xs btn-glass" onclick={() => setLayer('osm')}>OSM</button>
-		<button class="btn btn-xs btn-glass" onclick={() => setLayer('satellite')}>Satellite</button>
-		<button class="btn btn-xs btn-glass" onclick={() => setLayer('topo')}>Topo</button>
-			<button class="btn btn-xs {showStreetViewPlaces ? 'btn-primary' : 'btn-glass'}" onclick={() => showStreetViewPlaces = !showStreetViewPlaces}>
+	<div class="absolute bottom-4 left-4 z-[400] flex flex-col gap-2 animate-in fade-in slide-in-from-left-2 duration-500">
+		<button class="btn btn-xs btn-glass hover:shadow-md hover:bg-base-300/50 transition-all duration-200" onclick={() => setLayer('osm')}>OSM</button>
+		<button class="btn btn-xs btn-glass hover:shadow-md hover:bg-base-300/50 transition-all duration-200" onclick={() => setLayer('satellite')}>Satellite</button>
+		<button class="btn btn-xs btn-glass hover:shadow-md hover:bg-base-300/50 transition-all duration-200" onclick={() => setLayer('topo')}>Topo</button>
+			<button class="btn btn-xs {showStreetViewPlaces ? 'btn-primary shadow-md' : 'btn-glass'} hover:shadow-md transition-all duration-200" onclick={() => showStreetViewPlaces = !showStreetViewPlaces}>
 				SV Places
 			</button>
 	</div>

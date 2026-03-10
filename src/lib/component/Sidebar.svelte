@@ -80,55 +80,55 @@
 				class="absolute top-4 left-4 z-[4000]"
 			>
 				<div class="dropdown dropdown-bottom">
-					<label tabindex="0" class="btn btn-circle btn-primary btn-md shadow-xl">
+					<label tabindex="0" class="btn btn-circle btn-primary btn-md shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 ease-out">
 						<FluentEmojiPlus class="size-6" />
 					</label>
-					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[4001] mt-2 w-64 p-2 shadow-2xl border border-base-300">
-						<li class="menu-title text-xs opacity-50">Tools</li>
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-lg z-[4001] mt-3 w-64 p-2 shadow-2xl border border-base-300/50 backdrop-blur-sm">
+						<li class="menu-title text-xs opacity-40 font-semibold tracking-wide">Tools</li>
 						<li>
-							<button onclick={onAddCircle}>
+							<button class="hover:bg-primary/10 transition-colors duration-150" onclick={onAddCircle}>
 								<FluentEmojiRoundPushpin class="size-5" />
 								Add Marker
 							</button>
 						</li>
 						<li>
-							<button class="{displayLegend ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleLegend}>
+							<button class="{displayLegend ? 'bg-primary/20 text-primary' : ''} hover:bg-primary/15 transition-colors duration-150" onclick={onToggleLegend}>
 								<FluentEmojiEye class="size-5" />
 								Toggle Legend
 							</button>
 						</li>
 						<li>
-							<button class="{isLeafletActive ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleLeaflet}>
+							<button class="{isLeafletActive ? 'bg-primary/20 text-primary' : ''} hover:bg-primary/15 transition-colors duration-150" onclick={onToggleLeaflet}>
 								<FluentEmojiMap class="size-5" />
 								Advanced Leaflet
 							</button>
 						</li>
 						<li>
-							<button class="{isInfraSearchActive ? 'bg-primary/20 text-primary' : ''}" onclick={onToggleInfraSearch}>
+							<button class="{isInfraSearchActive ? 'bg-primary/20 text-primary' : ''} hover:bg-primary/15 transition-colors duration-150" onclick={onToggleInfraSearch}>
 								<FluentEmojiMagnifyingGlass class="size-5" />
 								Infrastructure Search
 							</button>
 						</li>
 						
-						<div class="divider my-1 opacity-20"></div>
-						<li class="menu-title text-xs opacity-50">Measurement</li>
+						<div class="divider my-2 opacity-10"></div>
+						<li class="menu-title text-xs opacity-40 font-semibold tracking-wide">Measurement</li>
 						<li>
-							<button class="{measureMode === 'distance' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('distance')}>
+							<button class="{measureMode === 'distance' ? 'bg-primary text-primary-content' : ''} hover:bg-primary/20 transition-colors duration-150" onclick={() => onToggleMeasure('distance')}>
 								<FluentEmojiStraightRuler class="size-5" />
 								Measure Distance
 							</button>
 						</li>
 						<li>
-							<button class="{measureMode === 'area' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('area')}>
+							<button class="{measureMode === 'area' ? 'bg-primary text-primary-content' : ''} hover:bg-primary/20 transition-colors duration-150" onclick={() => onToggleMeasure('area')}>
 								<FluentEmojiTriangularRuler class="size-5" />
 								Measure Area
 							</button>
 						</li>
 
-						<div class="divider my-1 opacity-20"></div>
-						<li class="menu-title text-xs opacity-50">Data</li>
+						<div class="divider my-2 opacity-10"></div>
+						<li class="menu-title text-xs opacity-40 font-semibold tracking-wide">Data</li>
 						<li>
-							<button onclick={onCaptureScreenshot} disabled={isCapturingScreenshot}>
+							<button class="hover:bg-primary/10 transition-colors duration-150 disabled:opacity-50" onclick={onCaptureScreenshot} disabled={isCapturingScreenshot}>
 								{#if isCapturingScreenshot}
 									<span class="loading loading-spinner loading-xs"></span>
 								{:else}
@@ -179,8 +179,8 @@
 							</button>
 						</li>
 
-						<div class="divider my-1 opacity-20"></div>
-						<li class="menu-title text-xs opacity-50">Maps</li>
+						<div class="divider my-2 opacity-10"></div>
+						<li class="menu-title text-xs opacity-40 font-semibold tracking-wide">Maps</li>
 						<li>
 							<button onclick={onOpenMapModal}>
 								<FluentEmojiPlus class="size-5" />
@@ -202,9 +202,9 @@
 							</li>
 						{/each}
 
-						<div class="divider my-1 opacity-20"></div>
+						<div class="divider my-2 opacity-10"></div>
 						<li>
-							<button class="text-error hover:bg-error/10" onclick={onClearCirclesAndLegend}>
+							<button class="text-error hover:bg-error/10 transition-colors duration-150" onclick={onClearCirclesAndLegend}>
 								<FluentEmojiWastebasket class="size-5" />
 								Clear All
 							</button>
