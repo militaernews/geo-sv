@@ -2,6 +2,7 @@
 	import { Map, TileLayer, Marker, Polyline, Polygon } from 'sveaflet';
 	import { browser } from '$app/environment';
 	import 'leaflet/dist/leaflet.css';
+	import { onMount } from 'svelte';
 
 	const {
 		onLocationSelect,
@@ -15,6 +16,15 @@
 
 	let points = $state<[number, number][]>([]);
 	let map: any = $state(null);
+
+	$effect(() => {
+		// Ensure map is resized correctly when it becomes visible
+		if (map) {
+			setTimeout(() => {
+				map.invalidateSize();
+			}, 100);
+		}
+	});
 
 	// Layer definitions
 	const layers = {
@@ -94,11 +104,11 @@
 	}
 </script>
 
-<div class="relative h-full w-full">
+<div class="relative h-full min-h-[400px] w-full">
 	{#if browser}
 		<Map
 			options={{ center: [48.8827, 37.9248], zoom: 13 }}
-			bind:this={map}
+			bind:instance={map}
 			onclick={handleMapClick}
 		>
 			<TileLayer
