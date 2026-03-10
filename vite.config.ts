@@ -5,17 +5,13 @@ import Icons from 'unplugin-icons/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
-	ssr: {
-		noExternal: ['sveaflet']
-	},
 	plugins: [
 		sveltekit(),
-		tailwindcss(),
+		tailwindcss({ optimize: { minify: true } }),
 		Icons({
 			compiler: 'svelte',
 			autoInstall: true,
 			// Configure for separate files
-
 			iconCustomizer(collection, icon, props) {
 				props.mode = 'url';
 			}
@@ -53,8 +49,5 @@ export default defineConfig({
 	server: {
 		allowedHosts: true,
 		port: 3021
-	},
-	optimizeDeps: {
-		exclude: ['sveaflet']
 	}
 });
