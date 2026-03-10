@@ -7,4 +7,5 @@ export type Circle = {
 	colorIndex: number;
 	rectExpandLeft: boolean;
 	useDottedBorder: boolean;
+	isChecked?: boolean;
 };

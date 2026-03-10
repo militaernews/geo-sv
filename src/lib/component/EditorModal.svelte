@@ -64,10 +64,15 @@
 			<span>Expand label left</span>
 		</label>
 
-		<label class="mb-4 flex items-center gap-2">
-			<input type="checkbox" class="checkbox" bind:checked={circle.useDottedBorder} />
-			<span>Dotted border</span>
-		</label>
+			<label class="mb-2 flex items-center gap-2">
+				<input type="checkbox" class="checkbox" bind:checked={circle.useDottedBorder} />
+				<span>Dotted border</span>
+			</label>
+
+			<label class="mb-4 flex items-center gap-2">
+				<input type="checkbox" class="checkbox checkbox-success" bind:checked={circle.isChecked} />
+				<span class="font-bold text-success">Mark as Checked</span>
+			</label>
 
 		<div class="mt-4 flex justify-end space-x-2">
 			<button class="btn btn-ghost" onclick={onCancel}>Cancel</button>
