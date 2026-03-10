@@ -3,6 +3,8 @@
 	import { browser } from '$app/environment';
 	import 'leaflet/dist/leaflet.css';
 	import { onMount } from 'svelte';
+	import DataSourcePanel from './DataSourcePanel.svelte';
+	import type { FireData, FlightData, VesselData } from '$lib/services/dataSourceService';
 
 	let {
 		onLocationSelect,
@@ -28,6 +30,10 @@
 
 	let points = $state<[number, number][]>([]);
 	let map: any = $state(null);
+	let isPlacingMarker = $state(false);
+	let fireData = $state<FireData[]>([]);
+	let flightData = $state<FlightData[]>([]);
+	let vesselData = $state<VesselData[]>([]);
 
 	$effect(() => {
 		// Ensure map is resized correctly when it becomes visible
@@ -66,6 +72,10 @@
 		if (measureMode !== 'none') {
 			points = [...points, [latlng.lat, latlng.lng]];
 			calculateMeasurements();
+		} else if (isPlacingMarker) {
+			// Marker-Platzierung im Leaflet-Modus
+			if (onLocationSelect) onLocationSelect(latlng.lat, latlng.lng);
+			isPlacingMarker = false;
 		} else {
 			if (onLocationSelect) onLocationSelect(latlng.lat, latlng.lng);
 		}
@@ -126,6 +136,24 @@
 	export function setLayer(type: keyof typeof layers) {
 		activeLayer = layers[type];
 	}
+
+	export function startPlacingMarker() {
+		isPlacingMarker = true;
+	}
+
+	export function cancelPlacingMarker() {
+		isPlacingMarker = false;
+	}
+
+	export function handleExternalData(data: {
+		fires: FireData[];
+		flights: FlightData[];
+		vessels: VesselData[];
+	}) {
+		fireData = data.fires;
+		flightData = data.flights;
+		vesselData = data.vessels;
+	}
 </script>
 
 	<div class="relative h-screen w-full z-0">
@@ -179,11 +207,73 @@
 						{/each}
 					{/if}
 
+					{#if fireData.length > 0}
+						{#each fireData as fire}
+							<Marker latLng={[fire.lat, fire.lng]}>
+								<DivIcon options={{
+									html: `<div style="background-color: #ff6b35; width: 20px; height: 20px; border: 2px solid white; border-radius: 50%; display: flex; items-center; justify-content: center; color: white; font-weight: bold; font-size: 10px;">🔥</div>`,
+									className: 'fire-marker',
+									iconSize: [20, 20],
+									iconAnchor: [10, 10]
+								}} />
+								<Popup>
+									<div class="p-1 text-xs">
+										<p class="font-bold">Fire Detection</p>
+										<p>Confidence: {fire.confidence.toFixed(1)}%</p>
+										<p>Date: {new Date(fire.date).toLocaleDateString()}</p>
+									</div>
+								</Popup>
+							</Marker>
+						{/each}
+					{/if}
+
+					{#if flightData.length > 0}
+						{#each flightData as flight}
+							<Marker latLng={[flight.lat, flight.lng]}>
+								<DivIcon options={{
+									html: `<div style="background-color: #4a90e2; width: 20px; height: 20px; border: 2px solid white; border-radius: 50%; display: flex; items-center; justify-content: center; color: white; font-weight: bold; font-size: 10px;">✈️</div>`,
+									className: 'flight-marker',
+									iconSize: [20, 20],
+									iconAnchor: [10, 10]
+								}} />
+								<Popup>
+									<div class="p-1 text-xs">
+										<p class="font-bold">{flight.callsign}</p>
+										<p>ICAO: {flight.icao}</p>
+										<p>Altitude: {flight.altitude} ft</p>
+										<p>Speed: {flight.speed} kts</p>
+									</div>
+								</Popup>
+							</Marker>
+						{/each}
+					{/if}
+
+					{#if vesselData.length > 0}
+						{#each vesselData as vessel}
+							<Marker latLng={[vessel.lat, vessel.lng]}>
+								<DivIcon options={{
+									html: `<div style="background-color: #2ecc71; width: 20px; height: 20px; border: 2px solid white; border-radius: 50%; display: flex; items-center; justify-content: center; color: white; font-weight: bold; font-size: 10px;">⛴️</div>`,
+									className: 'vessel-marker',
+									iconSize: [20, 20],
+									iconAnchor: [10, 10]
+								}} />
+								<Popup>
+									<div class="p-1 text-xs">
+										<p class="font-bold">{vessel.name}</p>
+										<p>MMSI: {vessel.mmsi}</p>
+										<p>Type: {vessel.shipType}</p>
+										<p>Speed: {vessel.speed} kts</p>
+									</div>
+								</Popup>
+							</Marker>
+						{/each}
+					{/if}
+
 					{#if circles.length > 0}
 						{#each circles as circle}
 							<Marker latLng={[circle.lat || lat, circle.lng || lng]}>
 								<DivIcon options={{
-									html: `<div style="background-color: ${circle.color || 'red'}; width: 24px; height: 24px; border: 2px solid white; border-radius: 4px; display: flex; items-center; justify-center; color: white; font-weight: bold; font-size: 10px;">${circle.symbol || 'X'}</div>`,
+									html: `<div style="background-color: ${circle.color || 'red'}; width: 24px; height: 24px; border: 2px solid white; border-radius: 4px; display: flex; items-center; justify-content: center; color: white; font-weight: bold; font-size: 10px;">${circle.symbol || 'X'}</div>`,
 									className: 'nato-icon',
 									iconSize: [24, 24],
 									iconAnchor: [12, 12]
@@ -207,7 +297,23 @@
 			<button class="btn btn-xs {showStreetViewPlaces ? 'btn-primary shadow-md' : 'btn-glass'} hover:shadow-md transition-all duration-200" onclick={() => showStreetViewPlaces = !showStreetViewPlaces}>
 				SV Places
 			</button>
+		<button class="btn btn-xs {isPlacingMarker ? 'btn-success shadow-md' : 'btn-glass'} hover:shadow-md transition-all duration-200" onclick={() => isPlacingMarker = !isPlacingMarker}>
+			{isPlacingMarker ? 'Placing...' : 'Place Marker'}
+		</button>
 	</div>
+
+	{#if isPlacingMarker}
+		<div class="absolute top-4 left-1/2 -translate-x-1/2 z-[400] bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg animate-pulse">
+			Click on map to place marker
+		</div>
+	{/if}
+
+	<DataSourcePanel
+		{lat}
+		{lng}
+		{zoom}
+		onDataLoaded={handleExternalData}
+	/>
 </div>
 
 <style>

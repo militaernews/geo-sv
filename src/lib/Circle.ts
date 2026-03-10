@@ -8,4 +8,9 @@ export type Circle = {
 	rectExpandLeft: boolean;
 	useDottedBorder: boolean;
 	isChecked?: boolean;
-};
+	// Leaflet-Modus Koordinaten (geografisch)
+	lat?: number;
+	lng?: number;
+	// Markierungstyp: 'screen' (X/Y Prozent) oder 'leaflet' (Lat/Lon)
+	markerMode?: 'screen' | 'leaflet';
+};}
