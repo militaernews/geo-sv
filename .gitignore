@@ -2,3 +2,4 @@
 /build
 .svelte-kit/generated
 .env
+.svelte-kit/build
