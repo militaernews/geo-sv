@@ -9,13 +9,19 @@
 		measureMode = 'none',
 		onMeasureUpdate,
 		searchResults = [],
-		showStreetViewPlaces = $bindable(false)
+		showStreetViewPlaces = $bindable(false),
+		lat = $bindable(48.8827),
+		lng = $bindable(37.9248),
+		zoom = $bindable(13)
 	} = $props<{
 		onLocationSelect?: (lat: number, lng: number) => void;
 		measureMode?: 'distance' | 'area' | 'none';
 		onMeasureUpdate?: (value: number, type: 'distance' | 'area') => void;
 		searchResults?: any[];
 		showStreetViewPlaces?: boolean;
+		lat?: number;
+		lng?: number;
+		zoom?: number;
 	}>();
 
 	let points = $state<[number, number][]>([]);
@@ -40,6 +46,15 @@
 	};
 
 	let activeLayer = $state(layers.osm);
+
+	function handleMapMove() {
+		if (map) {
+			const center = map.getCenter();
+			lat = center.lat;
+			lng = center.lng;
+			zoom = map.getZoom();
+		}
+	}
 
 	function handleMapClick(e: any) {
 		// Sveaflet might pass the raw Leaflet event or a CustomEvent
@@ -114,10 +129,12 @@
 <div class="relative h-full min-h-[400px] w-full">
 	{#if browser}
 		<Map
-			options={{ center: [48.8827, 37.9248], zoom: 13 }}
-			bind:instance={map}
-			onclick={handleMapClick}
-		>
+				options={{ center: [lat, lng], zoom: zoom }}
+				bind:instance={map}
+				onclick={handleMapClick}
+				onmoveend={handleMapMove}
+				onzoomend={handleMapMove}
+			>
 				<TileLayer
 					url={activeLayer}
 					options={{ attribution: 'Map data &copy; OpenStreetMap contributors' }}

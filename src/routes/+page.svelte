@@ -82,6 +82,11 @@
 	let searchResults = $state([]);
 	let showStreetViewPlaces = $state(false);
 
+	// Central map state for synchronization
+	let mapLat = $state(48.8827);
+	let mapLng = $state(37.9248);
+	let mapZoom = $state(13);
+
 	const currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
 
 	const usedColors = derived(circles, ($circles) => {
@@ -264,22 +269,28 @@
 					{measureMode}
 					{searchResults}
 					bind:showStreetViewPlaces
+					bind:lat={mapLat}
+					bind:lng={mapLng}
+					bind:zoom={mapZoom}
 					onLocationSelect={handleLocationSelect}
 					onMeasureUpdate={(v) => (measureValue = v)}
 				/>
 			{/await}
-	{:else}
-		<MapContainer
-			{currentMapUrl}
-			circles={$circles}
-			onCircleEdit={openEditor}
-			onCirclesUpdate={handleCirclesUpdate}
-			{displayLegend}
-			legendTexts={$legendTexts}
-			{activeLegendEntries}
-			{isMobile}
-		/>
-	{/if}
+		{:else}
+			<MapContainer
+				{currentMapUrl}
+				circles={$circles}
+				onCircleEdit={openEditor}
+				onCirclesUpdate={handleCirclesUpdate}
+				{displayLegend}
+				legendTexts={$legendTexts}
+				{activeLegendEntries}
+				{isMobile}
+				lat={mapLat}
+				lng={mapLng}
+				zoom={mapZoom}
+			/>
+		{/if}
 
 	{#if showStreetView}
 		<StreetView lat={streetViewLat} lng={streetViewLng} onClose={() => (showStreetView = false)} />

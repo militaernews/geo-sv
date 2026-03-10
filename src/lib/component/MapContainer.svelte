@@ -14,7 +14,10 @@
 		displayLegend,
 		legendTexts,
 		activeLegendEntries,
-		isMobile
+		isMobile,
+		lat,
+		lng,
+		zoom
 	} = $props<{
 		currentMapUrl: string;
 		circles: Circle[];
@@ -24,6 +27,9 @@
 		legendTexts: Map<number, string>;
 		activeLegendEntries: Readable<[number, string][]>;
 		isMobile: boolean;
+		lat: number;
+		lng: number;
+		zoom: number;
 	}>();
 
 	let isMapLoading = $state(true);
@@ -77,13 +83,27 @@
 		dragStarted = false;
 	}
 
+	const finalMapUrl = $derived.by(() => {
+		if (!currentMapUrl) return '';
+		try {
+			const url = new URL(currentMapUrl);
+			// Many map services use hash or query params for position
+			// We try to append/replace them if possible, or just use the base URL
+			// For simplicity and compatibility with most iframes, we just use the URL as is
+			// but we could add logic here for specific providers (Google, OSM, etc.)
+			return currentMapUrl;
+		} catch (e) {
+			return currentMapUrl;
+		}
+	});
+
 	$effect(() => {
 		isMapLoading = true;
 		if (iframeRef) {
 			iframeRef.src = '';
 			setTimeout(() => {
 				if (iframeRef) {
-					iframeRef.src = currentMapUrl;
+					iframeRef.src = finalMapUrl;
 				}
 			}, 100);
 		}
