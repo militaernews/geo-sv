@@ -8,6 +8,8 @@
 		import FluentEmojiCrossMark from '~icons/fluent-emoji/cross-mark';
 		import FluentEmojiMap from '~icons/fluent-emoji/world-map';
 		import FluentEmojiMagnifyingGlass from '~icons/fluent-emoji/magnifying-glass-tilted-left';
+		import FluentEmojiStraightRuler from '~icons/fluent-emoji/straight-ruler';
+		import FluentEmojiTriangularRuler from '~icons/fluent-emoji/triangular-ruler';
 		import type { MapSource } from '$lib/MapSource';
 	
 		const {
@@ -26,7 +28,9 @@
 			onToggleLeaflet,
 			isLeafletActive,
 			onToggleInfraSearch,
-			isInfraSearchActive
+			isInfraSearchActive,
+			onToggleMeasure,
+			measureMode
 		} = $props<{
 			displayLegend: boolean;
 			isCapturingScreenshot: boolean;
@@ -44,6 +48,8 @@
 			isLeafletActive: boolean;
 			onToggleInfraSearch: () => void;
 			isInfraSearchActive: boolean;
+			onToggleMeasure: (mode: 'distance' | 'area' | 'none') => void;
+			measureMode: 'distance' | 'area' | 'none';
 		}>();
 	
 		let showMobilePanel = $state(false);
@@ -111,6 +117,35 @@
 			</div>
 
 			<div class="divider mx-2 my-0 opacity-20"></div>
+
+			<div class="tooltip tooltip-right" data-tip="More Tools">
+				<div class="dropdown dropdown-right">
+					<label tabindex="0" class="btn btn-ghost btn-sm">
+						<FluentEmojiPlus class="size-6" />
+					</label>
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] ml-2 w-52 p-2 shadow">
+						<li>
+							<button class="{measureMode === 'distance' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('distance')}>
+								<FluentEmojiStraightRuler class="size-5" />
+								Measure Distance
+							</button>
+						</li>
+						<li>
+							<button class="{measureMode === 'area' ? 'bg-primary text-primary-content' : ''}" onclick={() => onToggleMeasure('area')}>
+								<FluentEmojiTriangularRuler class="size-5" />
+								Measure Area
+							</button>
+						</li>
+						<div class="divider my-1 opacity-20"></div>
+						<li>
+							<button onclick={onOpenMapModal}>
+								<FluentEmojiPlus class="size-5" />
+								Add Custom Map
+							</button>
+						</li>
+					</ul>
+				</div>
+			</div>
 	
 			<div class="tooltip tooltip-right" data-tip="Download Screenshot">
 				<button
@@ -123,12 +158,6 @@
 					{:else}
 						<FluentEmojiFloppyDisk class="size-6" />
 					{/if}
-				</button>
-			</div>
-	
-			<div class="tooltip tooltip-right" data-tip="Add Custom Map">
-				<button class="btn btn-ghost btn-sm" onclick={onOpenMapModal}>
-					<FluentEmojiPlus class="size-6" />
 				</button>
 			</div>
 	

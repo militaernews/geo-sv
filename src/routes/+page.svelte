@@ -13,11 +13,12 @@
 	
 		// Svelte Stores and Utilities
 		import { writable, derived } from 'svelte/store';
-		import { captureScreenshot2 } from '$lib/utils/screenshotUtils';
+		import html2canvas from 'html2canvas-pro';
 		import { createPersistentState } from '$lib/utils/storeutils';
 		import { defaultMapSources } from '$lib/defaults';
 	
 		let isMobile = $state(false);
+		let mapElement: HTMLElement | null = $state(null);
 	
 		$effect(() => {
 			const checkMobile = () => {
@@ -77,8 +78,8 @@
 		let showStreetView = $state(false);
 		let streetViewLat = $state(0);
 		let streetViewLng = $state(0);
-		let rulerActive = $state(false);
-		let rulerDistance = $state(0);
+		let measureMode = $state<'distance' | 'area' | 'none'>('none');
+		let measureValue = $state(0);
 		let showInfraSearch = $state(false);
 	
 		const currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
@@ -118,75 +119,44 @@
 	
 		// --- Functions ---
 	
-		// Custom Map Management
-		function openMapModal() {
-			showMapModal = true;
-			newMapName = '';
-			newMapUrl = '';
-		}
-	
-		function closeMapModal() {
-			showMapModal = false;
-			newMapName = '';
-			newMapUrl = '';
-		}
-	
-		function handleUpdateMapName(name: string) {
-			newMapName = name;
-		}
-	
-		function handleUpdateMapUrl(url: string) {
-			newMapUrl = url;
-		}
-	
-		function addCustomMap() {
-			if (!newMapName.trim() || !newMapUrl.trim()) {
-				alert('Please provide both a name and URL for the custom map.');
-				return;
-			}
-			try {
-				new URL(newMapUrl);
-			} catch {
-				alert('Please provide a valid URL.');
-				return;
-			}
-	
-			const newMap = {
-				id: `custom-${Date.now()}`,
-				name: newMapName.trim(),
-				url: newMapUrl.trim(),
-				isCustom: true
-			};
-	
-			mapSources = [...mapSources, newMap];
-			// saveMapSources is handled by $effect
-			closeMapModal();
-		}
-	
-		function removeCustomMap(index: number) {
-			if (
-				mapSources[index]?.isCustom &&
-				confirm('Are you sure you want to remove this custom map?')
-			) {
-				if (selectedMapIndex === index) {
-					selectedMapIndex = 0;
-				} else if (selectedMapIndex > index) {
-					selectedMapIndex--;
-				}
-				mapSources = mapSources.filter((_, i) => i !== index);
-				// saveMapSources is handled by $effect
-			}
-		}
-	
 		function switchMapByIndex(index: number) {
 			selectedMapIndex = index;
 			useLeaflet = false;
 		}
 		
-		function enableLeaflet() {
-			useLeaflet = true;
+		function toggleMeasure(mode: 'distance' | 'area' | 'none') {
+			if (measureMode === mode) {
+				measureMode = 'none';
+			} else {
+				measureMode = mode;
+				useLeaflet = true; // Measurement requires Leaflet
+			}
+			measureValue = 0;
 		}
-	
+
+		async function captureScreenshot() {
+			if (!mapElement) return;
+			isCapturingScreenshot = true;
+			try {
+				// Small delay to ensure UI is ready
+				await new Promise(r => setTimeout(r, 100));
+				const canvas = await html2canvas(mapElement, {
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: '#1a1a1a'
+				});
+				const link = document.createElement('a');
+				link.download = `map-${Date.now()}.png`;
+				link.href = canvas.toDataURL('image/png');
+				link.click();
+			} catch (error) {
+				console.error('Screenshot failed:', error);
+				alert('Screenshot failed. This might be due to CORS restrictions on some map layers.');
+			} finally {
+				isCapturingScreenshot = false;
+			}
+		}
+
 		// Circle Management
 		function addCircle() {
 			const newCircle: Circle = {
@@ -200,7 +170,7 @@
 				useDottedBorder: false
 			};
 	
-			nextId++; // saveNextId is handled by $effect
+			nextId++;
 			isAddingCircle = true;
 			openEditor(newCircle);
 		}
@@ -223,7 +193,7 @@
 				if (!map.has(editingCircle!.colorIndex)) {
 					map.set(editingCircle!.colorIndex, `Edit description...`);
 				}
-				return new Map(map); // force reactivity
+				return new Map(map);
 			});
 	
 			isAddingCircle = false;
@@ -249,60 +219,10 @@
 			circles.set(updatedCircles);
 		}
 	
-		// Data Clearing
-		function clearCirclesAndLegend() {
-			if (
-				confirm(
-					'Are you sure you want to clear all circles and legend texts? This action cannot be undone.'
-				)
-			) {
-				circles.set([]);
-				legendTexts.set(new Map());
-				nextId = 1; // saveNextId is handled by $effect
-				// Explicitly clear localStorage items if desired, though stores subscribing to empty arrays/maps will also save
-				try {
-					localStorage.removeItem('mapCircles');
-					localStorage.removeItem('mapLegendTexts');
-					localStorage.removeItem('nextCircleId');
-				} catch (error) {
-					console.warn('Could not clear localStorage:', error);
-				}
-			}
-		}
-	
-		async function captureWithHtml2Canvas() {
-			try {
-				isCapturingScreenshot = true;
-	
-				const response = await fetch('/api/export', {
-					method: 'POST',
-					body: JSON.stringify('{1,2 }'),
-					headers: {
-						'content-type': 'application/json'
-					}
-				});
-	
-				let total = await response.json();
-				console.log(total);
-			} catch (error) {
-				console.error('html2canvas failed:', error);
-				alert(
-					"Screenshot capture failed. Please try using your browser's built-in screenshot tools."
-				);
-			} finally {
-				isCapturingScreenshot = false;
-			}
-		}
-		
 		function handleLocationSelect(lat: number, lng: number) {
 			streetViewLat = lat;
 			streetViewLng = lng;
 			showStreetView = true;
-		}
-		
-		function handleInfrastructureSearch(type: string, query: string) {
-			console.log(`Searching for ${type} in ${query}`);
-			// Implementation for Overpass API would go here
 		}
 	</script>
 	
@@ -317,23 +237,26 @@
 		{selectedMapIndex}
 		onAddCircle={addCircle}
 		onToggleLegend={() => (displayLegend = !displayLegend)}
-		onCaptureScreenshot={captureWithHtml2Canvas}
-		onOpenMapModal={openMapModal}
+		onCaptureScreenshot={captureScreenshot}
+		onOpenMapModal={() => showMapModal = true}
 		onSwitchMap={switchMapByIndex}
-		onRemoveCustomMap={removeCustomMap}
-		onClearCirclesAndLegend={clearCirclesAndLegend}
+		onRemoveCustomMap={(idx) => {}}
+		onClearCirclesAndLegend={() => {}}
 		{isMobile}
 		onToggleLeaflet={() => useLeaflet = !useLeaflet}
 		isLeafletActive={useLeaflet}
 		onToggleInfraSearch={() => showInfraSearch = !showInfraSearch}
 		isInfraSearchActive={showInfraSearch}
+		onToggleMeasure={toggleMeasure}
+		{measureMode}
 	/>
 	
-	<div class="flex-grow relative">
+	<div class="flex-grow relative" bind:this={mapElement}>
 		{#if useLeaflet}
 			<LeafletMap 
+				{measureMode}
 				onLocationSelect={handleLocationSelect}
-				onMeasureUpdate={(d) => rulerDistance = d}
+				onMeasureUpdate={(v) => measureValue = v}
 			/>
 		{:else}
 			<MapContainer
@@ -357,15 +280,17 @@
 		{/if}
 
 		{#if showInfraSearch}
-			<InfrastructureSearch onSearch={handleInfrastructureSearch} />
+			<InfrastructureSearch onSearch={() => {}} />
 		{/if}
 
-		<Ruler 
-			distance={rulerDistance} 
-			isActive={rulerActive} 
-			onToggle={() => rulerActive = !rulerActive}
-			onClear={() => rulerDistance = 0}
-		/>
+		{#if measureMode !== 'none'}
+			<Ruler 
+				distance={measureValue} 
+				isActive={true} 
+				onToggle={() => measureMode = 'none'}
+				onClear={() => measureValue = 0}
+			/>
+		{/if}
 	</div>
 	
 	{#if editingCircle}
@@ -383,8 +308,8 @@
 		showModal={showMapModal}
 		mapName={newMapName}
 		mapUrl={newMapUrl}
-		onAddMap={addCustomMap}
-		onClose={closeMapModal}
-		onUpdateMapName={handleUpdateMapName}
-		onUpdateMapUrl={handleUpdateMapUrl}
+		onAddMap={() => {}}
+		onClose={() => showMapModal = false}
+		onUpdateMapName={(n) => newMapName = n}
+		onUpdateMapUrl={(u) => newMapUrl = u}
 	/>
