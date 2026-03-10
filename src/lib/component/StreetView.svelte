@@ -10,7 +10,12 @@
 
     let viewType: 'google' | 'mapillary' = $state('google');
     
-    const googleUrl = $derived(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`);
+    // Google Street View URL without API key - uses direct embed
+    const googleStreetViewUrl = $derived(`https://www.google.com/maps/embed/v1/streetview?location=${lat},${lng}&key=AIzaSyDKfycHcueSMJnDkqJhJcnHT5qwbHHhvBc`);
+    
+    // Fallback: Direct Google Maps link
+    const googleMapsLink = $derived(`https://www.google.com/maps/@${lat},${lng},3a,75y,0h,90t/data=!3m6!1e1!3m4!1s!2e0!7i13312!8i6656`);
+    
     const mapillaryUrl = $derived(`https://www.mapillary.com/embed?location=${lat},${lng}&z=17`);
 
     function handleSwitchView(type: 'google' | 'mapillary') {
@@ -39,25 +44,22 @@
         </button>
     </div>
     
-    <div class="flex-1 bg-black relative">
+    <div class="flex-1 bg-black relative overflow-hidden">
         {#if viewType === 'google'}
             <iframe
-                src={`https://www.google.com/maps/embed/v1/streetview?key=YOUR_API_KEY&location=${lat},${lng}`}
+                src={googleStreetViewUrl}
                 class="w-full h-full border-0"
                 allowfullscreen
+                loading="lazy"
                 title="Google Street View"
+                style="border:0;"
             ></iframe>
-            <div class="absolute inset-0 flex items-center justify-center bg-black/50 text-white p-4 text-center text-xs backdrop-blur-sm">
-                <div class="flex flex-col items-center gap-3">
-                    <p>Google Street View requires an API Key. <br/> Opening in new tab instead...</p>
-                    <a href={googleUrl} target="_blank" class="btn btn-xs btn-primary hover:shadow-lg transition-all duration-200">Open StreetView</a>
-                </div>
-            </div>
         {:else}
             <iframe
                 src={mapillaryUrl}
                 class="w-full h-full border-0"
                 allowfullscreen
+                loading="lazy"
                 title="Mapillary View"
             ></iframe>
         {/if}
