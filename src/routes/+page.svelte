@@ -80,6 +80,7 @@
 	let measureValue = $state(0);
 	let showInfraSearch = $state(false);
 	let searchResults = $state([]);
+	let showStreetViewPlaces = $state(false);
 
 	const currentMapUrl = $derived(mapSources[selectedMapIndex]?.url || '');
 
@@ -262,6 +263,7 @@
 				<LeafletMap
 					{measureMode}
 					{searchResults}
+					bind:showStreetViewPlaces
 					onLocationSelect={handleLocationSelect}
 					onMeasureUpdate={(v) => (measureValue = v)}
 				/>

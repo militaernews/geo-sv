@@ -4,16 +4,18 @@
 	import 'leaflet/dist/leaflet.css';
 	import { onMount } from 'svelte';
 
-	const {
+	let {
 		onLocationSelect,
 		measureMode = 'none',
 		onMeasureUpdate,
-		searchResults = []
+		searchResults = [],
+		showStreetViewPlaces = $bindable(false)
 	} = $props<{
 		onLocationSelect?: (lat: number, lng: number) => void;
 		measureMode?: 'distance' | 'area' | 'none';
 		onMeasureUpdate?: (value: number, type: 'distance' | 'area') => void;
 		searchResults?: any[];
+		showStreetViewPlaces?: boolean;
 	}>();
 
 	let points = $state<[number, number][]>([]);
@@ -33,7 +35,8 @@
 		osm: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 		satellite:
 			'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-		topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+		topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+		mapillary: 'https://tiles.mapillary.com/maps/v1/mapillary_tiles/{z}/{x}/{y}.png'
 	};
 
 	let activeLayer = $state(layers.osm);
@@ -115,10 +118,21 @@
 			bind:instance={map}
 			onclick={handleMapClick}
 		>
-			<TileLayer
-				url={activeLayer}
-				options={{ attribution: 'Map data &copy; OpenStreetMap contributors' }}
-			/>
+				<TileLayer
+					url={activeLayer}
+					options={{ attribution: 'Map data &copy; OpenStreetMap contributors' }}
+				/>
+
+					{#if showStreetViewPlaces}
+						<TileLayer
+							url="https://tiles.mapillary.com/maps/v1/mapillary_tiles/{z}/{x}/{y}.png?access_token=MLY|4712345678901234|your_token_here"
+							options={{ 
+								attribution: 'Mapillary',
+								opacity: 0.6,
+								zIndex: 500
+							}}
+						/>
+					{/if}
 
 			{#if points.length > 0}
 				{#each points as point}
@@ -153,6 +167,9 @@
 		<button class="btn btn-xs btn-glass" onclick={() => setLayer('osm')}>OSM</button>
 		<button class="btn btn-xs btn-glass" onclick={() => setLayer('satellite')}>Satellite</button>
 		<button class="btn btn-xs btn-glass" onclick={() => setLayer('topo')}>Topo</button>
+			<button class="btn btn-xs {showStreetViewPlaces ? 'btn-primary' : 'btn-glass'}" onclick={() => showStreetViewPlaces = !showStreetViewPlaces}>
+				SV Places
+			</button>
 	</div>
 </div>
 
