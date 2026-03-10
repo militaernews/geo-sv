@@ -77,13 +77,13 @@
 	
 	{#if !isMobile}
 	<div
-				class="absolute top-4 left-4 z-[1000]"
+				class="absolute top-4 left-4 z-[4000]"
 			>
 				<div class="dropdown dropdown-bottom">
 					<label tabindex="0" class="btn btn-circle btn-primary btn-md shadow-xl">
 						<FluentEmojiPlus class="size-6" />
 					</label>
-					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1001] mt-2 w-64 p-2 shadow-2xl border border-base-300">
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[4001] mt-2 w-64 p-2 shadow-2xl border border-base-300">
 						<li class="menu-title text-xs opacity-50">Tools</li>
 						<li>
 							<button onclick={onAddCircle}>
@@ -346,7 +346,7 @@
 		<!-- Mobile backdrop -->
 		{#if showMobilePanel}
 			<div
-				class="animate-in fade-in fixed inset-0 z-40 bg-black/20 backdrop-blur-sm duration-300"
+				class="animate-in fade-in fixed inset-0 z-[3999] bg-black/20 backdrop-blur-sm duration-300"
 				onclick={() => (showMobilePanel = false)}
 			></div>
 		{/if}
