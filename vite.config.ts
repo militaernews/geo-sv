@@ -5,6 +5,9 @@ import Icons from 'unplugin-icons/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
+	ssr: {
+		noExternal: ['sveaflet']
+	},
 	plugins: [
 		sveltekit(),
 		tailwindcss(),
@@ -50,5 +53,8 @@ export default defineConfig({
 	server: {
 		allowedHosts: true,
 		port: 3021
+	},
+	optimizeDeps: {
+		exclude: ['sveaflet']
 	}
 });
