@@ -6,7 +6,6 @@
 	import EditorModal from '$lib/component/EditorModal.svelte';
 	import MapContainer from '$lib/component/MapContainer.svelte';
 	import MapModal from '$lib/component/MapModal.svelte';
-	import LeafletMap from '$lib/component/LeafletMap.svelte';
 	import StreetView from '$lib/component/StreetView.svelte';
 	import InfrastructureSearch from '$lib/component/InfrastructureSearch.svelte';
 	import Ruler from '$lib/component/Ruler.svelte';
