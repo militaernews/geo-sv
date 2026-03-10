@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { Circle } from '$lib/Circle';
-
 	// Svelte Components
 	import Sidebar from '$lib/component/Sidebar.svelte';
 	import EditorModal from '$lib/component/EditorModal.svelte';
@@ -9,7 +7,14 @@
 	import StreetView from '$lib/component/StreetView.svelte';
 	import InfrastructureSearch from '$lib/component/InfrastructureSearch.svelte';
 	import Ruler from '$lib/component/Ruler.svelte';
-	import IconFluentMap24Regular from '~icons/fluent/map-24-regular';
+	import { onMount } from 'svelte';
+
+	let IconFluentMap24Regular = $state(null);
+
+	onMount(async () => {
+		const icon = await import('~icons/fluent/map-24-regular');
+		IconFluentMap24Regular = icon.default;
+	});
 
 	// Svelte Stores and Utilities
 	import { writable, derived } from 'svelte/store';
@@ -18,7 +23,7 @@
 	import { defaultMapSources } from '$lib/defaults';
 
 	let isMobile = $state(false);
-	let mapElement: HTMLElement | null = $state(null);
+	let mapElement = $state(null);
 
 	$effect(() => {
 		const checkMobile = () => {
@@ -51,16 +56,16 @@
 	);
 	let selectedMapIndex = $state(initialSelectedMapIndex);
 
-	const [initialCircles, saveCircles] = createPersistentState<Circle[]>('mapCircles', []);
-	const circles = writable<Circle[]>(initialCircles);
+	const [initialCircles, saveCircles] = createPersistentState('mapCircles', []);
+	const circles = writable(initialCircles);
 
-	const [initialLegendTexts, saveLegendTexts] = createPersistentState<Map<number, string>>(
+	const [initialLegendTexts, saveLegendTexts] = createPersistentState(
 		'mapLegendTexts',
 		new Map(),
 		(map) => JSON.stringify(Object.fromEntries(map)),
 		(json) => new Map(Object.entries(JSON.parse(json)))
 	);
-	const legendTexts = writable<Map<number, string>>(initialLegendTexts);
+	const legendTexts = writable(initialLegendTexts);
 
 	const [initialNextId, saveNextId] = createPersistentState('nextCircleId', 1, String, Number);
 	let nextId = $state(initialNextId);
@@ -71,14 +76,14 @@
 	let newMapName = $state('');
 	let newMapUrl = $state('');
 	let isCapturingScreenshot = $state(false);
-	let editingCircle: Circle | null = $state(null);
+	let editingCircle = $state(null);
 
 	// New feature states
 	let useLeaflet = $state(false);
 	let showStreetView = $state(false);
 	let streetViewLat = $state(0);
 	let streetViewLng = $state(0);
-	let measureMode = $state<'distance' | 'area' | 'none'>('none');
+	let measureMode = $state('none');
 	let measureValue = $state(0);
 	let showInfraSearch = $state(false);
 
@@ -119,12 +124,12 @@
 
 	// --- Functions ---
 
-	function switchMapByIndex(index: number) {
+	function switchMapByIndex(index) {
 		selectedMapIndex = index;
 		useLeaflet = false;
 	}
 
-	function toggleMeasure(mode: 'distance' | 'area' | 'none') {
+	function toggleMeasure(mode) {
 		if (measureMode === mode) {
 			measureMode = 'none';
 		} else {
@@ -159,7 +164,7 @@
 
 	// Circle Management
 	function addCircle() {
-		const newCircle: Circle = {
+		const newCircle = {
 			id: nextId,
 			x: 50,
 			y: 50,
@@ -175,7 +180,7 @@
 		openEditor(newCircle);
 	}
 
-	function removeCircle(id: number) {
+	function removeCircle(id) {
 		circles.update((c) => c.filter((circle) => circle.id !== id));
 		editingCircle = null;
 	}
@@ -186,12 +191,12 @@
 		circles.update((c) =>
 			isAddingCircle
 				? [...c, editingCircle]
-				: c.map((circle) => (circle.id === editingCircle!.id ? editingCircle : circle))
+				: c.map((circle) => (circle.id === editingCircle.id ? editingCircle : circle))
 		);
 
 		legendTexts.update((map) => {
-			if (!map.has(editingCircle!.colorIndex)) {
-				map.set(editingCircle!.colorIndex, `Edit description...`);
+			if (!map.has(editingCircle.colorIndex)) {
+				map.set(editingCircle.colorIndex, `Edit description...`);
 			}
 			return new Map(map);
 		});
@@ -200,7 +205,7 @@
 		editingCircle = null;
 	}
 
-	function openEditor(circle: Circle) {
+	function openEditor(circle) {
 		editingCircle = { ...circle };
 	}
 
@@ -209,17 +214,17 @@
 		isAddingCircle = false;
 	}
 
-	function selectColor(colorIndex: number) {
+	function selectColor(colorIndex) {
 		if (editingCircle) {
 			editingCircle.colorIndex = colorIndex;
 		}
 	}
 
-	function handleCirclesUpdate(updatedCircles: Circle[]) {
+	function handleCirclesUpdate(updatedCircles) {
 		circles.set(updatedCircles);
 	}
 
-	function handleLocationSelect(lat: number, lng: number) {
+	function handleLocationSelect(lat, lng) {
 		streetViewLat = lat;
 		streetViewLng = lng;
 		showStreetView = true;
@@ -255,7 +260,9 @@
 	{#if useLeaflet}
 		{#await import('$lib/component/LeafletMap.svelte')}
 			<div class="flex h-full items-center justify-center">
-				<IconFluentMap24Regular class="text-base-content/50 size-12 animate-pulse" />
+				{#if IconFluentMap24Regular}
+					<IconFluentMap24Regular class="text-base-content/50 size-12 animate-pulse" />
+				{/if}
 			</div>
 		{:then { default: LeafletMap }}
 			<LeafletMap
@@ -301,7 +308,7 @@
 		isNew={isAddingCircle}
 		onCancel={cancelEditor}
 		onSave={saveEditor}
-		onRemove={() => removeCircle(editingCircle?.id!)}
+		onRemove={() => removeCircle(editingCircle?.id)}
 		onColorSelect={selectColor}
 	/>
 {/if}

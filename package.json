@@ -49,7 +49,6 @@
 		"valibot": "1.2.0"
 	},
 	"dependencies": {
-		"@boxfish-studio/sveltekit-cookie-manager": "1.0.3",
 		"@iconify/svelte": "5.2.1",
 		"dotenv": "17.3.1"
 	}

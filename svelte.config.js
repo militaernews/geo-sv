@@ -11,6 +11,9 @@ const config = {
 		vitePreprocess()
 		// sveltePreprocessSvg must be used AFTER other markup preprocessors like mdsvex
 	],
+	compilerOptions: {
+		runes: true
+	},
 
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.

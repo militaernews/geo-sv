@@ -6,16 +6,12 @@ import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
-		sveltekit(),
-		tailwindcss({ optimize: { minify: true } }),
 		Icons({
 			compiler: 'svelte',
-			autoInstall: true,
-			// Configure for separate files
-			iconCustomizer(collection, icon, props) {
-				props.mode = 'url';
-			}
+			autoInstall: true
 		}),
+		sveltekit(),
+		tailwindcss({ optimize: { minify: true } }),
 		SvelteKitPWA()
 		/*{
 			strategies: 'injectManifest',
