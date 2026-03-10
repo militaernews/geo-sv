@@ -2,6 +2,7 @@
     import { Map, TileLayer, Marker, Polyline, Polygon } from 'sveaflet';
     import { browser } from '$app/environment';
     import L from 'leaflet';
+    import 'leaflet-geometryutil'; // Import for side effects, will be used conditionally
     import 'leaflet/dist/leaflet.css';
 
     const { 
@@ -44,8 +45,11 @@
             // Leaflet GeometryUtil might not be available directly in all environments
             // Simple polygon area calculation (approximate for small areas)
             const latlngs = points.map(p => L.latLng(p[0], p[1]));
+            let area = 0;
+            if (browser && L.GeometryUtil) {
+                area = L.GeometryUtil.geodesicArea(latlngs);
+            }
             // @ts-ignore
-            const area = L.GeometryUtil ? L.GeometryUtil.geodesicArea(latlngs) : 0;
             if (onMeasureUpdate) onMeasureUpdate(area, 'area');
         } else {
             let distance = 0;

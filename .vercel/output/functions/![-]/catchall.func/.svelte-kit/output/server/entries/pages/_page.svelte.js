@@ -2,6 +2,7 @@ import { a4 as attributes, a8 as attr_class, Y as attr, a9 as ensure_array_like,
 import { C as Cross_mark } from "../../chunks/cross-mark.js";
 import "clsx";
 import "leaflet";
+import "leaflet-geometryutil";
 import { d as derived, w as writable } from "../../chunks/index.js";
 import "html2canvas-pro";
 function Magnifying_glass_tilted_left($$renderer, $$props) {
