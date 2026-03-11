@@ -36,6 +36,36 @@ export interface VesselData {
 }
 
 /**
+ * NASA EONET API - Feuer- und Wärmequellendaten (Kostenlose Alternative ohne Key)
+ */
+export async function fetchNASAEonetData(
+	bounds: { north: number; south: number; east: number; west: number },
+	daysBack: number = 20
+): Promise<FireData[]> {
+	try {
+		const url = `https://eonet.gsfc.nasa.gov/api/v3/events?category=wildfires&status=open&days=${daysBack}&bbox=${bounds.west},${bounds.north},${bounds.east},${bounds.south}`;
+
+		const response = await fetch(url);
+		if (!response.ok) throw new Error(`NASA EONET API error: ${response.statusText}`);
+
+		const data = await response.json();
+		
+		return (data.events || []).flatMap((event: any) => {
+			return event.geometry.map((geom: any) => ({
+				lat: geom.coordinates[1],
+				lng: geom.coordinates[0],
+				confidence: 100, // EONET liefert bestätigte Ereignisse
+				date: geom.date || new Date().toISOString(),
+				source: 'VIIRS'
+			}));
+		});
+	} catch (error) {
+		console.error('NASA EONET fetch error:', error);
+		return [];
+	}
+}
+
+/**
  * NASA FIRMS API - Feuer- und Wärmequellendaten
  * Benötigt: NASA API Key
  */
@@ -44,12 +74,14 @@ export async function fetchNASAFirmsData(
 	apiKey: string,
 	daysBack: number = 7
 ): Promise<FireData[]> {
+	// Falls kein Key vorhanden ist, nutze EONET
+	if (!apiKey) return fetchNASAEonetData(bounds, daysBack);
+	
 	try {
 		const endDate = new Date();
 		const startDate = new Date(endDate.getTime() - daysBack * 24 * 60 * 60 * 1000);
 
 		const formattedStart = startDate.toISOString().split('T')[0];
-		const formattedEnd = endDate.toISOString().split('T')[0];
 
 		const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${apiKey}/VIIRS_SNPP_NRT/${bounds.west},${bounds.south},${bounds.east},${bounds.north}/1/${formattedStart}`;
 
@@ -62,18 +94,22 @@ export async function fetchNASAFirmsData(
 		return lines
 			.filter((line) => line.trim())
 			.map((line) => {
-				const [, , lat, lng, , , confidence, , date] = line.split(',');
+				const parts = line.split(',');
+				const lat = parts[2];
+				const lng = parts[3];
+				const confidence = parts[6];
+				const date = parts[8];
 				return {
 					lat: parseFloat(lat),
 					lng: parseFloat(lng),
-					confidence: parseFloat(confidence),
+					confidence: parseFloat(confidence) || 0,
 					date: date?.trim() || new Date().toISOString(),
 					source: 'VIIRS'
 				};
 			});
 	} catch (error) {
 		console.error('NASA FIRMS fetch error:', error);
-		return [];
+		return fetchNASAEonetData(bounds, daysBack);
 	}
 }
 

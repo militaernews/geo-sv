@@ -31,19 +31,22 @@
 	let flightCount = $state(0);
 	let vesselCount = $state(0);
 
-	async function loadData() {
-		isLoading = true;
-		try {
-			// Berechne Bounding Box basierend auf Zoom-Level
-			const zoomFactor = Math.pow(2, 8 - zoom / 2);
-			const bounds = {
-				north: lat + zoomFactor,
-				south: lat - zoomFactor,
-				east: lng + zoomFactor,
-				west: lng - zoomFactor
-			};
+		async function loadData() {
+			isLoading = true;
+			try {
+				// Berechne Bounding Box basierend auf Zoom-Level
+				// Ein Zoom-Level von 13 entspricht ca. 0.05 Grad Abdeckung
+				const latDiff = 180 / Math.pow(2, zoom);
+				const lngDiff = 360 / Math.pow(2, zoom);
+				
+				const bounds = {
+					north: lat + latDiff,
+					south: lat - latDiff,
+					east: lng + lngDiff,
+					west: lng - lngDiff
+				};
 
-			const data = await fetchAllDataSources(bounds, {
+				const data = await fetchAllDataSources(bounds, {
 				nasaApiKey: includeFires ? nasaApiKey : undefined,
 				includeFires,
 				includeFlights,
@@ -77,22 +80,23 @@
 		<div class="absolute top-12 right-0 bg-base-100 rounded-lg shadow-xl p-4 w-80 border border-base-300">
 			<h3 class="font-bold text-lg mb-3">External Data Sources</h3>
 
-			<!-- NASA FIRMS -->
+			<!-- NASA FIRMS / EONET -->
 			<label class="flex items-center gap-2 mb-3">
 				<input
 					type="checkbox"
 					bind:checked={includeFires}
 					class="checkbox checkbox-sm"
 				/>
-				<span class="text-sm">🔥 NASA FIRMS (Fires)</span>
+				<span class="text-sm">🔥 NASA Fires (FIRMS/EONET)</span>
 			</label>
 			{#if includeFires}
 				<input
 					type="password"
-					placeholder="NASA API Key"
+					placeholder="NASA API Key (Optional)"
 					bind:value={nasaApiKey}
-					class="input input-sm input-bordered w-full mb-3"
+					class="input input-sm input-bordered w-full mb-1"
 				/>
+				<p class="text-[10px] opacity-50 mb-3">Falls kein Key vorhanden ist, wird NASA EONET verwendet.</p>
 			{/if}
 
 			<!-- ADS-B Exchange -->
