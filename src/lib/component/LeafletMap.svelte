@@ -219,7 +219,7 @@
 								<Popup>
 									<div class="p-1 text-xs">
 										<p class="font-bold">Fire Detection</p>
-										<p>Confidence: {fire.confidence.toFixed(1)}%</p>
+										<p>Confidence: {(fire.confidence ?? 0).toFixed(1)}%</p>
 										<p>Date: {new Date(fire.date).toLocaleDateString()}</p>
 									</div>
 								</Popup>

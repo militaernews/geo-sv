@@ -31,7 +31,7 @@
 	<div class="flex items-center gap-6 text-sm">
 		<div class="flex flex-col gap-1">
 			<span class="text-xs opacity-60">LOCATION</span>
-			<span class="font-mono font-bold">{mapLat.toFixed(4)}° N / {mapLng.toFixed(4)}° E</span>
+			<span class="font-mono font-bold">{(mapLat ?? 0).toFixed(4)}° N / {(mapLng ?? 0).toFixed(4)}° E</span>
 		</div>
 		<div class="divider divider-horizontal mx-0 h-8"></div>
 		<div class="flex flex-col gap-1">

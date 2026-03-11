@@ -351,11 +351,11 @@
 				<div class="space-y-2 text-xs">
 					<div class="flex justify-between">
 						<span class="opacity-70">Breite:</span>
-						<span class="font-mono">{mapLat.toFixed(6)}</span>
+						<span class="font-mono">{(mapLat ?? 0).toFixed(6)}</span>
 					</div>
 					<div class="flex justify-between">
 						<span class="opacity-70">Länge:</span>
-						<span class="font-mono">{mapLng.toFixed(6)}</span>
+						<span class="font-mono">{(mapLng ?? 0).toFixed(6)}</span>
 					</div>
 					<div class="flex justify-between">
 						<span class="opacity-70">Zoom:</span>
@@ -369,7 +369,7 @@
 						<div class="rounded bg-slate-700 p-2 text-xs">
 							<div class="truncate font-bold">{circle.text || 'Unnamed'}</div>
 							<div class="font-mono opacity-70">
-								{circle.lat.toFixed(4)}, {circle.lng.toFixed(4)}
+								{(circle.lat ?? 0).toFixed(4)}, {(circle.lng ?? 0).toFixed(4)}
 							</div>
 						</div>
 					{/each}

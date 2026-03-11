@@ -177,11 +177,11 @@
 					<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
 						<div class="flex justify-between text-xs">
 							<span class="opacity-70">Azimuth:</span>
-							<span class="font-mono font-bold">{sunAzimuth.toFixed(1)}°</span>
+							<span class="font-mono font-bold">{(sunAzimuth ?? 0).toFixed(1)}°</span>
 						</div>
 						<div class="flex justify-between text-xs">
 							<span class="opacity-70">Elevation:</span>
-							<span class="font-mono font-bold">{sunElevation.toFixed(1)}°</span>
+							<span class="font-mono font-bold">{(sunElevation ?? 0).toFixed(1)}°</span>
 						</div>
 						<div class="flex justify-between text-xs">
 							<span class="opacity-70">Status:</span>
