@@ -187,9 +187,7 @@
 		if (isAddingCircle) {
 			circles.update((circs) => [...circs, editingCircle]);
 		} else {
-			circles.update((circs) =>
-				circs.map((c) => (c.id === editingCircle.id ? editingCircle : c))
-			);
+			circles.update((circs) => circs.map((c) => (c.id === editingCircle.id ? editingCircle : c)));
 		}
 
 		const colorIndex = editingCircle.colorIndex || 0;
@@ -233,7 +231,7 @@
 	<title>OSINT Geolocalization Tool</title>
 </svelte:head>
 
-<div class="h-screen w-screen flex flex-col bg-slate-950 text-slate-100">
+<div class="flex h-screen w-screen flex-col bg-slate-900 text-slate-100">
 	<!-- Top OSINT Toolbar -->
 	{#if showOSINTToolbar}
 		<OSINTToolbar
@@ -274,7 +272,7 @@
 		/>
 
 		<!-- Map Container -->
-		<div class="relative flex-grow flex flex-col" bind:this={mapElement}>
+		<div class="relative flex flex-grow flex-col" bind:this={mapElement}>
 			{#if useLeaflet}
 				{#await import('$lib/component/LeafletMap.svelte')}
 					<div class="flex h-full items-center justify-center">
@@ -312,13 +310,17 @@
 			{/if}
 
 			{#if showStreetView}
-				<StreetView lat={streetViewLat} lng={streetViewLng} onClose={() => (showStreetView = false)} />
+				<StreetView
+					lat={streetViewLat}
+					lng={streetViewLng}
+					onClose={() => (showStreetView = false)}
+				/>
 			{/if}
 
 			{#if showInfraSearch}
-				<InfrastructureSearch 
-					onSearch={() => {}} 
-					onResults={(results) => searchResults = results}
+				<InfrastructureSearch
+					onSearch={() => {}}
+					onResults={(results) => (searchResults = results)}
 				/>
 			{/if}
 
@@ -343,10 +345,10 @@
 		</div>
 
 		<!-- Right Info Panel (collapsible) -->
-		<div class="w-80 bg-slate-800 border-l border-slate-700 overflow-y-auto hidden lg:block">
-			<div class="p-4 space-y-4">
+		<div class="hidden w-80 overflow-y-auto border-l border-slate-700 bg-slate-800 lg:block">
+			<div class="space-y-4 p-4">
 				<div class="divider my-2">Koordinaten</div>
-				<div class="text-xs space-y-2">
+				<div class="space-y-2 text-xs">
 					<div class="flex justify-between">
 						<span class="opacity-70">Breite:</span>
 						<span class="font-mono">{mapLat.toFixed(6)}</span>
@@ -362,11 +364,13 @@
 				</div>
 
 				<div class="divider my-2">Marker ({$circles.length})</div>
-				<div class="space-y-2 max-h-48 overflow-y-auto">
-				{#each $circles as circle}
-					<div class="p-2 bg-slate-700 rounded text-xs">
-							<div class="font-bold truncate">{circle.text || 'Unnamed'}</div>
-							<div class="opacity-70 font-mono">{circle.lat.toFixed(4)}, {circle.lng.toFixed(4)}</div>
+				<div class="max-h-48 space-y-2 overflow-y-auto">
+					{#each $circles as circle}
+						<div class="rounded bg-slate-700 p-2 text-xs">
+							<div class="truncate font-bold">{circle.text || 'Unnamed'}</div>
+							<div class="font-mono opacity-70">
+								{circle.lat.toFixed(4)}, {circle.lng.toFixed(4)}
+							</div>
 						</div>
 					{/each}
 				</div>
@@ -374,8 +378,11 @@
 				<div class="divider my-2">Legende</div>
 				<div class="space-y-1">
 					{#each $activeLegendEntries as [colorIndex, text]}
-						<div class="text-xs flex items-center gap-2">
-							<div class="w-4 h-4 rounded" style="background-color: {mapSources[selectedMapIndex]?.color || '#ffcc00'}"></div>
+						<div class="flex items-center gap-2 text-xs">
+							<div
+								class="h-4 w-4 rounded"
+								style="background-color: {mapSources[selectedMapIndex]?.color || '#ffcc00'}"
+							></div>
 							<span>{text}</span>
 						</div>
 					{/each}
@@ -407,7 +414,7 @@
 />
 
 <style>
-:global(body) {
-	@apply bg-slate-950;
-}
+	:global(body) {
+		@apply bg-slate-900;
+	}
 </style>
