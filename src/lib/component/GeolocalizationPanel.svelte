@@ -58,9 +58,9 @@
 	}
 </script>
 
-<div class="absolute bottom-4 right-4 z-[300] bg-base-800 rounded-lg shadow-2xl border border-base-700 w-96 max-h-[70vh] overflow-hidden flex flex-col">
+<div class="absolute bottom-4 right-4 z-[300] bg-base-200 rounded-lg shadow-2xl border border-base-300 w-96 max-h-[70vh] overflow-hidden flex flex-col">
 	<!-- Header -->
-	<div class="bg-base-700 px-4 py-3 flex items-center justify-between border-b border-base-600">
+	<div class="bg-base-300 px-4 py-3 flex items-center justify-between border-b border-base-400">
 		<h3 class="font-bold text-sm">Geolocalization Tools</h3>
 		<button class="btn btn-ghost btn-xs p-0 h-6 w-6" onclick={onClose}>
 			<FluentEmojiXMark class="size-4" />
@@ -68,7 +68,7 @@
 	</div>
 
 	<!-- Tool Tabs -->
-	<div class="flex border-b border-base-600 bg-base-700/50">
+	<div class="flex border-b border-base-400 bg-base-300/50">
 		<button
 			class="flex-1 px-3 py-2 text-xs font-bold border-b-2 transition-colors {selectedTool === 'image-overlay' ? 'border-primary text-primary' : 'border-transparent opacity-60'}"
 			onclick={() => (selectedTool = 'image-overlay')}
@@ -121,16 +121,16 @@
 						/>
 						<div class="text-xs opacity-60">{Math.round(imageOpacity * 100)}%</div>
 
-						<div class="mt-3 p-2 bg-base-700 rounded border border-base-600">
+						<div class="mt-3 p-2 bg-base-300 rounded border border-base-400">
 							<img src={imageUrl} alt="overlay" style="opacity: {imageOpacity}" class="w-full rounded" />
 						</div>
 
-						<div class="text-xs opacity-60 p-2 bg-base-900 rounded">
+						<div class="text-xs opacity-60 p-2 bg-base-100 rounded">
 							💡 Align the image with map features to verify location. Use markers to pinpoint exact matches.
 						</div>
 					</div>
 				{:else}
-					<div class="p-4 bg-base-700/50 rounded border border-base-600 text-center text-xs opacity-60">
+					<div class="p-4 bg-base-300/50 rounded border border-base-400 text-center text-xs opacity-60">
 						No image selected
 					</div>
 				{/if}
@@ -145,7 +145,7 @@
 				</button>
 
 				{#if showSunInfo}
-					<div class="space-y-2 p-3 bg-base-700 rounded border border-base-600">
+					<div class="space-y-2 p-3 bg-base-300 rounded border border-base-400">
 						<div class="flex justify-between text-xs">
 							<span class="opacity-70">Azimuth:</span>
 							<span class="font-mono font-bold">{sunAzimuth.toFixed(1)}°</span>
@@ -162,7 +162,7 @@
 						</div>
 					</div>
 
-					<div class="text-xs opacity-60 p-2 bg-base-900 rounded">
+					<div class="text-xs opacity-60 p-2 bg-base-100 rounded">
 						💡 Use shadow direction and length to verify time of day and location. Compare with video shadows.
 					</div>
 				{/if}
@@ -198,7 +198,7 @@
 					</div>
 				</div>
 
-				<div class="p-3 bg-base-700 rounded border border-base-600 text-center text-xs">
+				<div class="p-3 bg-base-300 rounded border border-base-400 text-center text-xs">
 					<div class="font-bold">Current Bearing</div>
 					<div class="font-mono text-lg font-bold text-primary mt-1">0° (N)</div>
 				</div>
