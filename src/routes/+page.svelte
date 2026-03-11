@@ -7,6 +7,8 @@
 	import StreetView from '$lib/component/StreetView.svelte';
 	import InfrastructureSearch from '$lib/component/InfrastructureSearch.svelte';
 	import Ruler from '$lib/component/Ruler.svelte';
+	import GeolocalizationPanel from '$lib/component/GeolocalizationPanel.svelte';
+	import OSINTToolbar from '$lib/component/OSINTToolbar.svelte';
 	import IconFluentMap24Regular from '~icons/fluent-emoji/world-map';
 
 	// Svelte Stores and Utilities
@@ -81,6 +83,8 @@
 	let showInfraSearch = $state(false);
 	let searchResults = $state([]);
 	let showStreetViewPlaces = $state(false);
+	let showGeolocalization = $state(false);
+	let showOSINTToolbar = $state(true);
 
 	// Central map state for synchronization
 	let mapLat = $state(48.8827);
@@ -98,20 +102,8 @@
 	});
 
 	// --- Side Effects ($effect and Store Subscriptions) ---
-	circles.subscribe(($circles) => {
-		saveCircles($circles);
-	});
-
-	legendTexts.subscribe(($legendTexts) => {
-		saveLegendTexts($legendTexts);
-	});
-
 	$effect(() => {
 		saveDisplayLegend(displayLegend);
-	});
-
-	$effect(() => {
-		saveSelectedMapIndex(selectedMapIndex);
 	});
 
 	$effect(() => {
@@ -119,86 +111,92 @@
 	});
 
 	$effect(() => {
+		saveSelectedMapIndex(selectedMapIndex);
+	});
+
+	$effect(() => {
+		const unsubscribe = circles.subscribe((value) => {
+			saveCircles(value);
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
+		const unsubscribe = legendTexts.subscribe((value) => {
+			saveLegendTexts(value);
+		});
+		return unsubscribe;
+	});
+
+	$effect(() => {
 		saveNextId(nextId);
 	});
 
-	// --- Functions ---
-
-	function switchMapByIndex(index) {
-		selectedMapIndex = index;
-		useLeaflet = false;
+	// --- Event Handlers ---
+	function toggleMeasure(mode: 'distance' | 'area' | 'none') {
+		measureMode = mode;
+		measureValue = 0;
 	}
 
-	function toggleMeasure(mode) {
-		if (measureMode === mode) {
-			measureMode = 'none';
-		} else {
-			measureMode = mode;
-			useLeaflet = true; // Measurement requires Leaflet
-		}
-		measureValue = 0;
+	function switchMapByIndex(index: number) {
+		selectedMapIndex = index;
+	}
+
+	function addCircle() {
+		isAddingCircle = true;
+		editingCircle = {
+			id: nextId,
+			lat: mapLat,
+			lng: mapLng,
+			text: '',
+			symbol: 'X',
+			colorIndex: 0,
+			color: '#ffcc00'
+		};
+		nextId++;
+	}
+
+	function removeCircle(id) {
+		circles.update((circs) => circs.filter((c) => c.id !== id));
 	}
 
 	async function captureScreenshot() {
 		if (!mapElement) return;
+
 		isCapturingScreenshot = true;
 		try {
-			// Small delay to ensure UI is ready
-			await new Promise((r) => setTimeout(r, 100));
 			const canvas = await html2canvas(mapElement, {
-				useCORS: true,
-				allowTaint: true,
-				backgroundColor: '#1a1a1a'
+				backgroundColor: null,
+				scale: 2
 			});
+
 			const link = document.createElement('a');
-			link.download = `map-${Date.now()}.png`;
 			link.href = canvas.toDataURL('image/png');
+			link.download = `map-screenshot-${Date.now()}.png`;
 			link.click();
 		} catch (error) {
 			console.error('Screenshot failed:', error);
-			alert('Screenshot failed. This might be due to CORS restrictions on some map layers.');
 		} finally {
 			isCapturingScreenshot = false;
 		}
 	}
 
-	// Circle Management
-	function addCircle() {
-		const newCircle = {
-			id: nextId,
-			x: 50,
-			y: 50,
-			text: 'Edit text...',
-			colorIndex: 0,
-			rectExpandLeft: false,
-			headline: '',
-			useDottedBorder: false
-		};
-
-		nextId++;
-		isAddingCircle = true;
-		openEditor(newCircle);
-	}
-
-	function removeCircle(id) {
-		circles.update((c) => c.filter((circle) => circle.id !== id));
-		editingCircle = null;
-	}
-
 	function saveEditor() {
 		if (!editingCircle) return;
 
-		circles.update((c) =>
-			isAddingCircle
-				? [...c, editingCircle]
-				: c.map((circle) => (circle.id === editingCircle.id ? editingCircle : circle))
-		);
+		if (isAddingCircle) {
+			circles.update((circs) => [...circs, editingCircle]);
+		} else {
+			circles.update((circs) =>
+				circs.map((c) => (c.id === editingCircle.id ? editingCircle : c))
+			);
+		}
 
+		const colorIndex = editingCircle.colorIndex || 0;
 		legendTexts.update((map) => {
-			if (!map.has(editingCircle.colorIndex)) {
-				map.set(editingCircle.colorIndex, `Edit description...`);
-			}
-			return new Map(map);
+			const newMap = new Map(map);
+			newMap.set(colorIndex, editingCircle.text);
+			return newMap;
 		});
 
 		isAddingCircle = false;
@@ -232,90 +230,159 @@
 </script>
 
 <svelte:head>
-	<title>MN Map</title>
+	<title>OSINT Geolocalization Tool</title>
 </svelte:head>
 
-	<Sidebar
-		{displayLegend}
-		{isCapturingScreenshot}
-		{mapSources}
-		{selectedMapIndex}
-		onAddCircle={addCircle}
-		onToggleLegend={() => (displayLegend = !displayLegend)}
-		onCaptureScreenshot={captureScreenshot}
-		onOpenMapModal={() => (showMapModal = true)}
-		onSwitchMap={switchMapByIndex}
-		onRemoveCustomMap={(idx) => {}}
-		onClearCirclesAndLegend={() => {}}
-		{isMobile}
-		onToggleLeaflet={() => (useLeaflet = !useLeaflet)}
-		isLeafletActive={useLeaflet}
-		onToggleInfraSearch={() => (showInfraSearch = !showInfraSearch)}
-		isInfraSearchActive={showInfraSearch}
-		onToggleMeasure={toggleMeasure}
-		{measureMode}
-		circles={$circles}
-		onImportMarkers={(imported) => {
-			circles.set(imported);
-		}}
-	/>
-
-<div class="relative flex-grow" bind:this={mapElement}>
-	{#if useLeaflet}
-		{#await import('$lib/component/LeafletMap.svelte')}
-			<div class="flex h-full items-center justify-center">
-				{#if IconFluentMap24Regular}
-					<IconFluentMap24Regular class="text-base-content/50 size-12 animate-pulse" />
-				{/if}
-			</div>
-			{:then { default: LeafletMap }}
-				<LeafletMap
-					{measureMode}
-					{searchResults}
-					bind:showStreetViewPlaces
-					bind:lat={mapLat}
-					bind:lng={mapLng}
-					bind:zoom={mapZoom}
-					circles={$circles}
-					onLocationSelect={handleLocationSelect}
-					onMeasureUpdate={(v) => (measureValue = v)}
-				/>
-			{/await}
-		{:else}
-			<MapContainer
-				{currentMapUrl}
-				circles={$circles}
-				onCircleEdit={openEditor}
-				onCirclesUpdate={handleCirclesUpdate}
-				{displayLegend}
-				legendTexts={$legendTexts}
-				{activeLegendEntries}
-				{isMobile}
-				lat={mapLat}
-				lng={mapLng}
-				zoom={mapZoom}
-			/>
-		{/if}
-
-	{#if showStreetView}
-		<StreetView lat={streetViewLat} lng={streetViewLng} onClose={() => (showStreetView = false)} />
-	{/if}
-
-		{#if showInfraSearch}
-			<InfrastructureSearch 
-				onSearch={() => {}} 
-				onResults={(results) => searchResults = results}
-			/>
-		{/if}
-
-	{#if measureMode !== 'none'}
-		<Ruler
-			distance={measureValue}
-			isActive={true}
-			onToggle={() => (measureMode = 'none')}
-			onClear={() => (measureValue = 0)}
+<div class="h-screen w-screen flex flex-col bg-base-900 text-base-content">
+	<!-- Top OSINT Toolbar -->
+	{#if showOSINTToolbar}
+		<OSINTToolbar
+			{mapLat}
+			{mapLng}
+			{mapZoom}
+			onToggleGeolocalization={() => (showGeolocalization = !showGeolocalization)}
+			isGeolocalizationActive={showGeolocalization}
 		/>
 	{/if}
+
+	<!-- Main Content Area -->
+	<div class="flex flex-1 overflow-hidden">
+		<!-- Left Sidebar -->
+		<Sidebar
+			{displayLegend}
+			{isCapturingScreenshot}
+			{mapSources}
+			{selectedMapIndex}
+			onAddCircle={addCircle}
+			onToggleLegend={() => (displayLegend = !displayLegend)}
+			onCaptureScreenshot={captureScreenshot}
+			onOpenMapModal={() => (showMapModal = true)}
+			onSwitchMap={switchMapByIndex}
+			onRemoveCustomMap={(idx) => {}}
+			onClearCirclesAndLegend={() => {}}
+			{isMobile}
+			onToggleLeaflet={() => (useLeaflet = !useLeaflet)}
+			isLeafletActive={useLeaflet}
+			onToggleInfraSearch={() => (showInfraSearch = !showInfraSearch)}
+			isInfraSearchActive={showInfraSearch}
+			onToggleMeasure={toggleMeasure}
+			{measureMode}
+			circles={$circles}
+			onImportMarkers={(imported) => {
+				circles.set(imported);
+			}}
+		/>
+
+		<!-- Map Container -->
+		<div class="relative flex-grow flex flex-col" bind:this={mapElement}>
+			{#if useLeaflet}
+				{#await import('$lib/component/LeafletMap.svelte')}
+					<div class="flex h-full items-center justify-center">
+						{#if IconFluentMap24Regular}
+							<IconFluentMap24Regular class="text-base-content/50 size-12 animate-pulse" />
+						{/if}
+					</div>
+				{:then { default: LeafletMap }}
+					<LeafletMap
+						{measureMode}
+						{searchResults}
+						bind:showStreetViewPlaces
+						bind:lat={mapLat}
+						bind:lng={mapLng}
+						bind:zoom={mapZoom}
+						circles={$circles}
+						onLocationSelect={handleLocationSelect}
+						onMeasureUpdate={(v) => (measureValue = v)}
+					/>
+				{/await}
+			{:else}
+				<MapContainer
+					{currentMapUrl}
+					circles={$circles}
+					onCircleEdit={openEditor}
+					onCirclesUpdate={handleCirclesUpdate}
+					{displayLegend}
+					legendTexts={$legendTexts}
+					{activeLegendEntries}
+					{isMobile}
+					lat={mapLat}
+					lng={mapLng}
+					zoom={mapZoom}
+				/>
+			{/if}
+
+			{#if showStreetView}
+				<StreetView lat={streetViewLat} lng={streetViewLng} onClose={() => (showStreetView = false)} />
+			{/if}
+
+			{#if showInfraSearch}
+				<InfrastructureSearch 
+					onSearch={() => {}} 
+					onResults={(results) => searchResults = results}
+				/>
+			{/if}
+
+			{#if measureMode !== 'none'}
+				<Ruler
+					distance={measureValue}
+					isActive={true}
+					onToggle={() => (measureMode = 'none')}
+					onClear={() => (measureValue = 0)}
+				/>
+			{/if}
+
+			<!-- Geolocalization Panel -->
+			{#if showGeolocalization}
+				<GeolocalizationPanel
+					{mapLat}
+					{mapLng}
+					{mapZoom}
+					onClose={() => (showGeolocalization = false)}
+				/>
+			{/if}
+		</div>
+
+		<!-- Right Info Panel (collapsible) -->
+		<div class="w-80 bg-base-800 border-l border-base-700 overflow-y-auto hidden lg:block">
+			<div class="p-4 space-y-4">
+				<div class="divider my-2">Koordinaten</div>
+				<div class="text-xs space-y-2">
+					<div class="flex justify-between">
+						<span class="opacity-70">Breite:</span>
+						<span class="font-mono">{mapLat.toFixed(6)}</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="opacity-70">Länge:</span>
+						<span class="font-mono">{mapLng.toFixed(6)}</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="opacity-70">Zoom:</span>
+						<span class="font-mono">{mapZoom}</span>
+					</div>
+				</div>
+
+				<div class="divider my-2">Marker ({$circles.length})</div>
+				<div class="space-y-2 max-h-48 overflow-y-auto">
+					{#each $circles as circle}
+						<div class="p-2 bg-base-700 rounded text-xs">
+							<div class="font-bold truncate">{circle.text || 'Unnamed'}</div>
+							<div class="opacity-70 font-mono">{circle.lat.toFixed(4)}, {circle.lng.toFixed(4)}</div>
+						</div>
+					{/each}
+				</div>
+
+				<div class="divider my-2">Legende</div>
+				<div class="space-y-1">
+					{#each $activeLegendEntries as [colorIndex, text]}
+						<div class="text-xs flex items-center gap-2">
+							<div class="w-4 h-4 rounded" style="background-color: {mapSources[selectedMapIndex]?.color || '#ffcc00'}"></div>
+							<span>{text}</span>
+						</div>
+					{/each}
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 {#if editingCircle}
@@ -338,3 +405,9 @@
 	onUpdateMapName={(n) => (newMapName = n)}
 	onUpdateMapUrl={(u) => (newMapUrl = u)}
 />
+
+<style>
+	:global(body) {
+		@apply bg-base-900;
+	}
+</style>
