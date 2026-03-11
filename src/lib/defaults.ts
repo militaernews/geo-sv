@@ -53,6 +53,12 @@ export const defaultMapSources: MapSource[] = [
 		isCustom: false,
 		category: 'Truppenpositionen'
 	},
+	{
+		name: 'Kursk (Map.army)',
+		url: 'https://www.map.army/?ShareID=1029769&UserType=RO-JrW5lMVV',
+		isCustom: false,
+		category: 'Truppenpositionen'
+	},
 
 	// --- Ereignisse und wichtige Orte ---
 	{
@@ -85,6 +91,18 @@ export const defaultMapSources: MapSource[] = [
 		isCustom: false,
 		category: 'Ereignisse'
 	},
+	{
+		name: 'Kursk (ZD-YrVB)',
+		url: 'https://www.google.com/maps/d/embed?mid=1ZD-YrVB91qrF3EaagUOs7ur6Byj7YfE',
+		isCustom: false,
+		category: 'Ereignisse'
+	},
+	{
+		name: 'Militaryland Invasion',
+		url: 'https://militaryland.net/maps/russian-invasion/',
+		isCustom: false,
+		category: 'Ereignisse'
+	},
 
 	// --- Infrastruktur und OSINT ---
 	{
@@ -106,6 +124,12 @@ export const defaultMapSources: MapSource[] = [
 		category: 'Infrastruktur'
 	},
 	{
+		name: 'Geolokalisierte Verluste',
+		url: 'https://www.google.com/maps/d/embed?mid=1zn614O85rZZz9eNpTWyA3Y8afIZ9jXE',
+		isCustom: false,
+		category: 'Infrastruktur'
+	},
+	{
 		name: 'Brady Africk (Befestigungen)',
 		url: 'https://www.google.com/maps/d/embed?mid=1rRKs40IEbGRsV0Fhky25l5OkPJ_vUvQ',
 		isCustom: false,
@@ -117,8 +141,52 @@ export const defaultMapSources: MapSource[] = [
 		isCustom: false,
 		category: 'Infrastruktur'
 	},
+	{
+		name: 'Osint Varta (Rüstung)',
+		url: 'https://map.osint-varta.com/',
+		isCustom: false,
+		category: 'Infrastruktur'
+	},
+
+	// --- Analyse & Satellit ---
+	{
+		name: 'Sentinel Hub (EO Browser)',
+		url: 'https://apps.sentinel-hub.com/eo-browser/',
+		isCustom: false,
+		category: 'Analyse'
+	},
+	{
+		name: 'Topographische Karte',
+		url: 'https://en-gb.topographic-map.com/map-wmv51/Ukraine/',
+		isCustom: false,
+		category: 'Analyse'
+	},
+	{
+		name: 'Nautische Karte (Fishermap)',
+		url: 'https://ua.fishermap.org/depth-map/dnepr-reka-ukraina/',
+		isCustom: false,
+		category: 'Analyse'
+	},
+	{
+		name: 'Shademap (Schatten)',
+		url: 'https://shademap.app/',
+		isCustom: false,
+		category: 'Analyse'
+	},
+	{
+		name: 'Geoconfirmed',
+		url: 'https://geoconfirmed.azurewebsites.net/',
+		isCustom: false,
+		category: 'Analyse'
+	},
 
 	// --- Sonstige Regionen ---
+	{
+		name: 'Suriyak Maps (Ukraine)',
+		url: 'https://www.google.com/maps/d/embed?mid=1V8NzjQkzMOhpuLhkktbiKgodOQ27X6IV',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
 	{
 		name: 'Suriyak Maps (Gaza)',
 		url: 'https://www.google.com/maps/d/embed?mid=1SrPdIEnbc9pLZIL_nD02rfOGiUuAboc',
@@ -132,14 +200,44 @@ export const defaultMapSources: MapSource[] = [
 		category: 'Andere Regionen'
 	},
 	{
+		name: 'Clement Molin (Kosovo)',
+		url: 'https://www.google.com/maps/d/embed?mid=17ptxgYuee2f76FJH0I_2crnxwIRLzIQ',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
+	{
+		name: 'Clement Molin (Somalia)',
+		url: 'https://www.google.com/maps/d/embed?mid=1J0vLwLJFiVQt46D78plIFPMDTO-EPCo',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
+	{
+		name: 'Clement Molin (Ruanda)',
+		url: 'https://www.google.com/maps/d/embed?mid=1jnOYWJ-uAGu2h_5mwgpshgxJ6MjXODs',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
+	{
 		name: 'Clement Molin (Sudan)',
 		url: 'https://www.google.com/maps/d/embed?mid=1cd6umI2sZASnKo91dMkP8g-AqJ5ISJY',
 		isCustom: false,
 		category: 'Andere Regionen'
 	},
 	{
+		name: 'Vistamaps.xyz (Sudan)',
+		url: 'https://www.google.com/maps/d/embed?mid=1lN9T6hcpzauhEdsA0YG8uBcTiv39Mmk',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
+	{
 		name: 'Epic Fury Map (Iran)',
 		url: 'https://www.google.com/maps/d/embed?mid=1grL800fMN6Q3_1jQM75Zy5iGcaQWnrw',
+		isCustom: false,
+		category: 'Andere Regionen'
+	},
+	{
+		name: 'Belarusian Hajun',
+		url: 'https://map.hajun.info/',
 		isCustom: false,
 		category: 'Andere Regionen'
 	},
@@ -154,6 +252,12 @@ export const defaultMapSources: MapSource[] = [
 	{
 		name: 'OpenStreetMap',
 		url: 'https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik',
+		isCustom: false,
+		category: 'Standard'
+	},
+	{
+		name: 'Satellites.pro',
+		url: 'https://satellites.pro/Ukraine_map#48.882780,37.924805,7',
 		isCustom: false,
 		category: 'Standard'
 	}
