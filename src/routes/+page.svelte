@@ -231,7 +231,7 @@
 	<title>OSINT Geolocalization Tool</title>
 </svelte:head>
 
-<div class="flex h-screen w-screen flex-col bg-slate-900 text-slate-100">
+<div class="flex h-screen w-screen flex-col text-slate-100">
 	<!-- Top OSINT Toolbar -->
 	{#if showOSINTToolbar}
 		<OSINTToolbar
@@ -412,9 +412,3 @@
 	onUpdateMapName={(n) => (newMapName = n)}
 	onUpdateMapUrl={(u) => (newMapUrl = u)}
 />
-
-<style>
-	:global(body) {
-		@apply bg-slate-900;
-	}
-</style>

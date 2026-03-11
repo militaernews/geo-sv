@@ -42,14 +42,16 @@
 	}
 </script>
 
-<div class="absolute bottom-4 left-4 z-[300] bg-slate-800 rounded-lg shadow-2xl border border-slate-700 w-96 max-h-[70vh] overflow-hidden flex flex-col">
+<div
+	class="absolute bottom-4 left-4 z-[300] flex max-h-[70vh] w-96 flex-col overflow-hidden rounded-lg border border-slate-700 bg-slate-800 shadow-2xl"
+>
 	<!-- Header -->
-	<div class="bg-slate-700 px-4 py-3 flex items-center justify-between border-b border-slate-600">
+	<div class="flex items-center justify-between border-b border-slate-600 bg-slate-700 px-4 py-3">
 		<div class="flex items-center gap-2">
-			<FluentEmojiDatabase class="size-5 text-primary" />
-			<h3 class="font-bold text-sm">OSINT Data Sources</h3>
+			<FluentEmojiDatabase class="text-primary size-5" />
+			<h3 class="text-sm font-bold">OSINT Data Sources</h3>
 		</div>
-		<button class="btn btn-ghost btn-xs p-0 h-6 w-6" onclick={onClose}>
+		<button class="btn btn-ghost btn-xs h-6 w-6 p-0" onclick={onClose}>
 			<FluentEmojiXMark class="size-4" />
 		</button>
 	</div>
@@ -57,19 +59,28 @@
 	<!-- Tabs -->
 	<div class="flex border-b border-slate-600 bg-slate-700/50">
 		<button
-			class="flex-1 px-3 py-2 text-xs font-bold border-b-2 transition-colors {activeTab === 'overview' ? 'border-primary text-primary' : 'border-transparent opacity-60'}"
+			class="flex-1 border-b-2 px-3 py-2 text-xs font-bold transition-colors {activeTab ===
+			'overview'
+				? 'border-primary text-primary'
+				: 'border-transparent opacity-60'}"
 			onclick={() => (activeTab = 'overview')}
 		>
 			Overview
 		</button>
 		<button
-			class="flex-1 px-3 py-2 text-xs font-bold border-b-2 transition-colors {activeTab === 'sources' ? 'border-primary text-primary' : 'border-transparent opacity-60'}"
+			class="flex-1 border-b-2 px-3 py-2 text-xs font-bold transition-colors {activeTab ===
+			'sources'
+				? 'border-primary text-primary'
+				: 'border-transparent opacity-60'}"
 			onclick={() => (activeTab = 'sources')}
 		>
 			Sources
 		</button>
 		<button
-			class="flex-1 px-3 py-2 text-xs font-bold border-b-2 transition-colors {activeTab === 'settings' ? 'border-primary text-primary' : 'border-transparent opacity-60'}"
+			class="flex-1 border-b-2 px-3 py-2 text-xs font-bold transition-colors {activeTab ===
+			'settings'
+				? 'border-primary text-primary'
+				: 'border-transparent opacity-60'}"
 			onclick={() => (activeTab = 'settings')}
 		>
 			Settings
@@ -77,44 +88,41 @@
 	</div>
 
 	<!-- Content -->
-	<div class="flex-1 overflow-y-auto p-4 space-y-4">
+	<div class="flex-1 space-y-4 overflow-y-auto p-4">
 		{#if activeTab === 'overview'}
 			<div class="space-y-3">
 				<div class="grid grid-cols-2 gap-2">
-					<div class="p-3 bg-slate-700 rounded border border-slate-600">
-						<div class="text-xs opacity-60 mb-1">🔥 Fires</div>
+					<div class="rounded border border-slate-600 bg-slate-700 p-3">
+						<div class="mb-1 text-xs opacity-60">🔥 Fires</div>
 						<div class="text-2xl font-bold text-orange-500">{dataStats.fires}</div>
 					</div>
-					<div class="p-3 bg-slate-700 rounded border border-slate-600">
-						<div class="text-xs opacity-60 mb-1">✈️ Flights</div>
+					<div class="rounded border border-slate-600 bg-slate-700 p-3">
+						<div class="mb-1 text-xs opacity-60">✈️ Flights</div>
 						<div class="text-2xl font-bold text-blue-500">{dataStats.flights}</div>
 					</div>
-					<div class="p-3 bg-slate-700 rounded border border-slate-600">
-						<div class="text-xs opacity-60 mb-1">⛴️ Vessels</div>
+					<div class="rounded border border-slate-600 bg-slate-700 p-3">
+						<div class="mb-1 text-xs opacity-60">⛴️ Vessels</div>
 						<div class="text-2xl font-bold text-green-500">{dataStats.vessels}</div>
 					</div>
-					<div class="p-3 bg-slate-700 rounded border border-slate-600">
-						<div class="text-xs opacity-60 mb-1">🛰️ Satellites</div>
+					<div class="rounded border border-slate-600 bg-slate-700 p-3">
+						<div class="mb-1 text-xs opacity-60">🛰️ Satellites</div>
 						<div class="text-2xl font-bold text-purple-500">{dataStats.satellites}</div>
 					</div>
 				</div>
 
-				<button
-					class="btn btn-sm btn-primary w-full"
-					onclick={loadOSINTData}
-				>
+				<button class="btn btn-sm btn-primary w-full" onclick={loadOSINTData}>
 					Refresh Data
 				</button>
 
-				<div class="text-xs opacity-60 p-2 bg-slate-900 rounded">
-					💡 Real-time OSINT data integration. Enable sources below to populate the map with live intelligence.
+				<div class="rounded p-2 text-xs opacity-60">
+					💡 Real-time OSINT data integration. Enable sources below to populate the map with live
+					intelligence.
 				</div>
 			</div>
-
 		{:else if activeTab === 'sources'}
 			<div class="space-y-3">
-				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
-					<label class="flex items-center gap-2 cursor-pointer">
+				<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
+					<label class="flex cursor-pointer items-center gap-2">
 						<input type="checkbox" bind:checked={firmsEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
 							<div class="text-xs font-bold">🔥 NASA FIRMS / EONET</div>
@@ -123,8 +131,8 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
-					<label class="flex items-center gap-2 cursor-pointer">
+				<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
+					<label class="flex cursor-pointer items-center gap-2">
 						<input type="checkbox" bind:checked={adsbEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
 							<div class="text-xs font-bold">✈️ ADS-B Exchange</div>
@@ -133,8 +141,8 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
-					<label class="flex items-center gap-2 cursor-pointer">
+				<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
+					<label class="flex cursor-pointer items-center gap-2">
 						<input type="checkbox" bind:checked={maritimeEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
 							<div class="text-xs font-bold">⛴️ Maritime Tracker</div>
@@ -143,8 +151,8 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
-					<label class="flex items-center gap-2 cursor-pointer">
+				<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
+					<label class="flex cursor-pointer items-center gap-2">
 						<input type="checkbox" bind:checked={satelliteEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
 							<div class="text-xs font-bold">🛰️ Sentinel Hub</div>
@@ -153,7 +161,6 @@
 					</label>
 				</div>
 			</div>
-
 		{:else if activeTab === 'settings'}
 			<div class="space-y-3">
 				<div>
@@ -166,7 +173,7 @@
 						bind:value={nasaApiKey}
 						class="input input-sm input-bordered w-full"
 					/>
-					<div class="text-[10px] opacity-60 mt-1">
+					<div class="mt-1 text-[10px] opacity-60">
 						FIRMS API key for higher resolution fire data. EONET is used if empty.
 					</div>
 				</div>
@@ -197,7 +204,7 @@
 					</select>
 				</div>
 
-				<div class="text-xs opacity-60 p-2 bg-slate-900 rounded">
+				<div class="rounded p-2 text-xs opacity-60">
 					⚠️ More frequent updates consume more bandwidth. Adjust based on your needs.
 				</div>
 			</div>
