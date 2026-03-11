@@ -42,9 +42,9 @@
 	}
 </script>
 
-<div class="absolute bottom-4 left-4 z-[300] bg-base-200 rounded-lg shadow-2xl border border-base-300 w-96 max-h-[70vh] overflow-hidden flex flex-col">
+<div class="absolute bottom-4 left-4 z-[300] bg-slate-800 rounded-lg shadow-2xl border border-slate-700 w-96 max-h-[70vh] overflow-hidden flex flex-col">
 	<!-- Header -->
-	<div class="bg-base-300 px-4 py-3 flex items-center justify-between border-b border-base-400">
+	<div class="bg-slate-700 px-4 py-3 flex items-center justify-between border-b border-slate-600">
 		<div class="flex items-center gap-2">
 			<FluentEmojiDatabase class="size-5 text-primary" />
 			<h3 class="font-bold text-sm">OSINT Data Sources</h3>
@@ -55,7 +55,7 @@
 	</div>
 
 	<!-- Tabs -->
-	<div class="flex border-b border-base-400 bg-base-300/50">
+	<div class="flex border-b border-slate-600 bg-slate-700/50">
 		<button
 			class="flex-1 px-3 py-2 text-xs font-bold border-b-2 transition-colors {activeTab === 'overview' ? 'border-primary text-primary' : 'border-transparent opacity-60'}"
 			onclick={() => (activeTab = 'overview')}
@@ -81,19 +81,19 @@
 		{#if activeTab === 'overview'}
 			<div class="space-y-3">
 				<div class="grid grid-cols-2 gap-2">
-					<div class="p-3 bg-base-300 rounded border border-base-400">
+					<div class="p-3 bg-slate-700 rounded border border-slate-600">
 						<div class="text-xs opacity-60 mb-1">🔥 Fires</div>
 						<div class="text-2xl font-bold text-orange-500">{dataStats.fires}</div>
 					</div>
-					<div class="p-3 bg-base-300 rounded border border-base-400">
+					<div class="p-3 bg-slate-700 rounded border border-slate-600">
 						<div class="text-xs opacity-60 mb-1">✈️ Flights</div>
 						<div class="text-2xl font-bold text-blue-500">{dataStats.flights}</div>
 					</div>
-					<div class="p-3 bg-base-300 rounded border border-base-400">
+					<div class="p-3 bg-slate-700 rounded border border-slate-600">
 						<div class="text-xs opacity-60 mb-1">⛴️ Vessels</div>
 						<div class="text-2xl font-bold text-green-500">{dataStats.vessels}</div>
 					</div>
-					<div class="p-3 bg-base-300 rounded border border-base-400">
+					<div class="p-3 bg-slate-700 rounded border border-slate-600">
 						<div class="text-xs opacity-60 mb-1">🛰️ Satellites</div>
 						<div class="text-2xl font-bold text-purple-500">{dataStats.satellites}</div>
 					</div>
@@ -106,14 +106,14 @@
 					Refresh Data
 				</button>
 
-				<div class="text-xs opacity-60 p-2 bg-base-100 rounded">
+				<div class="text-xs opacity-60 p-2 bg-slate-900 rounded">
 					💡 Real-time OSINT data integration. Enable sources below to populate the map with live intelligence.
 				</div>
 			</div>
 
 		{:else if activeTab === 'sources'}
 			<div class="space-y-3">
-				<div class="p-3 bg-base-300 rounded border border-base-400 space-y-2">
+				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
 					<label class="flex items-center gap-2 cursor-pointer">
 						<input type="checkbox" bind:checked={firmsEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
@@ -123,7 +123,7 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-base-300 rounded border border-base-400 space-y-2">
+				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
 					<label class="flex items-center gap-2 cursor-pointer">
 						<input type="checkbox" bind:checked={adsbEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
@@ -133,7 +133,7 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-base-300 rounded border border-base-400 space-y-2">
+				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
 					<label class="flex items-center gap-2 cursor-pointer">
 						<input type="checkbox" bind:checked={maritimeEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
@@ -143,7 +143,7 @@
 					</label>
 				</div>
 
-				<div class="p-3 bg-base-300 rounded border border-base-400 space-y-2">
+				<div class="p-3 bg-slate-700 rounded border border-slate-600 space-y-2">
 					<label class="flex items-center gap-2 cursor-pointer">
 						<input type="checkbox" bind:checked={satelliteEnabled} class="checkbox checkbox-sm" />
 						<div class="flex-1">
@@ -197,7 +197,7 @@
 					</select>
 				</div>
 
-				<div class="text-xs opacity-60 p-2 bg-base-100 rounded">
+				<div class="text-xs opacity-60 p-2 bg-slate-900 rounded">
 					⚠️ More frequent updates consume more bandwidth. Adjust based on your needs.
 				</div>
 			</div>

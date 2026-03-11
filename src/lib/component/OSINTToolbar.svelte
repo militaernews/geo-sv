@@ -13,7 +13,7 @@
 	}>();
 </script>
 
-<div class="bg-base-200 border-b border-base-300 px-4 py-3 flex items-center justify-between gap-4">
+<div class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between gap-4">
 	<!-- Left: Title and Status -->
 	<div class="flex items-center gap-3">
 		<div class="flex items-center gap-2">

@@ -233,7 +233,7 @@
 	<title>OSINT Geolocalization Tool</title>
 </svelte:head>
 
-<div class="h-screen w-screen flex flex-col bg-base-100 text-base-content">
+<div class="h-screen w-screen flex flex-col bg-slate-950 text-slate-100">
 	<!-- Top OSINT Toolbar -->
 	{#if showOSINTToolbar}
 		<OSINTToolbar
@@ -343,7 +343,7 @@
 		</div>
 
 		<!-- Right Info Panel (collapsible) -->
-		<div class="w-80 bg-base-200 border-l border-base-300 overflow-y-auto hidden lg:block">
+		<div class="w-80 bg-slate-800 border-l border-slate-700 overflow-y-auto hidden lg:block">
 			<div class="p-4 space-y-4">
 				<div class="divider my-2">Koordinaten</div>
 				<div class="text-xs space-y-2">
@@ -364,7 +364,7 @@
 				<div class="divider my-2">Marker ({$circles.length})</div>
 				<div class="space-y-2 max-h-48 overflow-y-auto">
 				{#each $circles as circle}
-					<div class="p-2 bg-base-300 rounded text-xs">
+					<div class="p-2 bg-slate-700 rounded text-xs">
 							<div class="font-bold truncate">{circle.text || 'Unnamed'}</div>
 							<div class="opacity-70 font-mono">{circle.lat.toFixed(4)}, {circle.lng.toFixed(4)}</div>
 						</div>
@@ -408,6 +408,6 @@
 
 <style>
 :global(body) {
-	@apply bg-base-100;
+	@apply bg-slate-950;
 }
 </style>
