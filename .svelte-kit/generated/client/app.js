@@ -39,3 +39,5 @@ export const hash = false;
 export const decode = (type, value) => decoders[type](value);
 
 export { default as root } from '../root.js';
+
+export const get_error_template = () => import('../shared/error-template.js').then(m => m.default);
