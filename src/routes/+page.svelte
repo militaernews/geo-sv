@@ -43,9 +43,13 @@
 	);
 	let mapSources = $state(initialMapSources);
 
+	const defaultMapIndex = Math.max(
+		0,
+		defaultMapSources.findIndex((source) => source.name === 'OpenStreetMap')
+	);
 	const [initialSelectedMapIndex, saveSelectedMapIndex] = createPersistentState(
 		'selectedMapIndex',
-		0,
+		defaultMapIndex,
 		String,
 		Number
 	);
@@ -231,7 +235,7 @@
 	<title>OSINT Geolocalization Tool</title>
 </svelte:head>
 
-<div class="flex h-screen w-screen flex-col text-slate-100">
+<div class="flex h-dvh w-screen flex-col text-slate-100">
 	<!-- Top OSINT Toolbar -->
 	{#if showOSINTToolbar}
 		<OSINTToolbar

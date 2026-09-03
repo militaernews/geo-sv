@@ -156,7 +156,7 @@
 	}
 </script>
 
-	<div class="relative h-screen w-full z-0">
+	<div class="relative h-full w-full z-0">
 		{#if browser}
 			<Map
 				options={{ center: [lat, lng], zoom: zoom }}
