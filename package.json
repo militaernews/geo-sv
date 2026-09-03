@@ -37,7 +37,6 @@
 		"prettier": "3.9.5",
 		"prettier-plugin-svelte": "4.1.1",
 		"prettier-plugin-tailwindcss": "0.8.0",
-		"puppeteer": "25.3.0",
 		"sveaflet": "^0.1.5",
 		"svelte": "5.56.4",
 		"svelte-check": "4.7.2",
@@ -51,7 +50,9 @@
 	},
 	"dependencies": {
 		"@iconify/svelte": "5.2.2",
+		"@sparticuz/chromium": "131.0.1",
 		"dotenv": "17.4.2",
-		"leaflet": "^1.9.4"
+		"leaflet": "^1.9.4",
+		"puppeteer-core": "23.11.1"
 	}
 }
