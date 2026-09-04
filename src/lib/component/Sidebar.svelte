@@ -10,6 +10,9 @@
 	import FluentEmojiMagnifyingGlass from '~icons/fluent-emoji/magnifying-glass-tilted-left';
 	import FluentEmojiStraightRuler from '~icons/fluent-emoji/straight-ruler';
 	import FluentEmojiTriangularRuler from '~icons/fluent-emoji/triangular-ruler';
+	import FluentEmojiSun from '~icons/fluent-emoji/sun';
+	import FluentEmojiCompass from '~icons/fluent-emoji/compass';
+	import CrosshairsIcon from '~icons/fluent/target-20-regular';
 	import BottomSheet from '$lib/component/BottomSheet.svelte';
 	import type { MapSource } from '$lib/MapSource';
 
@@ -33,7 +36,9 @@
 		onToggleMeasure,
 		measureMode,
 		onImportMarkers,
-		circles
+		circles,
+		onToggleGeolocalization,
+		isGeolocalizationActive
 	} = $props<{
 		displayLegend: boolean;
 		isCapturingScreenshot: boolean;
@@ -55,6 +60,8 @@
 		measureMode: 'distance' | 'area' | 'none';
 		onImportMarkers: (markers: any[]) => void;
 		circles: any[];
+		onToggleGeolocalization: () => void;
+		isGeolocalizationActive: boolean;
 	}>();
 
 	let showMobilePanel = $state(false);
@@ -356,6 +363,28 @@
 			>
 				<FluentEmojiPlus class="text-primary size-6" />
 				<span class="text-xs">Add Map</span>
+			</button>
+
+			<button class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl">
+				<FluentEmojiSun class="size-6" />
+				<span class="text-xs">Sun</span>
+			</button>
+
+			<button class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl">
+				<FluentEmojiCompass class="size-6" />
+				<span class="text-xs">Compass</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isGeolocalizationActive
+					? 'bg-primary/20'
+					: ''}"
+				onclick={handleActionClick(onToggleGeolocalization)}
+			>
+				<CrosshairsIcon
+					class="size-6 {isGeolocalizationActive ? 'text-primary' : 'text-base-content/70'}"
+				/>
+				<span class="text-xs">Geolocalize</span>
 			</button>
 		</div>
 

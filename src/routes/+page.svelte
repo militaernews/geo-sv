@@ -236,8 +236,8 @@
 </svelte:head>
 
 <div class="flex h-dvh w-screen flex-col text-slate-100">
-	<!-- Top OSINT Toolbar -->
-	{#if showOSINTToolbar}
+	<!-- Top OSINT Toolbar (desktop only; its tools move into the mobile bottom sheet) -->
+	{#if showOSINTToolbar && !isMobile}
 		<OSINTToolbar
 			{mapLat}
 			{mapLng}
@@ -273,6 +273,8 @@
 			onImportMarkers={(imported) => {
 				circles.set(imported);
 			}}
+			onToggleGeolocalization={() => (showGeolocalization = !showGeolocalization)}
+			isGeolocalizationActive={showGeolocalization}
 		/>
 
 		<!-- Map Container -->
