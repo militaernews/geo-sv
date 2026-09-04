@@ -10,6 +10,7 @@
 	import FluentEmojiMagnifyingGlass from '~icons/fluent-emoji/magnifying-glass-tilted-left';
 	import FluentEmojiStraightRuler from '~icons/fluent-emoji/straight-ruler';
 	import FluentEmojiTriangularRuler from '~icons/fluent-emoji/triangular-ruler';
+	import BottomSheet from '$lib/component/BottomSheet.svelte';
 	import type { MapSource } from '$lib/MapSource';
 
 	const {
@@ -281,9 +282,8 @@
 		</div>
 	</div>
 {:else}
-	<!-- Mobile: Minimal floating action button with simple panel -->
-	<div class="fixed bottom-5 left-5 z-50">
-		<!-- FAB -->
+	<!-- Mobile: FAB that opens a bottom sheet -->
+	<div class="fixed bottom-5 left-5 z-[4000]">
 		<button
 			class="btn btn-circle bg-base-100/90 size-12 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105"
 			onclick={() => (showMobilePanel = !showMobilePanel)}
@@ -292,131 +292,118 @@
 				<FluentEmojiPlus class="text-base-content size-5" />
 			</div>
 		</button>
-
-		<!-- Simple action panel -->
-		{#if showMobilePanel}
-			<div class="animate-in fade-in slide-in-from-bottom-2 absolute bottom-16 left-0 duration-200">
-				<div class="bg-base-100/95 w-72 rounded-2xl p-2 shadow-xl backdrop-blur-xl max-h-[70vh] overflow-y-auto">
-					<!-- Action buttons -->
-					<div class="mb-4 grid grid-cols-2 gap-3">
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
-							onclick={handleActionClick(onAddCircle)}
-						>
-							<FluentEmojiRoundPushpin class="text-primary size-6" />
-							<span class="text-xs">Marker</span>
-						</button>
-
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {displayLegend
-								? 'bg-primary/20'
-								: ''}"
-							onclick={handleActionClick(onToggleLegend)}
-						>
-							<FluentEmojiEye class="size-6 {displayLegend ? 'text-primary' : 'text-base-content/70'}" />
-							<span class="text-xs">Legend</span>
-						</button>
-
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isLeafletActive
-								? 'bg-primary/20'
-								: ''}"
-							onclick={handleActionClick(onToggleLeaflet)}
-						>
-							<FluentEmojiMap class="size-6 {isLeafletActive ? 'text-primary' : 'text-base-content/70'}" />
-							<span class="text-xs">Leaflet</span>
-						</button>
-
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isInfraSearchActive
-								? 'bg-primary/20'
-								: ''}"
-							onclick={handleActionClick(onToggleInfraSearch)}
-						>
-							<FluentEmojiMagnifyingGlass
-								class="size-6 {isInfraSearchActive ? 'text-primary' : 'text-base-content/70'}"
-							/>
-							<span class="text-xs">Search</span>
-						</button>
-
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
-							onclick={handleActionClick(onCaptureScreenshot)}
-							disabled={isCapturingScreenshot}
-						>
-							{#if isCapturingScreenshot}
-								<span class="loading loading-spinner loading-sm text-primary"></span>
-							{:else}
-								<FluentEmojiFloppyDisk class="text-primary size-6" />
-							{/if}
-							<span class="text-xs">Screenshot</span>
-						</button>
-
-						<button
-							class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
-							onclick={handleActionClick(onOpenMapModal)}
-						>
-							<FluentEmojiPlus class="text-primary size-6" />
-							<span class="text-xs">Add Map</span>
-						</button>
-					</div>
-
-					<!-- Map list grouped -->
-					<div class="space-y-2">
-						{#each Object.entries(groupedMaps) as [category, maps]}
-							<div class="text-[10px] font-bold opacity-40 uppercase px-2">{category}</div>
-							<div class="space-y-1">
-								{#each maps as map}
-									<div
-										class="hover:bg-base-200/50 flex items-center gap-2 rounded-lg p-2 {selectedMapIndex ===
-										map.index && !isLeafletActive
-											? 'bg-primary/20'
-											: ''}"
-									>
-										{#if selectedMapIndex === map.index && !isLeafletActive}<FluentEmojiWorldMap
-												class="text-primary size-5"
-											/>{/if}
-										<button
-											class="flex-1 truncate text-left text-sm"
-											onclick={() => handleMapSwitch(map.index)}
-										>
-											{map.name}
-										</button>
-										{#if map.isCustom}
-											<button
-												class="btn btn-ghost btn-xs text-error h-6 w-6 p-0"
-												onclick={(e) => {
-													e.stopPropagation();
-													onRemoveCustomMap(map.index);
-												}}
-											>
-												<FluentEmojiCrossMark class="size-3" />
-											</button>
-										{/if}
-									</div>
-								{/each}
-							</div>
-						{/each}
-					</div>
-
-					<!-- Clear button -->
-					<button
-						class="btn btn-ghost text-error hover:bg-error/10 mt-3 w-full rounded-xl"
-						onclick={handleActionClick(onClearCirclesAndLegend)}
-					>
-						<FluentEmojiWastebasket class="size-5" />
-						Clear
-					</button>
-				</div>
-			</div>
-		{/if}
 	</div>
 
-	<!-- Mobile backdrop -->
-	{#if showMobilePanel}
-		<div
-			class="animate-in fade-in fixed inset-0 z-[3999] bg-black/20 backdrop-blur-sm duration-300"
-			onclick={() => (showMobilePanel = false)}
-		></div>
-	{/if}
+	<BottomSheet bind:open={showMobilePanel} title="Menu">
+		<!-- Action buttons -->
+		<div class="mb-4 grid grid-cols-2 gap-3">
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
+				onclick={handleActionClick(onAddCircle)}
+			>
+				<FluentEmojiRoundPushpin class="text-primary size-6" />
+				<span class="text-xs">Marker</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {displayLegend
+					? 'bg-primary/20'
+					: ''}"
+				onclick={handleActionClick(onToggleLegend)}
+			>
+				<FluentEmojiEye class="size-6 {displayLegend ? 'text-primary' : 'text-base-content/70'}" />
+				<span class="text-xs">Legend</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isLeafletActive
+					? 'bg-primary/20'
+					: ''}"
+				onclick={handleActionClick(onToggleLeaflet)}
+			>
+				<FluentEmojiMap class="size-6 {isLeafletActive ? 'text-primary' : 'text-base-content/70'}" />
+				<span class="text-xs">Leaflet</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isInfraSearchActive
+					? 'bg-primary/20'
+					: ''}"
+				onclick={handleActionClick(onToggleInfraSearch)}
+			>
+				<FluentEmojiMagnifyingGlass
+					class="size-6 {isInfraSearchActive ? 'text-primary' : 'text-base-content/70'}"
+				/>
+				<span class="text-xs">Search</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
+				onclick={handleActionClick(onCaptureScreenshot)}
+				disabled={isCapturingScreenshot}
+			>
+				{#if isCapturingScreenshot}
+					<span class="loading loading-spinner loading-sm text-primary"></span>
+				{:else}
+					<FluentEmojiFloppyDisk class="text-primary size-6" />
+				{/if}
+				<span class="text-xs">Screenshot</span>
+			</button>
+
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl"
+				onclick={handleActionClick(onOpenMapModal)}
+			>
+				<FluentEmojiPlus class="text-primary size-6" />
+				<span class="text-xs">Add Map</span>
+			</button>
+		</div>
+
+		<!-- Map list grouped -->
+		<div class="space-y-2">
+			{#each Object.entries(groupedMaps) as [category, maps]}
+				<div class="text-[10px] font-bold opacity-40 uppercase px-2">{category}</div>
+				<div class="space-y-1">
+					{#each maps as map}
+						<div
+							class="hover:bg-base-200/50 flex items-center gap-2 rounded-lg p-2 {selectedMapIndex ===
+							map.index && !isLeafletActive
+								? 'bg-primary/20'
+								: ''}"
+						>
+							{#if selectedMapIndex === map.index && !isLeafletActive}<FluentEmojiWorldMap
+									class="text-primary size-5"
+								/>{/if}
+							<button
+								class="flex-1 truncate text-left text-sm"
+								onclick={() => handleMapSwitch(map.index)}
+							>
+								{map.name}
+							</button>
+							{#if map.isCustom}
+								<button
+									class="btn btn-ghost btn-xs text-error h-6 w-6 p-0"
+									onclick={(e) => {
+										e.stopPropagation();
+										onRemoveCustomMap(map.index);
+									}}
+								>
+									<FluentEmojiCrossMark class="size-3" />
+								</button>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</div>
+
+		<!-- Clear button -->
+		<button
+			class="btn btn-ghost text-error hover:bg-error/10 mt-3 w-full rounded-xl"
+			onclick={handleActionClick(onClearCirclesAndLegend)}
+		>
+			<FluentEmojiWastebasket class="size-5" />
+			Clear
+		</button>
+	</BottomSheet>
 {/if}
