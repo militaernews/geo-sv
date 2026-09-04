@@ -1,15 +1,24 @@
 <script lang="ts">
 	import FluentEmojiMagnifyingGlass from '~icons/fluent-emoji/magnifying-glass-tilted-left';
-	import FluentEmojiCompass from '~icons/fluent-emoji/compass';
 	import FluentEmojiSun from '~icons/fluent-emoji/sun';
 	import CrosshairsIcon from '~icons/fluent/target-20-regular';
 
-	let { mapLat, mapLng, mapZoom, onToggleGeolocalization, isGeolocalizationActive } = $props<{
+	let {
+		mapLat,
+		mapLng,
+		mapZoom,
+		onToggleGeolocalization,
+		isGeolocalizationActive,
+		onOpenSunTool,
+		isSunToolActive
+	} = $props<{
 		mapLat: number;
 		mapLng: number;
 		mapZoom: number;
 		onToggleGeolocalization: () => void;
 		isGeolocalizationActive: boolean;
+		onOpenSunTool: () => void;
+		isSunToolActive: boolean;
 	}>();
 </script>
 
@@ -42,14 +51,15 @@
 
 	<!-- Right: Tools -->
 	<div class="flex items-center gap-2">
-		<button class="btn btn-sm btn-ghost hover:bg-primary/10 gap-2" title="Sun Position & Shadows">
+		<button
+			class="btn btn-sm {isSunToolActive
+				? 'btn-primary'
+				: 'btn-ghost'} hover:bg-primary/10 gap-2"
+			onclick={onOpenSunTool}
+			title="Sun Position & Shadows"
+		>
 			<FluentEmojiSun class="size-4" />
 			<span class="hidden sm:inline">Sun</span>
-		</button>
-
-		<button class="btn btn-sm btn-ghost hover:bg-primary/10 gap-2" title="Compass & Direction">
-			<FluentEmojiCompass class="size-4" />
-			<span class="hidden sm:inline">Compass</span>
 		</button>
 
 		<div class="divider divider-horizontal mx-1 h-6"></div>

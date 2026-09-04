@@ -2,33 +2,57 @@
 	import FluentEmojiXMark from '~icons/fluent-emoji/cross-mark';
 	import FluentEmojiCamera from '~icons/fluent-emoji/camera';
 	import FluentEmojiSun from '~icons/fluent-emoji/sun';
-	import FluentEmojiCompass from '~icons/fluent-emoji/compass';
 	import FluentEmojiRuler from '~icons/fluent-emoji/straight-ruler';
 
-	let { mapLat, mapLng, mapZoom, onClose } = $props<{
+	let {
+		mapLat,
+		mapLng,
+		mapZoom,
+		onClose,
+		selectedTool = $bindable('image-overlay')
+	} = $props<{
 		mapLat: number;
 		mapLng: number;
 		mapZoom: number;
 		onClose: () => void;
+		selectedTool?: 'image-overlay' | 'sun';
 	}>();
 
-	let selectedTool = $state('image-overlay');
 	let imageUrl = $state('');
 	let imageOpacity = $state(0.5);
-	let showSunInfo = $state(false);
-	let sunAzimuth = $state(0);
-	let sunElevation = $state(0);
 
-	// Calculate sun position (simplified)
-	function calculateSunPosition() {
-		const now = new Date();
+	function pad(n: number) {
+		return String(n).padStart(2, '0');
+	}
+
+	function nowUtcInputValue() {
+		const d = new Date();
+		return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+	}
+
+	let sunDateTimeUtc = $state(nowUtcInputValue());
+
+	const targetDate = $derived.by(() => {
+		const [datePart, timePart] = sunDateTimeUtc.split('T');
+		if (!datePart || !timePart) return new Date();
+		const [y, m, d] = datePart.split('-').map(Number);
+		const [hh, mm] = timePart.split(':').map(Number);
+		return new Date(Date.UTC(y, m - 1, d, hh, mm));
+	});
+
+	/**
+	 * NOAA solar position approximation (Cooper declination + NOAA azimuth formula).
+	 * Accurate to roughly ±0.5° - plenty for shadow-matching OSINT work.
+	 */
+	function computeSunPosition(date: Date, lat: number, lng: number) {
 		const dayOfYear = Math.floor(
-			(now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000
+			(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) -
+				Date.UTC(date.getUTCFullYear(), 0, 0)) /
+				86400000
 		);
 
-		// Simplified calculation
 		const B = (2 * Math.PI * (dayOfYear - 1)) / 365;
-		const eot =
+		const eotMinutes =
 			229.18 *
 			(0.000075 +
 				0.001868 * Math.cos(B) -
@@ -36,28 +60,79 @@
 				0.014615 * Math.cos(2 * B) -
 				0.040849 * Math.sin(2 * B));
 
-		const standardMeridian = Math.floor(mapLng / 15) * 15;
-		const localSolarTime =
-			now.getHours() + now.getMinutes() / 60 + (mapLng - standardMeridian) / 15 + eot / 60;
+		// Cooper (1969) equation - peaks at the summer solstice (day ~172), unlike a plain sin(B).
+		const declRad =
+			((23.45 * Math.PI) / 180) * Math.sin(((2 * Math.PI) / 365) * (284 + dayOfYear));
 
-		const hourAngle = 15 * (localSolarTime - 12);
-		const sinAlt =
-			Math.sin((mapLat * Math.PI) / 180) * Math.sin(((23.44 * Math.PI) / 180) * Math.sin(B)) +
-			Math.cos((mapLat * Math.PI) / 180) *
-				Math.cos(((23.44 * Math.PI) / 180) * Math.sin(B)) *
-				Math.cos((hourAngle * Math.PI) / 180);
+		const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60;
+		const solarTime = utcHours + lng / 15 + eotMinutes / 60;
+		const hourAngleDeg = 15 * (solarTime - 12);
+		const hourAngleRad = (hourAngleDeg * Math.PI) / 180;
+		const latRad = (lat * Math.PI) / 180;
 
-		sunElevation = (Math.asin(sinAlt) * 180) / Math.PI;
+		const cosZenith =
+			Math.sin(latRad) * Math.sin(declRad) +
+			Math.cos(latRad) * Math.cos(declRad) * Math.cos(hourAngleRad);
+		const zenithRad = Math.acos(Math.max(-1, Math.min(1, cosZenith)));
+		const elevationDeg = 90 - (zenithRad * 180) / Math.PI;
 
-		const cosAz =
-			(Math.sin(((23.44 * Math.PI) / 180) * Math.sin(B)) -
-				Math.sin((mapLat * Math.PI) / 180) * sinAlt) /
-			(Math.cos((mapLat * Math.PI) / 180) * Math.cos(Math.asin(sinAlt)));
+		const azDenom = Math.cos(latRad) * Math.sin(zenithRad);
+		let azimuthDeg: number;
+		if (Math.abs(azDenom) > 0.001) {
+			let azRad =
+				(Math.sin(latRad) * Math.cos(zenithRad) - Math.sin(declRad)) / azDenom;
+			azRad = Math.acos(Math.max(-1, Math.min(1, azRad)));
+			azimuthDeg =
+				hourAngleDeg > 0 ? (((azRad * 180) / Math.PI + 180) % 360) : ((540 - (azRad * 180) / Math.PI) % 360);
+		} else {
+			azimuthDeg = lat > 0 ? 180 : 0;
+		}
 
-		sunAzimuth = (Math.acos(Math.max(-1, Math.min(1, cosAz))) * 180) / Math.PI;
-		if (localSolarTime < 12) sunAzimuth = 360 - sunAzimuth;
+		return { azimuthDeg, elevationDeg };
+	}
 
-		showSunInfo = true;
+	const sunPosition = $derived.by(() => computeSunPosition(targetDate, mapLat, mapLng));
+
+	function useNow() {
+		sunDateTimeUtc = nowUtcInputValue();
+	}
+
+	// --- Shadow calculator ---
+	let objectHeight = $state(1.8);
+
+	const shadowLength = $derived.by(() => {
+		if (sunPosition.elevationDeg <= 0) return null;
+		return objectHeight / Math.tan((sunPosition.elevationDeg * Math.PI) / 180);
+	});
+
+	// Reverse: given an observed shadow length, find times of day matching that sun elevation
+	let observedShadowLength = $state(3);
+	let matchingTimes = $state<string[]>([]);
+
+	function findMatchingTimes() {
+		if (objectHeight <= 0 || observedShadowLength <= 0) {
+			matchingTimes = [];
+			return;
+		}
+		const targetElevDeg = (Math.atan(objectHeight / observedShadowLength) * 180) / Math.PI;
+		const dayStart = Date.UTC(
+			targetDate.getUTCFullYear(),
+			targetDate.getUTCMonth(),
+			targetDate.getUTCDate()
+		);
+
+		const matches: string[] = [];
+		let prevDiff: number | null = null;
+		for (let mins = 0; mins <= 24 * 60; mins += 5) {
+			const t = new Date(dayStart + mins * 60000);
+			const { elevationDeg } = computeSunPosition(t, mapLat, mapLng);
+			const diff = elevationDeg - targetElevDeg;
+			if (prevDiff !== null && Math.sign(diff) !== Math.sign(prevDiff) && Math.sign(diff) !== 0) {
+				matches.push(`${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())} UTC`);
+			}
+			prevDiff = diff;
+		}
+		matchingTimes = matches;
 	}
 
 	function handleImageUpload(e: Event) {
@@ -102,17 +177,7 @@
 			onclick={() => (selectedTool = 'sun')}
 		>
 			<FluentEmojiSun class="mr-1 inline size-4" />
-			Sun
-		</button>
-		<button
-			class="flex-1 border-b-2 px-3 py-2 text-xs font-bold transition-colors {selectedTool ===
-			'compass'
-				? 'border-primary text-primary'
-				: 'border-transparent opacity-60'}"
-			onclick={() => (selectedTool = 'compass')}
-		>
-			<FluentEmojiCompass class="mr-1 inline size-4" />
-			Compass
+			Sun & Shadows
 		</button>
 	</div>
 
@@ -168,99 +233,99 @@
 				{/if}
 			</div>
 		{:else if selectedTool === 'sun'}
-			<div class="space-y-3">
-				<button class="btn btn-sm btn-primary w-full" onclick={calculateSunPosition}>
-					Calculate Sun Position
-				</button>
-
-				{#if showSunInfo}
-					<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
-						<div class="flex justify-between text-xs">
-							<span class="opacity-70">Azimuth:</span>
-							<span class="font-mono font-bold">{(sunAzimuth ?? 0).toFixed(1)}°</span>
-						</div>
-						<div class="flex justify-between text-xs">
-							<span class="opacity-70">Elevation:</span>
-							<span class="font-mono font-bold">{(sunElevation ?? 0).toFixed(1)}°</span>
-						</div>
-						<div class="flex justify-between text-xs">
-							<span class="opacity-70">Status:</span>
-							<span class="font-mono font-bold">
-								{sunElevation > 0 ? '☀️ Daytime' : '🌙 Nighttime'}
-							</span>
-						</div>
-					</div>
-
-					<div class="rounded p-2 text-xs opacity-60">
-						💡 Use shadow direction and length to verify time of day and location. Compare with
-						video shadows.
-					</div>
-				{/if}
-			</div>
-		{:else if selectedTool === 'compass'}
-			<div class="space-y-3">
-				<div class="flex justify-center">
-					<div class="relative h-48 w-48">
-						<svg viewBox="0 0 200 200" class="h-full w-full">
-							<!-- Compass circle -->
-							<circle
-								cx="100"
-								cy="100"
-								r="95"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								class="opacity-30"
-							/>
-
-							<!-- Cardinal directions -->
-							<text x="100" y="20" text-anchor="middle" class="fill-primary text-lg font-bold"
-								>N</text
-							>
-							<text
-								x="180"
-								y="105"
-								text-anchor="middle"
-								class="fill-base-content/70 text-lg font-bold">E</text
-							>
-							<text
-								x="100"
-								y="185"
-								text-anchor="middle"
-								class="fill-base-content/70 text-lg font-bold">S</text
-							>
-							<text
-								x="20"
-								y="105"
-								text-anchor="middle"
-								class="fill-base-content/70 text-lg font-bold">W</text
-							>
-
-							<!-- Degree markers -->
-							{#each Array(8) as _, i}
-								<line
-									x1="100"
-									y1="10"
-									x2="100"
-									y2="20"
-									stroke="currentColor"
-									stroke-width="1"
-									class="opacity-20"
-									transform="rotate({i * 45} 100 100)"
-								/>
-							{/each}
-						</svg>
+			<div class="space-y-4">
+				<div>
+					<label class="label">
+						<span class="label-text text-xs font-bold">Date / Time (UTC)</span>
+					</label>
+					<div class="flex gap-2">
+						<input
+							type="datetime-local"
+							bind:value={sunDateTimeUtc}
+							class="input input-bordered input-sm flex-1"
+						/>
+						<button class="btn btn-sm btn-ghost" onclick={useNow}>Now</button>
 					</div>
 				</div>
 
-				<div class="rounded border border-slate-600 bg-slate-700 p-3 text-center text-xs">
-					<div class="font-bold">Current Bearing</div>
-					<div class="text-primary mt-1 font-mono text-lg font-bold">0° (N)</div>
+				<div class="space-y-2 rounded border border-slate-600 bg-slate-700 p-3">
+					<div class="flex justify-between text-xs">
+						<span class="opacity-70">Azimuth:</span>
+						<span class="font-mono font-bold">{sunPosition.azimuthDeg.toFixed(1)}°</span>
+					</div>
+					<div class="flex justify-between text-xs">
+						<span class="opacity-70">Elevation:</span>
+						<span class="font-mono font-bold">{sunPosition.elevationDeg.toFixed(1)}°</span>
+					</div>
+					<div class="flex justify-between text-xs">
+						<span class="opacity-70">Status:</span>
+						<span class="font-mono font-bold">
+							{sunPosition.elevationDeg > 0 ? '☀️ Daytime' : '🌙 Nighttime'}
+						</span>
+					</div>
 				</div>
 
-				<div class="bg-base-900 rounded p-2 text-xs opacity-60">
-					💡 Use compass direction to match video angles with map orientation. Verify building/tree
-					positions.
+				<div class="rounded p-2 text-xs opacity-60">
+					💡 Match this azimuth/elevation against shadow direction and length in the footage to
+					narrow down capture time and confirm the location.
+				</div>
+
+				<div class="divider my-1 text-xs opacity-50">
+					<FluentEmojiRuler class="mr-1 inline size-4" />Shadow calculator
+				</div>
+
+				<div class="space-y-2">
+					<label class="label py-0">
+						<span class="label-text text-xs">Object height (m)</span>
+					</label>
+					<input
+						type="number"
+						min="0"
+						step="0.1"
+						bind:value={objectHeight}
+						class="input input-bordered input-sm w-full"
+					/>
+
+					<div class="rounded border border-slate-600 bg-slate-700 p-3 text-xs">
+						{#if shadowLength !== null}
+							Expected shadow length at the time above:
+							<span class="font-mono font-bold">{shadowLength.toFixed(2)} m</span>
+						{:else}
+							<span class="opacity-60">Sun is below the horizon at this time - no shadow.</span>
+						{/if}
+					</div>
+				</div>
+
+				<div class="space-y-2">
+					<label class="label py-0">
+						<span class="label-text text-xs">Observed shadow length (m)</span>
+					</label>
+					<div class="flex gap-2">
+						<input
+							type="number"
+							min="0"
+							step="0.1"
+							bind:value={observedShadowLength}
+							class="input input-bordered input-sm flex-1"
+						/>
+						<button class="btn btn-sm btn-primary" onclick={findMatchingTimes}>Find times</button>
+					</div>
+
+					{#if matchingTimes.length > 0}
+						<div class="rounded border border-slate-600 bg-slate-700 p-3 text-xs">
+							<div class="mb-1 font-bold">Matching times on this date (±5 min, UTC):</div>
+							<div class="flex flex-wrap gap-2">
+								{#each matchingTimes as t}
+									<span class="badge badge-primary badge-sm font-mono">{t}</span>
+								{/each}
+							</div>
+						</div>
+					{:else if matchingTimes.length === 0 && observedShadowLength > 0}
+						<div class="rounded p-2 text-xs opacity-60">
+							Click "Find times" to estimate when an object of this height would cast a shadow this
+							long, given the map's location and the selected date.
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/if}

@@ -11,7 +11,6 @@
 	import FluentEmojiStraightRuler from '~icons/fluent-emoji/straight-ruler';
 	import FluentEmojiTriangularRuler from '~icons/fluent-emoji/triangular-ruler';
 	import FluentEmojiSun from '~icons/fluent-emoji/sun';
-	import FluentEmojiCompass from '~icons/fluent-emoji/compass';
 	import CrosshairsIcon from '~icons/fluent/target-20-regular';
 	import BottomSheet from '$lib/component/BottomSheet.svelte';
 	import type { MapSource } from '$lib/MapSource';
@@ -38,7 +37,9 @@
 		onImportMarkers,
 		circles,
 		onToggleGeolocalization,
-		isGeolocalizationActive
+		isGeolocalizationActive,
+		onOpenSunTool,
+		isSunToolActive
 	} = $props<{
 		displayLegend: boolean;
 		isCapturingScreenshot: boolean;
@@ -62,6 +63,8 @@
 		circles: any[];
 		onToggleGeolocalization: () => void;
 		isGeolocalizationActive: boolean;
+		onOpenSunTool: () => void;
+		isSunToolActive: boolean;
 	}>();
 
 	let showMobilePanel = $state(false);
@@ -365,14 +368,14 @@
 				<span class="text-xs">Add Map</span>
 			</button>
 
-			<button class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl">
+			<button
+				class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl {isSunToolActive
+					? 'bg-primary/20'
+					: ''}"
+				onclick={handleActionClick(onOpenSunTool)}
+			>
 				<FluentEmojiSun class="size-6" />
 				<span class="text-xs">Sun</span>
-			</button>
-
-			<button class="btn btn-ghost hover:bg-primary/10 h-16 flex-col gap-1 rounded-xl">
-				<FluentEmojiCompass class="size-6" />
-				<span class="text-xs">Compass</span>
 			</button>
 
 			<button

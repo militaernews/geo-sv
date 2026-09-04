@@ -88,7 +88,13 @@
 	let searchResults = $state([]);
 	let showStreetViewPlaces = $state(false);
 	let showGeolocalization = $state(false);
+	let geoToolTab = $state<'image-overlay' | 'sun'>('image-overlay');
 	let showOSINTToolbar = $state(true);
+
+	function openSunTool() {
+		geoToolTab = 'sun';
+		showGeolocalization = true;
+	}
 
 	// Central map state for synchronization
 	let mapLat = $state(48.8827);
@@ -244,6 +250,8 @@
 			{mapZoom}
 			onToggleGeolocalization={() => (showGeolocalization = !showGeolocalization)}
 			isGeolocalizationActive={showGeolocalization}
+			onOpenSunTool={openSunTool}
+			isSunToolActive={showGeolocalization && geoToolTab === 'sun'}
 		/>
 	{/if}
 
@@ -275,6 +283,8 @@
 			}}
 			onToggleGeolocalization={() => (showGeolocalization = !showGeolocalization)}
 			isGeolocalizationActive={showGeolocalization}
+			onOpenSunTool={openSunTool}
+			isSunToolActive={showGeolocalization && geoToolTab === 'sun'}
 		/>
 
 		<!-- Map Container -->
@@ -346,6 +356,7 @@
 					{mapLng}
 					{mapZoom}
 					onClose={() => (showGeolocalization = false)}
+					bind:selectedTool={geoToolTab}
 				/>
 			{/if}
 		</div>
